@@ -1,10 +1,11 @@
+
 "use client";
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { ArrowRight, BrainCircuit, Music, Zap, Globe, ShieldCheck } from "lucide-react";
+import { ArrowRight, BrainCircuit, Music, Zap, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
 
@@ -44,7 +45,7 @@ export default function LandingPage() {
             transition={{ delay: 0.2 }}
             className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium opacity-80"
           >
-            Soulmatter uses high-dimensional vector embeddings to find people who resonate with your personality, values, and musical soul.
+            Soulmatter uses high-dimensional neural embeddings to find people who resonate with your personality, values, and musical soul.
           </motion.p>
           
           <motion.div
@@ -93,7 +94,7 @@ export default function LandingPage() {
               {
                 icon: Music,
                 title: "Musical Synergy",
-                desc: "Sync your Spotify or manual favorites. We match you with those whose musical soul vibrates at your frequency.",
+                desc: "Sync your music taste or manual favorites. We match you with those whose musical soul vibrates at your frequency.",
                 color: "secondary"
               },
               {
