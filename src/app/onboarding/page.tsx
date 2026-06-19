@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
-import { useUser, mockDb } from "@/firebase";
+import { useUser, useDoc, mockDb } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { generateSoulVector } from "@/ai/flows/generate-soul-vector";
 import { useToast } from "@/hooks/use-toast";
@@ -75,11 +75,44 @@ export default function OnboardingPage() {
   const [newGenre, setNewGenre] = useState("");
   const [newArtist, setNewArtist] = useState("");
 
+  // Fetch existing profile to pre-populate form
+  const profileQuery = useMemo(() => 
+    user ? { collection: 'users', id: user.uid } : null
+  , [user?.uid]);
+
+  const { data: profile, loading: profileLoading } = useDoc(profileQuery);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        age: profile.age?.toString() || "",
+        city: profile.city || "",
+        bio: profile.bio || "",
+        profileImage: profile.profileImage || "",
+        interests: profile.interests || [],
+        customPersonalityTraits: profile.customPersonalityTraits || [],
+        personality: profile.personality || {
+          introvertExtrovert: 50,
+          creativeAnalytical: 50,
+          plannerSpontaneous: 50,
+          logicalEmotional: 50,
+          adventurousCareful: 50,
+        },
+        music: profile.music || {
+          genres: [],
+          favoriteArtists: [],
+        }
+      });
+      if (profile.spotifyConnected) setSpotifyConnected(true);
+    }
+  }, [profile]);
 
   const nextStep = () => {
     if (step === 0) {
@@ -218,6 +251,11 @@ export default function OnboardingPage() {
         updatedAt: new Date().toISOString()
       });
 
+      toast({
+        title: profile?.onboarded ? "Vector Updated" : "Vector Finalized",
+        description: "Your Soul Identity has been updated with the latest resonant frequencies.",
+      });
+
       router.push("/dashboard");
     } catch (e) {
       console.error(e);
@@ -233,6 +271,14 @@ export default function OnboardingPage() {
       setLoading(false);
     }
   };
+
+  if (authLoading || (profileLoading && !profile)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   if (ageError && step === 0 && formData.age && parseInt(formData.age) < 18) {
     return (
@@ -301,7 +347,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
-                  <p className="mt-4 text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Add Profile Image</p>
+                  <p className="mt-4 text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Update Profile Image</p>
                 </div>
 
                 <h2 className="text-3xl font-headline font-bold mb-2">The Basics</h2>
@@ -526,7 +572,7 @@ export default function OnboardingPage() {
 
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 text-center">
-                <h2 className="text-3xl font-headline font-bold mb-2">Almost Ready!</h2>
+                <h2 className="text-3xl font-headline font-bold mb-2">{profile?.onboarded ? "Ready to Update?" : "Almost Ready!"}</h2>
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden border-2 border-primary/20">
                     {formData.profileImage ? (
@@ -537,10 +583,13 @@ export default function OnboardingPage() {
                   </div>
                   <h3 className="text-2xl font-headline font-bold">{formData.name || "Explorer"}</h3>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <Badge variant="secondary" className="bg-white/10 text-white border-none uppercase tracking-widest text-[8px] font-bold">Profile Ready</Badge>
+                    <Badge variant="secondary" className="bg-white/10 text-white border-none uppercase tracking-widest text-[8px] font-bold">Profile Prepped</Badge>
                     {formData.customPersonalityTraits.length > 0 && <Badge className="bg-primary/20 text-primary border-none uppercase tracking-widest text-[8px] font-bold">Custom Traits</Badge>}
-                    {formData.music.favoriteArtists.length > 0 && <Badge className="bg-secondary/20 text-secondary border-none uppercase tracking-widest text-[8px] font-bold">Music Curated</Badge>}
+                    {formData.music.favoriteArtists.length > 0 && <Badge className="bg-secondary/20 text-secondary border-none uppercase tracking-widest text-[8px] font-bold">Music Refined</Badge>}
                   </div>
+                  <p className="text-muted-foreground text-sm max-w-sm mt-4">
+                    Your Soul Vector will be recalculated based on your latest inputs for optimal matching.
+                  </p>
                 </div>
               </motion.div>
             )}
@@ -550,7 +599,8 @@ export default function OnboardingPage() {
             <Button variant="ghost" onClick={prevStep} disabled={step === 0} className="rounded-xl px-8 h-12">Back</Button>
             {step === STEPS.length - 1 ? (
               <Button onClick={handleFinish} className="rounded-xl px-8 h-12 bg-primary shadow-lg shadow-primary/20" disabled={loading}>
-                {loading ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />} Finalize Vector
+                {loading ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />} 
+                {profile?.onboarded ? "Update Vector" : "Finalize Vector"}
               </Button>
             ) : (
               <Button onClick={nextStep} className="rounded-xl px-8 h-12 bg-primary">

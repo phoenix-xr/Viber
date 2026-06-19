@@ -72,7 +72,7 @@ export default function DashboardPage() {
             <Link href="/onboarding">
               <Button className="rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest shadow-xl shadow-primary/20">
                 <RefreshCw className="w-5 h-5" />
-                Sync Vector
+                Update Vector
               </Button>
             </Link>
           </div>
