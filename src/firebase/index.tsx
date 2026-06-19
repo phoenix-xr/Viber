@@ -1,13 +1,11 @@
-
 'use client';
 
 /**
  * Mock Firebase Implementation (TSX)
- * This file replaces the real Firebase SDK with a local-storage based mock system.
- * Updated to fix recursion errors and ensure data stability.
+ * Centralized Auth Context to ensure synchronization across components.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
@@ -28,13 +26,18 @@ const getDb = () => {
   return JSON.parse(stored);
 };
 
-// --- MOCK AUTH ---
+// --- AUTH CONTEXT ---
 
-export function useAuth() {
-  return null;
+interface AuthContextType {
+  user: any;
+  loading: boolean;
+  login: (userData: any) => void;
+  logout: () => void;
 }
 
-export function useUser() {
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function FirebaseClientProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,7 +59,19 @@ export function useUser() {
     setUser(null);
   };
 
-  return { user, loading, login, logout };
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useUser() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useUser must be used within a FirebaseClientProvider');
+  }
+  return context;
 }
 
 // --- MOCK FIRESTORE ---
@@ -69,7 +84,6 @@ export function useCollection(queryInfo: any) {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Stabilize the queryInfo dependency
   const queryKey = JSON.stringify(queryInfo);
 
   useEffect(() => {
@@ -92,7 +106,6 @@ export function useCollection(queryInfo: any) {
         });
       }
 
-      // Use string comparison to avoid infinite loops with new object references
       setData((prev) => {
         const nextStr = JSON.stringify(items);
         const prevStr = JSON.stringify(prev);
@@ -113,7 +126,6 @@ export function useDoc(docInfo: any) {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Stabilize the docInfo dependency
   const docKey = JSON.stringify(docInfo);
 
   useEffect(() => {
@@ -181,10 +193,7 @@ export const initializeFirebase = () => ({
   auth: {} as any,
 });
 
-export function FirebaseClientProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-
+export function useAuth() { return null; }
 export function useFirebase() { return {} as any; }
 export function useFirebaseApp() { return {} as any; }
 export function useFirestoreInstance() { return {} as any; }

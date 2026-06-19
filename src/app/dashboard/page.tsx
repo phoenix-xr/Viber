@@ -3,7 +3,7 @@
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight } from "lucide-react";
+import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
 import { useEffect, useState, useMemo } from "react";
@@ -30,9 +30,9 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, profile, router]);
 
-  const handleManualSync = () => {
-    setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 2000);
+  const handleSignOut = () => {
+    logout();
+    router.push("/");
   };
 
   if (authLoading || profileLoading) {
@@ -54,8 +54,8 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Your Soul Vector is active and finding resonant signals.</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="rounded-xl glass border-white/10 gap-2" onClick={logout}>
-              Sign Out
+            <Button variant="outline" className="rounded-xl glass border-white/10 gap-2" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4" /> Sign Out
             </Button>
             <Link href="/onboarding">
               <Button className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
