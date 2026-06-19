@@ -19,7 +19,6 @@ import {
   X,
   Brain,
   Tag,
-  Mic2,
   Camera,
   AlertCircle
 } from "lucide-react";
@@ -256,9 +255,9 @@ export default function OnboardingPage() {
 
       router.push("/dashboard");
     } catch (e) {
-      console.error(e);
       mockDb.set("users", user.uid, {
         ...formData,
+        age: parseInt(formData.age) || 0,
         onboarded: true,
         spotifyConnected,
         soulVector: "A complex harmonic intelligence seeking resonance.",

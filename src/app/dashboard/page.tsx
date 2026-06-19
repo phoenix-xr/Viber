@@ -2,10 +2,10 @@
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut, BrainCircuit, Globe, User } from "lucide-react";
+import { RefreshCw, ArrowRight, LogOut, BrainCircuit, Globe, User, TrendingUp, Sparkles, Music as MusicIcon } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -107,8 +107,6 @@ export default function DashboardPage() {
                 </Button>
               </Link>
             </div>
-
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-primary/20 rounded-full blur-[140px] opacity-30 pointer-events-none" />
           </div>
 
           <div className="flex flex-col gap-8">

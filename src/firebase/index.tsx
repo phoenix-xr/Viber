@@ -11,10 +11,10 @@ const INITIAL_USERS = [
 ];
 
 const getDb = () => {
-  if (typeof window === 'undefined') return { users: INITIAL_USERS, interactions: [], chat_messages: {} };
+  if (typeof window === 'undefined') return { users: INITIAL_USERS, interactions: [] };
   const stored = localStorage.getItem('soulmatter_db');
   if (!stored) {
-    const initialDb = { users: INITIAL_USERS, interactions: [], chat_messages: {} };
+    const initialDb = { users: INITIAL_USERS, interactions: [] };
     localStorage.setItem('soulmatter_db', JSON.stringify(initialDb));
     return initialDb;
   }

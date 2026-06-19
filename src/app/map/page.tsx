@@ -13,8 +13,8 @@ export default function RemovedMapPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">This feature has been removed.</h1>
-        <p className="text-muted-foreground">Redirecting to Matches discovery...</p>
+        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
+        <p className="text-muted-foreground">This feature has been integrated into Matches discovery.</p>
       </div>
     </div>
   );

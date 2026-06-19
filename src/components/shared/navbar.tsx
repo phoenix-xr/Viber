@@ -86,7 +86,7 @@ export function Navbar() {
               {filteredLinks.map((link) => (
                 <Link key={link.name} href={link.href} className="text-xl font-headline font-bold flex items-center justify-between" onClick={() => setIsOpen(false)}>
                   {link.name}
-                  {link.icon && <link.icon className="w-5 h-5 text-primary" />}
+                  {link.icon && <link.icon className={`w-5 h-5 ${pathname === link.href ? 'text-primary' : 'text-muted-foreground'}`} />}
                 </Link>
               ))}
               <hr className="border-white/5" />

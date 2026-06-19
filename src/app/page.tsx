@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { ArrowRight, BrainCircuit, Music, Heart, Zap, Sparkles as SparklesIcon, Globe, ShieldCheck } from "lucide-react";
+import { ArrowRight, BrainCircuit, Music, Zap, Globe, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
 
@@ -117,46 +117,6 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Social Proof Section */}
-      <section className="py-32 px-4 bg-black/20 border-y border-white/5 relative">
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="font-headline text-5xl md:text-6xl font-bold mb-20 tracking-tight">The Future of Discovery</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            {[
-              { label: "Stability Rate", value: "98.2%", sub: "Vector alignment" },
-              { label: "Matches Active", value: "1.2M+", sub: "Global resonance" },
-              { label: "Dimensions", value: "512", sub: "Semantic resolution" }
-            ].map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                <div className="text-6xl md:text-7xl font-headline font-bold text-gradient mb-3">{stat.value}</div>
-                <div className="text-xs font-bold uppercase tracking-[0.3em] text-primary mb-1">{stat.label}</div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-50">{stat.sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-40 px-4">
-        <div className="max-w-4xl mx-auto text-center glass p-16 md:p-24 rounded-[4rem] border-white/10 relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-headline font-bold mb-8">Ready to sync?</h2>
-            <p className="text-muted-foreground text-xl mb-12 max-w-xl mx-auto">Join the high-dimensional network and find your resonant frequency.</p>
-            <Link href={user ? "/dashboard" : "/signup"}>
-              <Button size="lg" className="bg-white text-black hover:bg-white/90 rounded-2xl px-12 py-8 text-xl font-bold shadow-2xl">
-                Initialize Your Vector
-              </Button>
-            </Link>
-          </div>
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Globe className="w-64 h-64" />
-          </div>
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px]" />
         </div>
       </section>
 
