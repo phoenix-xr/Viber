@@ -7,7 +7,7 @@ import { MatchCard } from "@/components/shared/match-card";
 import { useUser, useCollection, useDoc } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map as MapIcon, Navigation, Search, Loader2, Info, Sparkles, MapPin } from "lucide-react";
+import { Map as MapIcon, Navigation, Search, Loader2, Info, Sparkles, MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
