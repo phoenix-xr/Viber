@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for generating a unique 'Soul Vector' (AI embedding) and a semantic explanation
@@ -16,7 +17,8 @@ const GenerateSoulVectorInputSchema = z.object({
   age: z.number().int().positive().describe("The user's age."),
   city: z.string().describe("The user's city of residence."),
   bio: z.string().describe("A short biography of the user."),
-  interests: z.array(z.string()).describe("A list of the user's interests."),
+  interests: z.array(z.string()).describe("A list of the user's interests (including custom ones)."),
+  customPersonalityTraits: z.array(z.string()).optional().describe("A list of custom personality descriptors provided by the user."),
   personalityTraits: z
     .object({
       introvertExtrovert: z
@@ -83,7 +85,7 @@ const generateSoulVectorPrompt = ai.definePrompt({
 
 The Soul Vector description should capture the essence of the user's personality, interests, and music taste in a concise, high-level summary that could be used for semantic matching. This summary should highlight core characteristics and values that define the user.
 
-The semantic overlap explanation should detail how these different aspects of the user's profile contribute to their unique "Soul Vector" and suggest the types of individuals they might be compatible with, explaining the reasoning based on their profile. This explanation should be insightful and actionable for matchmaking.
+The semantic overlap explanation should detail how these different aspects of the user's profile contribute to their unique "Soul Vector" and suggest the types of individuals they might be compatible with, explaining the reasoning based on their profile.
 
 User Profile:
 Name: {{{name}}}
@@ -96,11 +98,19 @@ Interests:
 {{/each}}
 
 Personality Traits (0=Left, 10=Right):
-Introvert \u2194 Extrovert: {{{personalityTraits.introvertExtrovert}}}
-Creative \u2194 Analytical: {{{personalityTraits.creativeAnalytical}}}
-Planner \u2194 Spontaneous: {{{personalityTraits.plannerSpontaneous}}}
-Logical \u2194 Emotional: {{{personalityTraits.logicalEmotional}}}
-Adventurous \u2194 Careful: {{{personalityTraits.adventurousCareful}}}
+Introvert ↔ Extrovert: {{{personalityTraits.introvertExtrovert}}}
+Creative ↔ Analytical: {{{personalityTraits.creativeAnalytical}}}
+Planner ↔ Spontaneous: {{{personalityTraits.plannerSpontaneous}}}
+Logical ↔ Emotional: {{{personalityTraits.logicalEmotional}}}
+Adventurous ↔ Careful: {{{personalityTraits.adventurousCareful}}}
+
+Custom Personality Traits:
+{{#if customPersonalityTraits}}
+{{#each customPersonalityTraits}}- {{{this}}}
+{{/each}}
+{{else}}
+None provided.
+{{/if}}
 
 Music Profile:
 Genres:

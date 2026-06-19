@@ -11,6 +11,7 @@
         "city": { "type": "string" },
         "bio": { "type": "string" },
         "interests": { "type": "array", "items": { "type": "string" } },
+        "customPersonalityTraits": { "type": "array", "items": { "type": "string" } },
         "personalityTraits": {
           "type": "object",
           "properties": {
@@ -29,7 +30,8 @@
           }
         },
         "onboarded": { "type": "boolean" },
-        "soulVector": { "type": "string" }
+        "soulVector": { "type": "string" },
+        "semanticExplanation": { "type": "string" }
       },
       "required": ["name", "onboarded"]
     },
@@ -39,6 +41,7 @@
       "type": "object",
       "properties": {
         "type": { "type": "string", "enum": ["like", "pass", "save"] },
+        "userId": { "type": "string" },
         "targetUserId": { "type": "string" },
         "timestamp": { "type": "string", "format": "date-time" }
       }
@@ -62,13 +65,13 @@
       "schema": "#/backend/entities/UserProfile",
       "description": "Main user document"
     },
-    "/users/{userId}/interactions/{targetUserId}": {
+    "/interactions": {
       "schema": "#/backend/entities/Interaction",
-      "description": "User's interactions with others"
+      "description": "Global interactions collection (simplified for mock)"
     },
-    "/chats/{chatId}/messages/{messageId}": {
+    "/chat_messages_{chatId}": {
       "schema": "#/backend/entities/ChatMessage",
-      "description": "Messages within a chat"
+      "description": "Messages for a specific chat ID"
     }
   }
 }
