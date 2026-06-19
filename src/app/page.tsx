@@ -1,28 +1,13 @@
+
 "use client";
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { ArrowRight, BrainCircuit, Music, UserCheck, Zap, Heart, Globe, Lock, Sparkles as SparklesIcon } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, BrainCircuit, Music, Heart, Zap, Sparkles as SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
 
 export default function LandingPage() {
   const { user } = useUser();

@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark } from "lucide-react";
+import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/firebase";
@@ -21,7 +22,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: "Matches", href: "/matches", icon: Heart },
-    { name: "Dashboard", href: "/dashboard", auth: true },
+    { name: "Dashboard", href: "/dashboard", auth: true, icon: LayoutDashboard },
     { name: "Saved", href: "/saved", auth: true, icon: Bookmark },
     { name: "Chats", href: "/chats", auth: true, icon: MessageSquare },
   ];
@@ -108,7 +109,7 @@ export function Navbar() {
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
-                  <link.icon className={`w-5 h-5 ${pathname === link.href ? 'text-primary' : 'text-muted-foreground'}`} />
+                  {link.icon && <link.icon className={`w-5 h-5 ${pathname === link.href ? 'text-primary' : 'text-muted-foreground'}`} />}
                 </Link>
               ))}
               <hr className="border-white/5" />
