@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -15,7 +15,12 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: profile, loading: profileLoading } = useDoc(user ? { collection: 'users', id: user.uid } : null);
+  // Memoize the doc query to prevent infinite loops
+  const profileQuery = useMemo(() => 
+    user ? { collection: 'users', id: user.uid } : null
+  , [user?.uid]);
+
+  const { data: profile, loading: profileLoading } = useDoc(profileQuery);
 
   useEffect(() => {
     if (!authLoading && !user) {

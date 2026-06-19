@@ -20,7 +20,12 @@ export default function MatchDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { data: match, loading: matchLoading } = useDoc(id ? { collection: 'users', id: id as string } : null);
+  // Memoize query to prevent loops
+  const matchQuery = useMemo(() => 
+    id ? { collection: 'users', id: id as string } : null
+  , [id]);
+
+  const { data: match, loading: matchLoading } = useDoc(matchQuery);
 
   useEffect(() => {
     if (!authLoading && !user) {

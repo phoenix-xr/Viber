@@ -4,10 +4,10 @@
 /**
  * Mock Firebase Implementation (TSX)
  * This file replaces the real Firebase SDK with a local-storage based mock system.
- * Updated with initial data to ensure 'Saved' and 'Chats' work properly.
+ * Updated to fix recursion errors and ensure data stability.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 // --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
@@ -69,6 +69,9 @@ export function useCollection(queryInfo: any) {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Stabilize the queryInfo dependency
+  const queryKey = JSON.stringify(queryInfo);
+
   useEffect(() => {
     if (!queryInfo) {
       setLoading(false);
@@ -89,7 +92,7 @@ export function useCollection(queryInfo: any) {
         });
       }
 
-      // Simple deep equality check to prevent unnecessary re-renders
+      // Use string comparison to avoid infinite loops with new object references
       setData((prev) => {
         const nextStr = JSON.stringify(items);
         const prevStr = JSON.stringify(prev);
@@ -99,10 +102,9 @@ export function useCollection(queryInfo: any) {
     };
 
     fetchData();
-    // Poll more frequently for a responsive chat experience
-    const interval = setInterval(fetchData, 500);
+    const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [queryInfo]);
+  }, [queryKey]);
 
   return { data, loading };
 }
@@ -110,6 +112,9 @@ export function useCollection(queryInfo: any) {
 export function useDoc(docInfo: any) {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Stabilize the docInfo dependency
+  const docKey = JSON.stringify(docInfo);
 
   useEffect(() => {
     if (!docInfo) {
@@ -121,14 +126,19 @@ export function useDoc(docInfo: any) {
       const db = getDb();
       const collection = db[docInfo.collection] || [];
       const item = collection.find((i: any) => i.id === docInfo.id);
-      setData(item || null);
+      
+      setData((prev) => {
+        const nextStr = JSON.stringify(item || null);
+        const prevStr = JSON.stringify(prev);
+        return nextStr === prevStr ? prev : (item || null);
+      });
       setLoading(false);
     };
 
     fetchData();
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [docInfo]);
+  }, [docKey]);
 
   return { data, loading };
 }
