@@ -1,13 +1,7 @@
 'use client';
 
-/**
- * Mock Firebase Implementation (TSX)
- * Centralized Auth Context to ensure synchronization across components.
- */
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-
-// --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
   { id: 'user_1', name: 'Alex', age: 26, city: 'London', interests: ['Computing', 'Jazz', 'Coding'], bio: 'Researcher and jazz pianist looking for harmonic resonance.', onboarded: true, soulVector: 'Analytical harmonic explorer', musicProfile: { genres: ['Jazz', 'Classical'], favoriteArtists: ['Bill Evans'] } },
   { id: 'user_2', name: 'Sam', age: 29, city: 'New York', interests: ['Coding', 'Music', 'Hiking'], bio: 'Full-stack developer who loves mountain trails and modular synths.', onboarded: true, soulVector: 'Digital nature enthusiast', musicProfile: { genres: ['Electronic', 'Ambient'], favoriteArtists: ['Aphex Twin'] } },
@@ -27,8 +21,6 @@ const getDb = () => {
   return JSON.parse(stored);
 };
 
-// --- AUTH CONTEXT ---
-
 interface AuthContextType {
   user: any;
   loading: boolean;
@@ -44,9 +36,7 @@ export function FirebaseClientProvider({ children }: { children: React.ReactNode
 
   useEffect(() => {
     const storedUser = localStorage.getItem('soulmatter_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    if (storedUser) setUser(JSON.parse(storedUser));
     setLoading(false);
   }, []);
 
@@ -69,56 +59,35 @@ export function FirebaseClientProvider({ children }: { children: React.ReactNode
 
 export function useUser() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useUser must be used within a FirebaseClientProvider');
-  }
+  if (context === undefined) throw new Error('useUser must be used within a FirebaseClientProvider');
   return context;
-}
-
-// --- MOCK FIRESTORE ---
-
-export function useFirestore() {
-  return null;
 }
 
 export function useCollection(queryInfo: any) {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
-
   const queryKey = JSON.stringify(queryInfo);
 
   const fetchData = useCallback(() => {
     if (!queryInfo) return;
     const db = getDb();
-    const collectionName = queryInfo.collection;
-    let items = db[collectionName] || [];
-
+    let items = db[queryInfo.collection] || [];
     if (queryInfo.where) {
       items = items.filter((item: any) => {
         const [field, op, value] = queryInfo.where;
         if (op === '==') return item[field] === value;
-        if (op === 'includes') return item[field]?.includes(value);
         return true;
       });
     }
-
-    const itemsStr = JSON.stringify(items);
-    setData((prev) => {
-      if (JSON.stringify(prev) === itemsStr) return prev;
-      return items;
-    });
+    setData(items);
     setLoading(false);
   }, [queryKey]);
 
   useEffect(() => {
-    if (!queryInfo) {
-      setLoading(false);
-      return;
-    }
     fetchData();
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [fetchData, queryInfo]);
+  }, [fetchData]);
 
   return { data, loading };
 }
@@ -126,7 +95,6 @@ export function useCollection(queryInfo: any) {
 export function useDoc(docInfo: any) {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
-
   const docKey = JSON.stringify(docInfo);
 
   const fetchData = useCallback(() => {
@@ -134,24 +102,15 @@ export function useDoc(docInfo: any) {
     const db = getDb();
     const collection = db[docInfo.collection] || [];
     const item = collection.find((i: any) => i.id === docInfo.id);
-    
-    const itemStr = JSON.stringify(item || null);
-    setData((prev) => {
-      if (JSON.stringify(prev) === itemStr) return prev;
-      return item ? { ...item } : null;
-    });
+    setData(item ? { ...item } : null);
     setLoading(false);
   }, [docKey]);
 
   useEffect(() => {
-    if (!docInfo) {
-      setLoading(false);
-      return;
-    }
     fetchData();
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [fetchData, docInfo]);
+  }, [fetchData]);
 
   return { data, loading };
 }
@@ -175,28 +134,11 @@ export const mockDb = {
       db[collectionName].push({ ...data, id });
     }
     localStorage.setItem('soulmatter_db', JSON.stringify(db));
-  },
-  update: (collectionName: string, id: string, data: any) => {
-    const db = getDb();
-    const collection = db[collectionName] || [];
-    const index = collection.findIndex((i: any) => i.id === id);
-    if (index > -1) {
-      collection[index] = { ...collection[index], ...data };
-      db[collectionName] = collection;
-      localStorage.setItem('soulmatter_db', JSON.stringify(db));
-    }
   }
 };
 
-export const initializeFirebase = () => ({
-  firebaseApp: {} as any,
-  firestore: {} as any,
-  auth: {} as any,
-});
-
+export const initializeFirebase = () => ({ firebaseApp: {} as any, firestore: {} as any, auth: {} as any });
 export function useAuth() { return null; }
 export function useFirebase() { return {} as any; }
-export function useFirebaseApp() { return {} as any; }
-export function useFirestoreInstance() { return {} as any; }
-
+export function useFirestore() { return {} as any; }
 export * from './provider';

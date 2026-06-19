@@ -13,7 +13,6 @@ export default function DashboardPage() {
   const { user, loading: authLoading, logout } = useUser();
   const router = useRouter();
 
-  // Memoize the doc query to prevent infinite loops
   const profileQuery = useMemo(() => 
     user ? { collection: 'users', id: user.uid } : null
   , [user?.uid]);
@@ -60,16 +59,16 @@ export default function DashboardPage() {
                 <BrainCircuit className="w-4 h-4" />
                 <span>Identity Pulse</span>
               </div>
-              <h1 className="font-headline text-5xl md:text-6xl font-bold mb-2 tracking-tight">Welcome back, {profile?.name || "Explorer"}</h1>
-              <p className="text-muted-foreground text-lg">Your Soul Vector is active and finding resonant signals.</p>
+              <h1 className="font-headline text-5xl md:text-6xl font-bold mb-2 tracking-tight">Welcome, {profile?.name || "Explorer"}</h1>
+              <p className="text-muted-foreground text-lg">Your Soul Vector is active and finding resonance.</p>
             </div>
           </div>
           <div className="flex gap-4">
-            <Button variant="outline" className="rounded-2xl glass border-white/10 gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest" onClick={handleSignOut}>
+            <Button variant="outline" className="rounded-2xl glass border-white/10 gap-3 h-14 px-8 font-bold text-xs uppercase tracking-widest" onClick={handleSignOut}>
               <LogOut className="w-5 h-5" /> Sign Out
             </Button>
             <Link href="/onboarding">
-              <Button className="rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest shadow-xl shadow-primary/20">
+              <Button className="rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground gap-3 h-14 px-8 font-bold text-xs uppercase tracking-widest shadow-xl shadow-primary/20">
                 <RefreshCw className="w-5 h-5" />
                 Update Vector
               </Button>
@@ -78,7 +77,6 @@ export default function DashboardPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Main Soul Card */}
           <div className="lg:col-span-2 glass rounded-[3rem] p-12 border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[500px] group">
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-8">
@@ -93,7 +91,7 @@ export default function DashboardPage() {
                   Soul Vector Essence
                 </h4>
                 <p className="text-xl italic leading-relaxed text-foreground font-medium">
-                  "{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your neural-generated essence."}"
+                  "{profile?.soulVector || "Refining your unique signal. Update your profile to see your neural essence."}"
                 </p>
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <Globe className="w-24 h-24" />
@@ -111,10 +109,8 @@ export default function DashboardPage() {
             </div>
 
             <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-primary/20 rounded-full blur-[140px] opacity-30 pointer-events-none" />
-            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] opacity-20 pointer-events-none" />
           </div>
 
-          {/* Stats Column */}
           <div className="flex flex-col gap-8">
             <div className="glass rounded-[3rem] p-10 border-white/5 flex flex-col justify-center flex-1">
               <div className="flex items-center justify-between mb-6">
@@ -129,7 +125,6 @@ export default function DashboardPage() {
                   className="h-full bg-gradient-to-r from-primary to-secondary" 
                 />
               </div>
-              <p className="mt-6 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Signal strength optimal</p>
             </div>
 
             <div className="glass rounded-[3rem] p-8 border-white/5 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-default group">
@@ -137,18 +132,8 @@ export default function DashboardPage() {
                 <MusicIcon className={`w-8 h-8 ${profile?.spotifyConnected ? 'text-[#1DB954]' : 'text-muted-foreground'}`} />
               </div>
               <div>
-                <p className="text-xl font-bold leading-tight">{profile?.spotifyConnected ? "Spotify Linked" : (profile?.music?.genres?.length ? "Manual Profile" : "No Music Sync")}</p>
+                <p className="text-xl font-bold leading-tight">{profile?.spotifyConnected ? "Spotify Linked" : "Manual Profile"}</p>
                 <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">Profile Enrichment</p>
-              </div>
-            </div>
-
-            <div className="glass rounded-[3rem] p-8 border-white/5 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-default group">
-              <div className="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center transition-all group-hover:scale-110">
-                <Heart className="w-8 h-8 text-pink-500" />
-              </div>
-              <div>
-                <p className="text-xl font-bold leading-tight">Semantic Mode</p>
-                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">Active Discovery</p>
               </div>
             </div>
           </div>

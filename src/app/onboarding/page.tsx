@@ -74,7 +74,6 @@ export default function OnboardingPage() {
   const [newGenre, setNewGenre] = useState("");
   const [newArtist, setNewArtist] = useState("");
 
-  // Fetch existing profile to pre-populate form
   const profileQuery = useMemo(() => 
     user ? { collection: 'users', id: user.uid } : null
   , [user?.uid]);
@@ -189,7 +188,7 @@ export default function OnboardingPage() {
       setLoading(false);
       toast({
         title: "Spotify Connected",
-        description: "Your music profile has been enriched with your top artists and genres.",
+        description: "Your music profile has been enriched.",
       });
       nextStep();
     }, 1500);
@@ -220,7 +219,7 @@ export default function OnboardingPage() {
     setLoading(true);
     
     try {
-      const aiResult = await generateSoulVector({
+      const result = await generateSoulVector({
         name: formData.name,
         age: parseInt(formData.age) || 0,
         city: formData.city,
@@ -245,14 +244,14 @@ export default function OnboardingPage() {
         age: parseInt(formData.age) || 0,
         onboarded: true,
         spotifyConnected,
-        soulVector: aiResult.soulVectorDescription,
-        semanticExplanation: aiResult.semanticOverlapExplanation,
+        soulVector: result.soulVectorDescription,
+        semanticExplanation: result.semanticOverlapExplanation,
         updatedAt: new Date().toISOString()
       });
 
       toast({
         title: profile?.onboarded ? "Vector Updated" : "Vector Finalized",
-        description: "Your Soul Identity has been updated with the latest resonant frequencies.",
+        description: "Your Soul Identity has been synced.",
       });
 
       router.push("/dashboard");
@@ -262,8 +261,8 @@ export default function OnboardingPage() {
         ...formData,
         onboarded: true,
         spotifyConnected,
-        soulVector: "A complex harmonic intelligence seeking resonant frequencies.",
-        semanticExplanation: "System simulation processed your profile essence locally."
+        soulVector: "A complex harmonic intelligence seeking resonance.",
+        semanticExplanation: "System processed your profile locally."
       });
       router.push("/dashboard");
     } finally {
@@ -304,7 +303,7 @@ export default function OnboardingPage() {
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex justify-between items-center mb-12">
           {STEPS.map((s, idx) => (
-            <div key={s} className="flex flex-col items-center gap-2 flex-1 relative">
+            <div key={idx} className="flex flex-col items-center gap-2 flex-1 relative">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                 idx <= step ? 'bg-primary border-primary text-primary-foreground' : 'border-white/10 text-muted-foreground'
               }`}>
@@ -346,7 +345,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
-                  <p className="mt-4 text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Update Profile Image</p>
+                  <p className="mt-4 text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Profile Image</p>
                 </div>
 
                 <h2 className="text-3xl font-headline font-bold mb-2">The Basics</h2>
@@ -394,11 +393,6 @@ export default function OnboardingPage() {
                       {interest}
                     </button>
                   ))}
-                  {formData.interests.filter(i => !INTEREST_OPTIONS.includes(i)).map(interest => (
-                    <Badge key={interest} className="px-6 py-3 rounded-full text-sm bg-primary text-primary-foreground border-none">
-                      {interest} <X className="w-3 h-3 ml-2 cursor-pointer" onClick={() => toggleInterest(interest)} />
-                    </Badge>
-                  ))}
                 </div>
                 
                 <div className="pt-6 border-t border-white/5">
@@ -429,17 +423,15 @@ export default function OnboardingPage() {
                   <PersonalitySlider labelLeft="Introvert" labelRight="Extrovert" value={formData.personality.introvertExtrovert} onChange={v => setFormData({ ...formData, personality: { ...formData.personality, introvertExtrovert: v } })} />
                   <PersonalitySlider labelLeft="Creative" labelRight="Analytical" value={formData.personality.creativeAnalytical} onChange={v => setFormData({ ...formData, personality: { ...formData.personality, creativeAnalytical: v } })} />
                   <PersonalitySlider labelLeft="Planner" labelRight="Spontaneous" value={formData.personality.plannerSpontaneous} onChange={v => setFormData({ ...formData, personality: { ...formData.personality, plannerSpontaneous: v } })} />
-                  <PersonalitySlider labelLeft="Logical" labelRight="Emotional" value={formData.personality.logicalEmotional} onChange={v => setFormData({ ...formData, personality: { ...formData.personality, logicalEmotional: v } })} />
-                  <PersonalitySlider labelLeft="Adventurous" labelRight="Careful" value={formData.personality.adventurousCareful} onChange={v => setFormData({ ...formData, personality: { ...formData.personality, adventurousCareful: v } })} />
                 </div>
 
                 <div className="pt-6 border-t border-white/5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-4">Add Specific Personality Traits</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-4">Specific Traits</label>
                   <div className="flex gap-2 mb-4">
                     <div className="relative flex-1">
                       <Brain className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input 
-                        placeholder="e.g. Empathetic, Stoic, Bold..." 
+                        placeholder="e.g. Stoic, Empathetic..." 
                         value={newTrait} 
                         onChange={e => setNewTrait(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && addCustomTrait()}
@@ -468,9 +460,6 @@ export default function OnboardingPage() {
                     <MusicIcon className="w-8 h-8 text-[#1DB954]" />
                   </div>
                   <h2 className="text-3xl font-headline font-bold mb-4">Music Profile</h2>
-                  <p className="text-muted-foreground mb-8">
-                    Connect Spotify for instant discovery, or refine your taste manually.
-                  </p>
                   
                   {!showManualMusic ? (
                     <div className="space-y-4">
@@ -478,91 +467,44 @@ export default function OnboardingPage() {
                         <div className="glass bg-[#1DB954]/5 border-[#1DB954]/20 p-6 rounded-2xl text-left">
                           <div className="flex items-center gap-3 mb-4">
                             <CheckCircle2 className="w-5 h-5 text-[#1DB954]" />
-                            <span className="font-bold text-[#1DB954]">Spotify Account Synced</span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {formData.music.genres.map(g => <Badge key={g} variant="outline" className="border-white/10">{g}</Badge>)}
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {formData.music.favoriteArtists.map(a => <Badge key={a} variant="secondary" className="bg-primary/10 text-primary border-none">{a}</Badge>)}
+                            <span className="font-bold text-[#1DB954]">Spotify Connected</span>
                           </div>
                         </div>
                       ) : (
-                        <Button 
-                          onClick={handleConnectSpotify} 
-                          className="w-full h-14 rounded-2xl bg-[#1DB954] hover:bg-[#1DB954]/90 text-white font-bold gap-3"
-                          disabled={loading}
-                        >
-                          {loading ? <Loader2 className="animate-spin w-5 h-5" /> : <MusicIcon className="w-5 h-5" />}
+                        <Button onClick={handleConnectSpotify} className="w-full h-14 rounded-2xl bg-[#1DB954] hover:bg-[#1DB954]/90 font-bold gap-3">
                           Connect Spotify
                         </Button>
                       )}
                       
                       {!spotifyConnected && (
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setShowManualMusic(true)} 
-                          className="w-full h-14 rounded-2xl glass border-white/10 font-bold"
-                        >
-                          Enter Manually
+                        <Button variant="outline" onClick={() => setShowManualMusic(true)} className="w-full h-14 rounded-2xl glass border-white/10 font-bold">
+                          Manual Entry
                         </Button>
                       )}
                     </div>
                   ) : (
                     <div className="space-y-6 text-left">
                       <div className="space-y-4">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">Music Genres</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Genres</label>
                         <div className="flex gap-2">
-                          <div className="relative flex-1">
-                            <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="e.g. Jazz, Techno..." 
-                              value={newGenre} 
-                              onChange={e => setNewGenre(e.target.value)}
-                              onKeyDown={e => e.key === 'Enter' && addManualGenre()}
-                              className="pl-12 bg-white/5 border-white/10 rounded-xl" 
-                            />
-                          </div>
-                          <Button size="icon" variant="outline" onClick={addManualGenre} className="shrink-0 rounded-xl h-10 w-10">
-                            <Plus className="w-4 h-4" />
-                          </Button>
+                           <Input placeholder="Genre..." value={newGenre} onChange={e => setNewGenre(e.target.value)} className="bg-white/5" onKeyDown={e => e.key === 'Enter' && addManualGenre()} />
+                           <Button onClick={addManualGenre} variant="outline" className="shrink-0"><Plus className="w-4 h-4" /></Button>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {formData.music.genres.map(g => (
-                            <Badge key={g} variant="outline" className="gap-1.5 border-white/10">
-                              {g} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, music: { ...prev.music, genres: prev.music.genres.filter(genre => genre !== g) } }))} />
-                            </Badge>
-                          ))}
+                          {formData.music.genres.map(g => <Badge key={g} variant="outline" className="gap-1.5">{g}</Badge>)}
                         </div>
                       </div>
-
                       <div className="space-y-4">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">Favorite Artists</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Artists</label>
                         <div className="flex gap-2">
-                          <div className="relative flex-1">
-                            <Mic2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="e.g. Radiohead, SZA..." 
-                              value={newArtist} 
-                              onChange={e => setNewArtist(e.target.value)}
-                              onKeyDown={e => e.key === 'Enter' && addManualArtist()}
-                              className="pl-12 bg-white/5 border-white/10 rounded-xl" 
-                            />
-                          </div>
-                          <Button size="icon" variant="outline" onClick={addManualArtist} className="shrink-0 rounded-xl h-10 w-10">
-                            <Plus className="w-4 h-4" />
-                          </Button>
+                           <Input placeholder="Artist..." value={newArtist} onChange={e => setNewArtist(e.target.value)} className="bg-white/5" onKeyDown={e => e.key === 'Enter' && addManualArtist()} />
+                           <Button onClick={addManualArtist} variant="outline" className="shrink-0"><Plus className="w-4 h-4" /></Button>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          {formData.music.favoriteArtists.map(a => (
-                            <Badge key={a} className="gap-1.5 bg-primary/20 text-primary border-none">
-                              {a} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, music: { ...prev.music, favoriteArtists: prev.music.favoriteArtists.filter(artist => artist !== a) } }))} />
-                            </Badge>
-                          ))}
+                          {formData.music.favoriteArtists.map(a => <Badge key={a} className="gap-1.5 bg-primary/20 text-primary border-none">{a}</Badge>)}
                         </div>
                       </div>
-
-                      <Button variant="ghost" onClick={() => setShowManualMusic(false)} className="w-full text-xs text-muted-foreground">← Back to options</Button>
+                      <Button variant="ghost" onClick={() => setShowManualMusic(false)} className="w-full text-xs">← Back</Button>
                     </div>
                   )}
                 </div>
@@ -571,24 +513,17 @@ export default function OnboardingPage() {
 
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 text-center">
-                <h2 className="text-3xl font-headline font-bold mb-2">{profile?.onboarded ? "Ready to Update?" : "Almost Ready!"}</h2>
+                <h2 className="text-3xl font-headline font-bold mb-2">Review Profile</h2>
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden border-2 border-primary/20">
+                   <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden border-2 border-primary/20 shadow-2xl">
                     {formData.profileImage ? (
-                      <img src={formData.profileImage} alt="Profile preview" className="w-full h-full object-cover" />
+                      <img src={formData.profileImage} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
                       <UserIcon className="w-10 h-10 text-primary" />
                     )}
                   </div>
                   <h3 className="text-2xl font-headline font-bold">{formData.name || "Explorer"}</h3>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <Badge variant="secondary" className="bg-white/10 text-white border-none uppercase tracking-widest text-[8px] font-bold">Profile Prepped</Badge>
-                    {formData.customPersonalityTraits.length > 0 && <Badge className="bg-primary/20 text-primary border-none uppercase tracking-widest text-[8px] font-bold">Custom Traits</Badge>}
-                    {formData.music.favoriteArtists.length > 0 && <Badge className="bg-secondary/20 text-secondary border-none uppercase tracking-widest text-[8px] font-bold">Music Refined</Badge>}
-                  </div>
-                  <p className="text-muted-foreground text-sm max-w-sm mt-4">
-                    Your Soul Vector will be recalculated based on your latest inputs for optimal matching.
-                  </p>
+                  <p className="text-muted-foreground text-sm max-w-sm">Ready to finalize your resonance?</p>
                 </div>
               </motion.div>
             )}

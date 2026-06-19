@@ -21,7 +21,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/", icon: Globe },
-    { name: "Matches", href: "/matches", icon: Heart },
+    { name: "Discovery", href: "/matches", icon: Heart },
     { name: "Dashboard", href: "/dashboard", auth: true, icon: LayoutDashboard },
     { name: "Saved", href: "/saved", auth: true, icon: Bookmark },
     { name: "Chats", href: "/chats", auth: true, icon: MessageSquare },
@@ -37,22 +37,19 @@ export function Navbar() {
             <div className="w-10 h-10 bg-gradient-to-tr from-primary to-secondary rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="font-headline font-bold text-2xl tracking-tight">
-              Soulmatter
-            </span>
+            <span className="font-headline font-bold text-2xl tracking-tight">Soulmatter</span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-10">
             {filteredLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className={`text-sm font-bold uppercase tracking-widest transition-all hover:text-primary flex items-center gap-2 ${
+                className={`text-[10px] font-bold uppercase tracking-widest transition-all hover:text-primary flex items-center gap-2 ${
                   pathname === link.href ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
-                {link.icon && <link.icon className="w-4 h-4" />}
+                {link.icon && <link.icon className="w-3.5 h-3.5" />}
                 {link.name}
               </Link>
             ))}
@@ -61,7 +58,7 @@ export function Navbar() {
           <div className="hidden lg:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2 font-bold uppercase tracking-widest text-[10px] h-10 px-4 rounded-xl border border-white/5 hover:bg-white/5">
+                <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2 font-bold uppercase tracking-widest text-[10px] h-10 px-4 rounded-xl border border-white/5">
                   <LogOut className="w-4 h-4" /> Sign Out
                 </Button>
                 <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary">
@@ -70,67 +67,34 @@ export function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/login">
-                  <Button variant="ghost" className="font-bold uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl">Log in</Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-8 h-10 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20">
-                    Get Started
-                  </Button>
-                </Link>
+                <Link href="/login"><Button variant="ghost" className="font-bold uppercase tracking-widest text-[10px]">Log in</Button></Link>
+                <Link href="/signup"><Button className="bg-primary hover:bg-primary/90 rounded-xl px-8 h-10 font-bold uppercase tracking-widest text-[10px]">Get Started</Button></Link>
               </div>
             )}
           </div>
 
-          {/* Mobile Toggle */}
-          <button className="lg:hidden p-2 text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(!isOpen)}>
+          <button className="lg:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="lg:hidden absolute top-28 left-4 right-4 z-40"
-          >
-            <div className="glass p-8 rounded-3xl flex flex-col gap-6 border-white/10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)]">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="lg:hidden absolute top-28 left-4 right-4 z-40">
+            <div className="glass p-8 rounded-3xl flex flex-col gap-6 border-white/10 shadow-2xl">
               {filteredLinks.map((link) => (
-                <Link 
-                  key={link.name} 
-                  href={link.href} 
-                  className={`text-xl font-headline font-bold flex items-center justify-between ${
-                    pathname === link.href ? 'text-primary' : 'text-foreground'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
+                <Link key={link.name} href={link.href} className="text-xl font-headline font-bold flex items-center justify-between" onClick={() => setIsOpen(false)}>
                   {link.name}
-                  {link.icon && <link.icon className={`w-5 h-5 ${pathname === link.href ? 'text-primary' : 'text-muted-foreground'}`} />}
+                  {link.icon && <link.icon className="w-5 h-5 text-primary" />}
                 </Link>
               ))}
               <hr className="border-white/5" />
-              <div className="flex flex-col gap-4">
-                {user ? (
-                  <Button variant="outline" className="w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs border-white/10" onClick={handleSignOut}>
-                    Sign Out
-                  </Button>
-                ) : (
-                  <>
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs border-white/10">Log in</Button>
-                    </Link>
-                    <Link href="/signup" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
-                        Get Started
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
+              {user ? (
+                <Button variant="outline" className="w-full h-14 rounded-2xl" onClick={handleSignOut}>Sign Out</Button>
+              ) : (
+                <Link href="/signup" onClick={() => setIsOpen(false)}><Button className="w-full h-14 rounded-2xl bg-primary">Get Started</Button></Link>
+              )}
             </div>
           </motion.div>
         )}

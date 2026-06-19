@@ -87,7 +87,7 @@ export default function LandingPage() {
               {
                 icon: BrainCircuit,
                 title: "Semantic Intelligence",
-                desc: "Our system understands the nuance of your bio and interests, mapping you in 512 dimensions for perfect resonance.",
+                desc: "Our neural system understands the nuance of your bio and interests, mapping you in 512 dimensions for perfect resonance.",
                 color: "primary"
               },
               {
