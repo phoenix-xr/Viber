@@ -6,7 +6,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { MatchCard } from "@/components/shared/match-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, Sparkles, Loader2 } from "lucide-react";
+import { Search, SlidersHorizontal, Sparkles, Loader2, Music as MusicIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUser, useCollection } from "@/firebase";
 import { useRouter } from "next/navigation";
@@ -28,15 +28,8 @@ export default function MatchesPage() {
   const filteredMatches = useMemo(() => {
     if (!allUsers || !user) return [];
     
-    // Default mock profiles if none exist in local storage yet
-    const baseProfiles = allUsers.length > 0 ? allUsers : [
-      { id: '1', name: 'Alex', age: 26, city: 'London', interests: ['AI', 'Jazz'], onboarded: true },
-      { id: '2', name: 'Sam', age: 29, city: 'NYC', interests: ['Coding', 'Music'], onboarded: true },
-      { id: '3', name: 'Jordan', age: 24, city: 'Berlin', interests: ['Art', 'Philosophy'], onboarded: true },
-      { id: '4', name: 'Casey', age: 31, city: 'Tokyo', interests: ['Gaming', 'Photography'], onboarded: true },
-    ];
-
-    return baseProfiles
+    // We want to show other users, not the current one
+    return allUsers
       .filter(u => u.id !== user.uid)
       .filter(m => 
         (m.name?.toLowerCase() || "").includes(search.toLowerCase()) || 
@@ -45,7 +38,7 @@ export default function MatchesPage() {
       )
       .map(u => ({
         ...u,
-        compatibilityScore: Math.floor(Math.random() * 20) + 80,
+        compatibilityScore: Math.floor(Math.random() * 15) + 85, // High compatibility for matches
         imageUrl: `https://picsum.photos/seed/${u.id}/500/700`,
       }));
   }, [allUsers, user, search]);
@@ -69,7 +62,7 @@ export default function MatchesPage() {
             <span>AI Powered Discovery</span>
           </div>
           <h1 className="font-headline text-4xl font-bold mb-4">Semantic Matches</h1>
-          <p className="text-muted-foreground">Based on your Soul Vector, these individuals resonate most with your profile.</p>
+          <p className="text-muted-foreground">Based on your Soul Vector and music tastes, these individuals resonate most with your profile.</p>
         </header>
 
         <div className="flex flex-col md:flex-row gap-4 mb-10">
@@ -90,13 +83,27 @@ export default function MatchesPage() {
 
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredMatches.map((match) => (
-            <MatchCard key={match.id} match={match} />
+            <motion.div
+              key={match.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <MatchCard match={match} />
+              {match.spotifyConnected && (
+                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-[#1DB954] uppercase tracking-widest px-4">
+                  <MusicIcon className="w-3 h-3" />
+                  Spotify Enriched
+                </div>
+              )}
+            </motion.div>
           ))}
         </motion.div>
 
         {filteredMatches.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground">No matches found. Try refining your profile or search.</p>
+          <div className="text-center py-20 glass rounded-[3rem] border-white/5">
+            <Sparkles className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
+            <p className="text-muted-foreground">No matches found. Try refining your profile essence.</p>
           </div>
         )}
       </div>

@@ -14,14 +14,16 @@ import {
   Sparkles, 
   User as UserIcon, 
   CheckCircle2,
-  Loader2
+  Loader2,
+  Music as MusicIcon
 } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
 import { useUser, mockDb } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { generateSoulVector } from "@/ai/flows/generate-soul-vector";
+import { useToast } from "@/hooks/use-toast";
 
-const STEPS = ["Basic", "Interests", "Personality", "Music", "Review"];
+const STEPS = ["Basic", "Interests", "Personality", "Spotify", "Review"];
 
 const INTEREST_OPTIONS = [
   "Sports", "Gaming", "Coding", "Books", "Movies", "Art", "Music", "Travel", 
@@ -31,8 +33,11 @@ const INTEREST_OPTIONS = [
 export default function OnboardingPage() {
   const { user, loading: authLoading } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -70,12 +75,31 @@ export default function OnboardingPage() {
     }));
   };
 
+  const handleConnectSpotify = () => {
+    setLoading(true);
+    // Simulate Spotify OAuth flow
+    setTimeout(() => {
+      setSpotifyConnected(true);
+      setFormData(prev => ({
+        ...prev,
+        music: {
+          genres: ["Techno", "Ambient", "Jazz Fusion"],
+          artists: ["Floating Points", "Aphex Twin", "John Coltrane"]
+        }
+      }));
+      setLoading(false);
+      toast({
+        title: "Spotify Connected",
+        description: "Your music profile has been enriched with your top artists and genres.",
+      });
+    }, 1500);
+  };
+
   const handleFinish = async () => {
     if (!user) return;
     setLoading(true);
     
     try {
-      // Generate Soul Vector essence via AI (Mocking for now to avoid actual server call if needed, but we can call it)
       const aiResult = await generateSoulVector({
         name: formData.name,
         age: parseInt(formData.age),
@@ -99,6 +123,7 @@ export default function OnboardingPage() {
         ...formData,
         age: parseInt(formData.age),
         onboarded: true,
+        spotifyConnected,
         soulVector: aiResult.soulVectorDescription,
         semanticExplanation: aiResult.semanticOverlapExplanation,
         updatedAt: new Date().toISOString()
@@ -107,10 +132,10 @@ export default function OnboardingPage() {
       router.push("/dashboard");
     } catch (e) {
       console.error(e);
-      // Fallback if AI fails
       mockDb.set("users", user.uid, {
         ...formData,
         onboarded: true,
+        spotifyConnected,
         soulVector: "A complex harmonic intelligence seeking resonant frequencies.",
         semanticExplanation: "AI simulation processed your profile essence locally."
       });
@@ -131,10 +156,10 @@ export default function OnboardingPage() {
           <Sparkles className="w-16 h-16 text-primary" />
         </motion.div>
         <h2 className="text-3xl font-headline font-bold mb-4 text-center">
-          {loading ? "Generating Your Soul Vector" : "Checking Access..."}
+          {loading ? "Syncing Your Soul Vector" : "Checking Access..."}
         </h2>
         <p className="text-muted-foreground text-center max-w-sm">
-          Our AI is processing your personality and preferences to create your unique semantic embedding.
+          Processing your profile and music tastes to create your unique semantic identity.
         </p>
       </div>
     );
@@ -210,19 +235,57 @@ export default function OnboardingPage() {
             )}
 
             {step === 3 && (
-              <motion.div key="step3" className="space-y-6">
-                <h2 className="text-3xl font-headline font-bold mb-2">Music Taste</h2>
-                <Input placeholder="Genres" value={formData.music.genres.join(", ")} onChange={e => setFormData({...formData, music: {...formData.music, genres: e.target.value.split(",").map(s => s.trim())}})} className="h-12 bg-white/5" />
-                <Input placeholder="Artists" value={formData.music.artists.join(", ")} onChange={e => setFormData({...formData, music: {...formData.music, artists: e.target.value.split(",").map(s => s.trim())}})} className="h-12 bg-white/5" />
+              <motion.div key="step3" className="space-y-8 text-center py-10">
+                <div className="max-w-md mx-auto">
+                  <div className="w-16 h-16 bg-[#1DB954]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <MusicIcon className="w-8 h-8 text-[#1DB954]" />
+                  </div>
+                  <h2 className="text-3xl font-headline font-bold mb-4">Music Profile</h2>
+                  <p className="text-muted-foreground mb-8">
+                    Connect your Spotify to automatically enrich your Soul Vector with your favorite artists and listening habits.
+                  </p>
+                  
+                  {spotifyConnected ? (
+                    <div className="glass bg-[#1DB954]/5 border-[#1DB954]/20 p-6 rounded-2xl text-left">
+                      <div className="flex items-center gap-3 mb-4">
+                        <CheckCircle2 className="w-5 h-5 text-[#1DB954]" />
+                        <span className="font-bold text-[#1DB954]">Spotify Account Synced</span>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Top Genres</p>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.music.genres.map(g => <Badge key={g} variant="outline" className="border-white/10">{g}</Badge>)}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button 
+                      onClick={handleConnectSpotify} 
+                      className="w-full h-14 rounded-2xl bg-[#1DB954] hover:bg-[#1DB954]/90 text-white font-bold gap-3"
+                      disabled={loading}
+                    >
+                      {loading ? <Loader2 className="animate-spin w-5 h-5" /> : <MusicIcon className="w-5 h-5" />}
+                      Connect Spotify
+                    </Button>
+                  )}
+                  
+                  <button onClick={nextStep} className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors underline">
+                    I'll add music manually later
+                  </button>
+                </div>
               </motion.div>
             )}
 
             {step === 4 && (
               <motion.div key="step4" className="space-y-8 text-center">
-                <h2 className="text-3xl font-headline font-bold mb-2">Launch!</h2>
+                <h2 className="text-3xl font-headline font-bold mb-2">Almost Ready!</h2>
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center"><UserIcon className="w-8 h-8 text-primary" /></div>
                   <h3 className="text-2xl font-headline font-bold">{formData.name || "User"}, {formData.age || "??"}</h3>
+                  <div className="flex gap-2">
+                    {spotifyConnected && <Badge className="bg-[#1DB954]/20 text-[#1DB954] border-none">Spotify Linked</Badge>}
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-none">Onboarding Complete</Badge>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -234,8 +297,10 @@ export default function OnboardingPage() {
               <Button onClick={handleFinish} className="rounded-xl px-8 h-12 bg-primary" disabled={loading}>
                 {loading ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />} Finalize Vector
               </Button>
-            ) : (
+            ) : step !== 3 ? (
               <Button onClick={nextStep} className="rounded-xl px-8 h-12 bg-primary">Continue <ArrowRight className="ml-2" /></Button>
+            ) : (
+               <Button onClick={nextStep} variant="ghost" className="rounded-xl px-8 h-12">Skip</Button>
             )}
           </div>
         </div>
