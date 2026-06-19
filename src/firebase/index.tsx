@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -5,14 +6,15 @@
  * Centralized Auth Context to ensure synchronization across components.
  */
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 // --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
-  { id: 'user_1', name: 'Alex', age: 26, city: 'London', interests: ['AI', 'Jazz', 'Coding'], bio: 'AI researcher and jazz pianist looking for harmonic resonance.', onboarded: true, soulVector: 'Analytical harmonic explorer' },
-  { id: 'user_2', name: 'Sam', age: 29, city: 'NYC', interests: ['Coding', 'Music', 'Hiking'], bio: 'Full-stack developer who loves mountain trails and modular synths.', onboarded: true, soulVector: 'Digital nature enthusiast' },
-  { id: 'user_3', name: 'Jordan', age: 24, city: 'Berlin', interests: ['Art', 'Philosophy', 'Techno'], bio: 'Digital artist exploring the intersection of ethics and aesthetic.', onboarded: true, soulVector: 'Philosophical creative signal' },
-  { id: 'user_4', name: 'Casey', age: 31, city: 'Tokyo', interests: ['Gaming', 'Photography', 'Sushi'], bio: 'Street photographer and competitive gamer based in Shibuya.', onboarded: true, soulVector: 'Visual interactive strategist' },
+  { id: 'user_1', name: 'Alex', age: 26, city: 'London', interests: ['AI', 'Jazz', 'Coding'], bio: 'AI researcher and jazz pianist looking for harmonic resonance.', onboarded: true, soulVector: 'Analytical harmonic explorer', musicProfile: { genres: ['Jazz', 'Classical'], favoriteArtists: ['Bill Evans'] } },
+  { id: 'user_2', name: 'Sam', age: 29, city: 'New York', interests: ['Coding', 'Music', 'Hiking'], bio: 'Full-stack developer who loves mountain trails and modular synths.', onboarded: true, soulVector: 'Digital nature enthusiast', musicProfile: { genres: ['Electronic', 'Ambient'], favoriteArtists: ['Aphex Twin'] } },
+  { id: 'user_3', name: 'Jordan', age: 24, city: 'Berlin', interests: ['Art', 'Philosophy', 'Techno'], bio: 'Digital artist exploring the intersection of ethics and aesthetic.', onboarded: true, soulVector: 'Philosophical creative signal', musicProfile: { genres: ['Techno', 'Industrial'], favoriteArtists: ['Paula Temple'] } },
+  { id: 'user_4', name: 'Casey', age: 31, city: 'Tokyo', interests: ['Gaming', 'Photography', 'Sushi'], bio: 'Street photographer and competitive gamer based in Shibuya.', onboarded: true, soulVector: 'Visual interactive strategist', musicProfile: { genres: ['Synthwave', 'J-Pop'], favoriteArtists: ['Kavinsky'] } },
+  { id: 'user_5', name: 'Morgan', age: 27, city: 'London', interests: ['Reading', 'Yoga', 'Nature'], bio: 'Librarian who finds peace in quiet mornings and complex narratives.', onboarded: true, soulVector: 'Serene literary observer', musicProfile: { genres: ['Indie Folk', 'Acoustic'], favoriteArtists: ['Phoebe Bridgers'] } },
 ];
 
 const getDb = () => {
@@ -86,38 +88,38 @@ export function useCollection(queryInfo: any) {
 
   const queryKey = JSON.stringify(queryInfo);
 
+  const fetchData = useCallback(() => {
+    if (!queryInfo) return;
+    const db = getDb();
+    const collectionName = queryInfo.collection;
+    let items = db[collectionName] || [];
+
+    if (queryInfo.where) {
+      items = items.filter((item: any) => {
+        const [field, op, value] = queryInfo.where;
+        if (op === '==') return item[field] === value;
+        if (op === 'includes') return item[field]?.includes(value);
+        return true;
+      });
+    }
+
+    const itemsStr = JSON.stringify(items);
+    setData((prev) => {
+      if (JSON.stringify(prev) === itemsStr) return prev;
+      return items;
+    });
+    setLoading(false);
+  }, [queryKey]);
+
   useEffect(() => {
     if (!queryInfo) {
       setLoading(false);
       return;
     }
-
-    const fetchData = () => {
-      const db = getDb();
-      const collectionName = queryInfo.collection;
-      let items = db[collectionName] || [];
-
-      if (queryInfo.where) {
-        items = items.filter((item: any) => {
-          const [field, op, value] = queryInfo.where;
-          if (op === '==') return item[field] === value;
-          if (op === 'includes') return item[field]?.includes(value);
-          return true;
-        });
-      }
-
-      setData((prev) => {
-        const nextStr = JSON.stringify(items);
-        const prevStr = JSON.stringify(prev);
-        return nextStr === prevStr ? prev : items;
-      });
-      setLoading(false);
-    };
-
     fetchData();
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [queryKey]);
+  }, [fetchData, queryInfo]);
 
   return { data, loading };
 }
@@ -128,29 +130,29 @@ export function useDoc(docInfo: any) {
 
   const docKey = JSON.stringify(docInfo);
 
+  const fetchData = useCallback(() => {
+    if (!docInfo) return;
+    const db = getDb();
+    const collection = db[docInfo.collection] || [];
+    const item = collection.find((i: any) => i.id === docInfo.id);
+    
+    const itemStr = JSON.stringify(item || null);
+    setData((prev) => {
+      if (JSON.stringify(prev) === itemStr) return prev;
+      return item ? { ...item } : null;
+    });
+    setLoading(false);
+  }, [docKey]);
+
   useEffect(() => {
     if (!docInfo) {
       setLoading(false);
       return;
     }
-
-    const fetchData = () => {
-      const db = getDb();
-      const collection = db[docInfo.collection] || [];
-      const item = collection.find((i: any) => i.id === docInfo.id);
-      
-      const nextData = item ? { ...item } : null;
-      setData((prev) => {
-        if (JSON.stringify(prev) === JSON.stringify(nextData)) return prev;
-        return nextData;
-      });
-      setLoading(false);
-    };
-
     fetchData();
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, [docKey]);
+  }, [fetchData, docInfo]);
 
   return { data, loading };
 }
