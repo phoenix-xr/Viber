@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -139,7 +138,7 @@ export default function MatchDetailPage() {
               <div className="relative z-10">
                 <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-4">
                   <Sparkles className="w-4 h-4" />
-                  <span>AI Compatibility Report</span>
+                  <span>Compatibility Report</span>
                 </div>
                 <h3 className="text-3xl font-headline font-bold mb-4">Why You Matched</h3>
                 <p className="text-muted-foreground mb-8 leading-relaxed">

@@ -36,7 +36,7 @@ const DisplayCompatibilityScoreOutputSchema = z.object({
   sharedInterests: z.array(z.string()).describe('List of shared interests between the two users.'),
   personalitySimilarityDescription: z.string().describe('An explanation of personality similarities and differences.'),
   musicOverlapDescription: z.string().describe('An explanation of music taste overlap and differences.'),
-  aiMatchExplanation: z.string().describe('A comprehensive explanation of why the users are a good match, covering all aspects.'),
+  matchExplanation: z.string().describe('A comprehensive explanation of why the users are a good match, covering all aspects.'),
 });
 export type DisplayCompatibilityScoreOutput = z.infer<typeof DisplayCompatibilityScoreOutputSchema>;
 
@@ -48,9 +48,9 @@ const compatibilityScorePrompt = ai.definePrompt({
   name: 'compatibilityScorePrompt',
   input: { schema: DisplayCompatibilityScoreInputSchema },
   output: { schema: DisplayCompatibilityScoreOutputSchema },
-  prompt: `You are an expert AI matchmaking assistant. Your task is to analyze two user profiles and determine their compatibility.
+  prompt: `You are an expert matchmaking assistant. Your task is to analyze two user profiles and determine their compatibility.
 Provide an overall compatibility score between 0 and 100, and detailed explanations for shared interests, personality similarity, and music overlap.
-Finally, provide a comprehensive AI match explanation.
+Finally, provide a comprehensive match explanation.
 
 User 1 Profile:
 Interests: {{#each user1.interests}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}

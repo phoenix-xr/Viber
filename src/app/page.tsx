@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -26,7 +25,7 @@ export default function LandingPage() {
             className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-10"
           >
             <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>High-Dimensional AI Matchmaking</span>
+            <span>High-Dimensional Matchmaking</span>
           </motion.div>
           
           <motion.h1
@@ -88,7 +87,7 @@ export default function LandingPage() {
               {
                 icon: BrainCircuit,
                 title: "Semantic Intelligence",
-                desc: "Our AI understands the nuance of your bio and interests, mapping you in 512 dimensions for perfect resonance.",
+                desc: "Our system understands the nuance of your bio and interests, mapping you in 512 dimensions for perfect resonance.",
                 color: "primary"
               },
               {
@@ -100,7 +99,7 @@ export default function LandingPage() {
               {
                 icon: ShieldCheck,
                 title: "Safe Connection",
-                desc: "No more small talk. Our AI match explanations give you the 'why' before you even send your first message.",
+                desc: "No more small talk. Our match explanations give you the 'why' before you even send your first message.",
                 color: "pink-500"
               }
             ].map((f, idx) => (

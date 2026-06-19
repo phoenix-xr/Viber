@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A Genkit flow that generates an AI-powered explanation for why two users matched, highlighting shared interests, personality traits, and music overlaps.
+ * @fileOverview A Genkit flow that generates a semantic-powered explanation for why two users matched, highlighting shared interests, personality traits, and music overlaps.
  *
  * - generateMatchExplanation - A function that handles the match explanation generation process.
  * - GenerateMatchExplanationInput - The input type for the generateMatchExplanation function.
@@ -55,7 +55,7 @@ export type GenerateMatchExplanationInput = z.infer<typeof GenerateMatchExplanat
 const GenerateMatchExplanationOutputSchema = z.object({
   explanation: z
     .string()
-    .describe("A comprehensive AI-generated explanation of why the two users matched."),
+    .describe("A comprehensive generated explanation of why the two users matched."),
   sharedInterestsSummary: z
     .string()
     .describe("A summary specifically detailing shared interests between the two users."),
@@ -78,7 +78,7 @@ const prompt = ai.definePrompt({
   name: 'generateMatchExplanationPrompt',
   input: {schema: GenerateMatchExplanationInputSchema},
   output: {schema: GenerateMatchExplanationOutputSchema},
-  prompt: `You are an expert matchmaking AI for a platform called Soulmatter. Your task is to analyze two user profiles and generate a detailed, insightful, and positive explanation of 'Why You Matched'. Focus on the semantic connections based on their shared interests, personality traits, and music tastes.
+  prompt: `You are an expert matchmaking system for a platform called Soulmatter. Your task is to analyze two user profiles and generate a detailed, insightful, and positive explanation of 'Why You Matched'. Focus on the semantic connections based on their shared interests, personality traits, and music tastes.
 
 Use a warm, engaging, and slightly poetic tone, fitting for a platform that helps people find deep connections. Make sure to clearly explain the connections in each category.
 

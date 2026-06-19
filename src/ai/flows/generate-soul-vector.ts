@@ -1,7 +1,6 @@
-
 'use server';
 /**
- * @fileOverview A Genkit flow for generating a unique 'Soul Vector' (AI embedding) and a semantic explanation
+ * @fileOverview A Genkit flow for generating a unique 'Soul Vector' (neural embedding) and a semantic explanation
  * based on a user's interests, personality, and music taste for the Soulmatter matchmaking platform.
  *
  * - generateSoulVector - A function that handles the soul vector generation process.
@@ -66,7 +65,7 @@ const GenerateSoulVectorOutputSchema = z.object({
   semanticOverlapExplanation: z
     .string()
     .describe(
-      "An explanation of how the AI derived the Soul Vector, detailing how different aspects of the user's profile contribute to it, and suggesting types of compatible individuals with reasoning."
+      "An explanation of how the system derived the Soul Vector, detailing how different aspects of the user's profile contribute to it, and suggesting types of compatible individuals with reasoning."
     ),
 });
 export type GenerateSoulVectorOutput = z.infer<typeof GenerateSoulVectorOutputSchema>;
@@ -81,7 +80,7 @@ const generateSoulVectorPrompt = ai.definePrompt({
   name: 'generateSoulVectorPrompt',
   input: {schema: GenerateSoulVectorInputSchema},
   output: {schema: GenerateSoulVectorOutputSchema},
-  prompt: `You are an advanced AI assistant for the "Soulmatter" matchmaking platform. Your task is to analyze a user's detailed profile and generate a "Soul Vector" description and a semantic explanation of potential compatibility.
+  prompt: `You are an advanced assistant for the "Soulmatter" matchmaking platform. Your task is to analyze a user's detailed profile and generate a "Soul Vector" description and a semantic explanation of potential compatibility.
 
 The Soul Vector description should capture the essence of the user's personality, interests, and music taste in a concise, high-level summary that could be used for semantic matching. This summary should highlight core characteristics and values that define the user.
 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -97,7 +96,7 @@ export default function MatchesPage() {
         <header className="mb-12">
           <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
             <Sparkles className="w-3 h-3" />
-            <span>AI Powered Discovery</span>
+            <span>Powered Discovery</span>
           </div>
           <h1 className="font-headline text-4xl font-bold mb-4 tracking-tight">Semantic Matches</h1>
           <p className="text-muted-foreground text-lg">Based on your Soul Vector and music tastes, these individuals resonate most with your profile.</p>
@@ -107,7 +106,7 @@ export default function MatchesPage() {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
-              placeholder="Search by name or interests (e.g. 'Jazz', 'AI')..." 
+              placeholder="Search by name or interests (e.g. 'Jazz', 'Coding')..." 
               className="pl-11 h-14 bg-white/5 border-white/10 rounded-2xl focus-visible:ring-primary text-base"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

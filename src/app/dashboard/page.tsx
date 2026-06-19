@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Navbar } from "@/components/shared/navbar";
@@ -94,7 +93,7 @@ export default function DashboardPage() {
                   Soul Vector Essence
                 </h4>
                 <p className="text-xl italic leading-relaxed text-foreground font-medium">
-                  "{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your AI-generated essence."}"
+                  "{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your neural-generated essence."}"
                 </p>
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                   <Globe className="w-24 h-24" />

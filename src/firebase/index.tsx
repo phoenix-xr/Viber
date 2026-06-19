@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -10,7 +9,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 
 // --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
-  { id: 'user_1', name: 'Alex', age: 26, city: 'London', interests: ['AI', 'Jazz', 'Coding'], bio: 'AI researcher and jazz pianist looking for harmonic resonance.', onboarded: true, soulVector: 'Analytical harmonic explorer', musicProfile: { genres: ['Jazz', 'Classical'], favoriteArtists: ['Bill Evans'] } },
+  { id: 'user_1', name: 'Alex', age: 26, city: 'London', interests: ['Computing', 'Jazz', 'Coding'], bio: 'Researcher and jazz pianist looking for harmonic resonance.', onboarded: true, soulVector: 'Analytical harmonic explorer', musicProfile: { genres: ['Jazz', 'Classical'], favoriteArtists: ['Bill Evans'] } },
   { id: 'user_2', name: 'Sam', age: 29, city: 'New York', interests: ['Coding', 'Music', 'Hiking'], bio: 'Full-stack developer who loves mountain trails and modular synths.', onboarded: true, soulVector: 'Digital nature enthusiast', musicProfile: { genres: ['Electronic', 'Ambient'], favoriteArtists: ['Aphex Twin'] } },
   { id: 'user_3', name: 'Jordan', age: 24, city: 'Berlin', interests: ['Art', 'Philosophy', 'Techno'], bio: 'Digital artist exploring the intersection of ethics and aesthetic.', onboarded: true, soulVector: 'Philosophical creative signal', musicProfile: { genres: ['Techno', 'Industrial'], favoriteArtists: ['Paula Temple'] } },
   { id: 'user_4', name: 'Casey', age: 31, city: 'Tokyo', interests: ['Gaming', 'Photography', 'Sushi'], bio: 'Street photographer and competitive gamer based in Shibuya.', onboarded: true, soulVector: 'Visual interactive strategist', musicProfile: { genres: ['Synthwave', 'J-Pop'], favoriteArtists: ['Kavinsky'] } },

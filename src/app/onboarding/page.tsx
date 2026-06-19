@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -35,7 +34,7 @@ const STEPS = ["Basic", "Interests", "Personality", "Music", "Review"];
 
 const INTEREST_OPTIONS = [
   "Sports", "Gaming", "Coding", "Books", "Movies", "Art", "Music", "Travel", 
-  "Food", "Nature", "Fitness", "Photography", "Startups", "AI", "Philosophy"
+  "Food", "Nature", "Fitness", "Photography", "Startups", "Computing", "Philosophy"
 ];
 
 export default function OnboardingPage() {
@@ -264,7 +263,7 @@ export default function OnboardingPage() {
         onboarded: true,
         spotifyConnected,
         soulVector: "A complex harmonic intelligence seeking resonant frequencies.",
-        semanticExplanation: "AI simulation processed your profile essence locally."
+        semanticExplanation: "System simulation processed your profile essence locally."
       });
       router.push("/dashboard");
     } finally {

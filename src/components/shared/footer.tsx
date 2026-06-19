@@ -15,7 +15,7 @@ export function Footer() {
             </span>
           </Link>
           <p className="text-sm text-muted-foreground max-w-[240px]">
-            The next generation of matchmaking, powered by high-dimensional AI embeddings.
+            The next generation of matchmaking, powered by high-dimensional embeddings.
           </p>
           <div className="flex gap-4">
             <Twitter className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors cursor-pointer" />
