@@ -1,0 +1,40 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-abstract",
+      "description": "Abstract futuristic network visualization",
+      "imageUrl": "https://picsum.photos/seed/soulmatter-network/1200/800",
+      "imageHint": "network abstract"
+    },
+    {
+      "id": "avatar-1",
+      "description": "User profile avatar 1",
+      "imageUrl": "https://picsum.photos/seed/user1/400/400",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "avatar-2",
+      "description": "User profile avatar 2",
+      "imageUrl": "https://picsum.photos/seed/user2/400/400",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "avatar-3",
+      "description": "User profile avatar 3",
+      "imageUrl": "https://picsum.photos/seed/user3/400/400",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "avatar-4",
+      "description": "User profile avatar 4",
+      "imageUrl": "https://picsum.photos/seed/user4/400/400",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "music-bg",
+      "description": "Music concert or abstract sound wave",
+      "imageUrl": "https://picsum.photos/seed/music/800/600",
+      "imageHint": "music wave"
+    }
+  ]
+}
