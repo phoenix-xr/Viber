@@ -19,7 +19,8 @@ import {
   Plus,
   X,
   Brain,
-  Tag
+  Tag,
+  Mic2
 } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
 import { useUser, mockDb } from "@/firebase";
@@ -59,7 +60,7 @@ export default function OnboardingPage() {
     },
     music: {
       genres: [] as string[],
-      artists: [] as string[],
+      favoriteArtists: [] as string[],
     }
   });
 
@@ -122,7 +123,7 @@ export default function OnboardingPage() {
         ...prev,
         music: {
           genres: ["Techno", "Ambient", "Jazz Fusion"],
-          artists: ["Floating Points", "Aphex Twin", "John Coltrane"]
+          favoriteArtists: ["Floating Points", "Aphex Twin", "John Coltrane"]
         }
       }));
       setLoading(false);
@@ -145,10 +146,10 @@ export default function OnboardingPage() {
   };
 
   const addManualArtist = () => {
-    if (newArtist.trim() && !formData.music.artists.includes(newArtist.trim())) {
+    if (newArtist.trim() && !formData.music.favoriteArtists.includes(newArtist.trim())) {
       setFormData(prev => ({
         ...prev,
-        music: { ...prev.music, artists: [...prev.music.artists, newArtist.trim()] }
+        music: { ...prev.music, favoriteArtists: [...prev.music.favoriteArtists, newArtist.trim()] }
       }));
       setNewArtist("");
     }
@@ -175,7 +176,7 @@ export default function OnboardingPage() {
         },
         musicProfile: {
           genres: formData.music.genres,
-          favoriteArtists: formData.music.artists,
+          favoriteArtists: formData.music.favoriteArtists,
         }
       });
 
@@ -347,8 +348,11 @@ export default function OnboardingPage() {
                             <CheckCircle2 className="w-5 h-5 text-[#1DB954]" />
                             <span className="font-bold text-[#1DB954]">Spotify Account Synced</span>
                           </div>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2 mb-4">
                             {formData.music.genres.map(g => <Badge key={g} variant="outline" className="border-white/10">{g}</Badge>)}
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.music.favoriteArtists.map(a => <Badge key={a} variant="secondary" className="bg-primary/10 text-primary border-none">{a}</Badge>)}
                           </div>
                         </div>
                       ) : (
@@ -375,20 +379,57 @@ export default function OnboardingPage() {
                   ) : (
                     <div className="space-y-6 text-left">
                       <div className="space-y-4">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Genres</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">Music Genres</label>
                         <div className="flex gap-2">
-                          <Input 
-                            placeholder="e.g. Jazz, Techno..." 
-                            value={newGenre} 
-                            onChange={e => setNewGenre(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && addManualGenre()}
-                            className="bg-white/5 border-white/10" 
-                          />
-                          <Button size="icon" variant="outline" onClick={addManualGenre} className="shrink-0 rounded-xl">
+                          <div className="relative flex-1">
+                            <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="e.g. Jazz, Techno..." 
+                              value={newGenre} 
+                              onChange={e => setNewGenre(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && addManualGenre()}
+                              className="pl-12 bg-white/5 border-white/10 rounded-xl" 
+                            />
+                          </div>
+                          <Button size="icon" variant="outline" onClick={addManualGenre} className="shrink-0 rounded-xl h-10 w-10">
                             <Plus className="w-4 h-4" />
                           </Button>
                         </div>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.music.genres.map(g => (
+                            <Badge key={g} variant="outline" className="gap-1.5 border-white/10">
+                              {g} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, music: { ...prev.music, genres: prev.music.genres.filter(genre => genre !== g) } }))} />
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
+
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">Favorite Artists</label>
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <Mic2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="e.g. Radiohead, SZA..." 
+                              value={newArtist} 
+                              onChange={e => setNewArtist(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && addManualArtist()}
+                              className="pl-12 bg-white/5 border-white/10 rounded-xl" 
+                            />
+                          </div>
+                          <Button size="icon" variant="outline" onClick={addManualArtist} className="shrink-0 rounded-xl h-10 w-10">
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.music.favoriteArtists.map(a => (
+                            <Badge key={a} className="gap-1.5 bg-primary/20 text-primary border-none">
+                              {a} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, music: { ...prev.music, favoriteArtists: prev.music.favoriteArtists.filter(artist => artist !== a) } }))} />
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
                       <Button variant="ghost" onClick={() => setShowManualMusic(false)} className="w-full text-xs text-muted-foreground">← Back to options</Button>
                     </div>
                   )}
@@ -407,6 +448,7 @@ export default function OnboardingPage() {
                   <div className="flex flex-wrap justify-center gap-2">
                     <Badge variant="secondary" className="bg-white/10 text-white border-none uppercase tracking-widest text-[8px] font-bold">Profile Ready</Badge>
                     {formData.customPersonalityTraits.length > 0 && <Badge className="bg-primary/20 text-primary border-none uppercase tracking-widest text-[8px] font-bold">Custom Traits</Badge>}
+                    {formData.music.favoriteArtists.length > 0 && <Badge className="bg-secondary/20 text-secondary border-none uppercase tracking-widest text-[8px] font-bold">Music Curated</Badge>}
                   </div>
                 </div>
               </motion.div>
