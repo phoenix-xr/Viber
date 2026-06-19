@@ -7,7 +7,7 @@ import { CompatibilityRing } from "@/components/ui/compatibility-ring";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Heart, X, MessageSquare, MapPin, Sparkles, Brain, Music, UserCheck, Share2, Loader2 } from "lucide-react";
+import { Heart, X, MessageSquare, MapPin, Sparkles, Brain, Music, UserCheck, Share2, Loader2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useUser, useDoc, mockDb } from "@/firebase";
@@ -86,13 +86,20 @@ export default function MatchDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
           <div className="lg:col-span-5 space-y-6">
-            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden glass border-white/10 shadow-2xl">
-              <Image 
-                src={`https://picsum.photos/seed/${id}/800/1000`} 
-                alt={match.name} 
-                fill 
-                className="object-cover"
-              />
+            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden glass border-white/10 shadow-2xl bg-white/5">
+              {match.profileImage ? (
+                <img 
+                  src={match.profileImage} 
+                  alt={match.name} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img 
+                  src={`https://picsum.photos/seed/${id}/800/1000`} 
+                  alt={match.name} 
+                  className="w-full h-full object-cover opacity-50"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between">
                 <div>

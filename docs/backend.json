@@ -10,6 +10,7 @@
         "age": { "type": "integer" },
         "city": { "type": "string" },
         "bio": { "type": "string" },
+        "profileImage": { "type": "string", "description": "Data URI of the profile picture" },
         "interests": { "type": "array", "items": { "type": "string" } },
         "customPersonalityTraits": { "type": "array", "items": { "type": "string" } },
         "personalityTraits": {
@@ -47,7 +48,7 @@
       }
     },
     "ChatMessage": {
-      "title": "Chat Message",
+      "title": "ChatMessage",
       "description": "A single message in a chat room.",
       "type": "object",
       "properties": {
@@ -67,7 +68,7 @@
     },
     "/interactions": {
       "schema": "#/backend/entities/Interaction",
-      "description": "Global interactions collection (simplified for mock)"
+      "description": "Global interactions collection"
     },
     "/chat_messages_{chatId}": {
       "schema": "#/backend/entities/ChatMessage",

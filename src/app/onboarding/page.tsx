@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,13 +20,16 @@ import {
   X,
   Brain,
   Tag,
-  Mic2
+  Mic2,
+  Camera,
+  AlertCircle
 } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
 import { useUser, mockDb } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { generateSoulVector } from "@/ai/flows/generate-soul-vector";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const STEPS = ["Basic", "Interests", "Personality", "Music", "Review"];
 
@@ -36,19 +39,22 @@ const INTEREST_OPTIONS = [
 ];
 
 export default function OnboardingPage() {
-  const { user, loading: authLoading } = useUser();
+  const { user, loading: authLoading, logout } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const [showManualMusic, setShowManualMusic] = useState(false);
+  const [ageError, setAgeError] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     name: "",
     age: "",
     city: "",
     bio: "",
+    profileImage: "",
     interests: [] as string[],
     customPersonalityTraits: [] as string[],
     personality: {
@@ -75,8 +81,30 @@ export default function OnboardingPage() {
     }
   }, [user, authLoading, router]);
 
-  const nextStep = () => setStep(s => Math.min(s + 1, STEPS.length - 1));
+  const nextStep = () => {
+    if (step === 0) {
+      const ageNum = parseInt(formData.age);
+      if (isNaN(ageNum) || ageNum < 18) {
+        setAgeError(true);
+        return;
+      }
+      setAgeError(false);
+    }
+    setStep(s => Math.min(s + 1, STEPS.length - 1));
+  };
+  
   const prevStep = () => setStep(s => Math.max(s - 1, 0));
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, profileImage: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const toggleInterest = (interest: string) => {
     setFormData(prev => ({
@@ -206,6 +234,24 @@ export default function OnboardingPage() {
     }
   };
 
+  if (ageError && step === 0 && formData.age && parseInt(formData.age) < 18) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-32 px-4">
+        <Navbar />
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full glass p-10 rounded-[2.5rem] border-white/10 text-center">
+          <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-6" />
+          <h2 className="text-3xl font-headline font-bold mb-4 text-destructive">Not Eligible</h2>
+          <p className="text-muted-foreground mb-8 text-lg">
+            We're sorry, but you must be at least 18 years old to use Soulmatter.
+          </p>
+          <Button onClick={() => logout()} className="w-full h-12 rounded-xl bg-primary">
+            Back to Home
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pb-20 pt-32">
       <Navbar />
@@ -237,10 +283,51 @@ export default function OnboardingPage() {
           <AnimatePresence mode="wait">
             {step === 0 && (
               <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                <div className="flex flex-col items-center mb-8">
+                   <div 
+                    className="w-32 h-32 rounded-3xl bg-white/5 border-2 border-dashed border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-all relative overflow-hidden group"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {formData.profileImage ? (
+                      <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <Camera className="w-8 h-8 text-muted-foreground mb-2 group-hover:text-primary transition-colors" />
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground group-hover:text-primary">Photo</span>
+                      </>
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <Plus className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                  <p className="mt-4 text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Add Profile Image</p>
+                </div>
+
                 <h2 className="text-3xl font-headline font-bold mb-2">The Basics</h2>
+                
+                {ageError && (
+                  <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 rounded-2xl">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Eligibility Requirement</AlertTitle>
+                    <AlertDescription>
+                      You must be at least 18 years old to join Soulmatter.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input placeholder="Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-12 bg-white/5 border-white/10" />
-                  <Input placeholder="Age" type="number" value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} className="h-12 bg-white/5 border-white/10" />
+                  <Input 
+                    placeholder="Age" 
+                    type="number" 
+                    value={formData.age} 
+                    onChange={e => {
+                      setFormData({...formData, age: e.target.value});
+                      if (parseInt(e.target.value) >= 18) setAgeError(false);
+                    }} 
+                    className={`h-12 bg-white/5 border-white/10 ${ageError ? 'border-destructive' : ''}`} 
+                  />
                 </div>
                 <Input placeholder="City" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="h-12 bg-white/5 border-white/10" />
                 <Textarea placeholder="Bio - What makes you, you?" className="min-h-[120px] bg-white/5 border-white/10" value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} />
@@ -441,8 +528,12 @@ export default function OnboardingPage() {
               <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 text-center">
                 <h2 className="text-3xl font-headline font-bold mb-2">Almost Ready!</h2>
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
-                    <UserIcon className="w-8 h-8 text-primary" />
+                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden border-2 border-primary/20">
+                    {formData.profileImage ? (
+                      <img src={formData.profileImage} alt="Profile preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <UserIcon className="w-10 h-10 text-primary" />
+                    )}
                   </div>
                   <h3 className="text-2xl font-headline font-bold">{formData.name || "Explorer"}</h3>
                   <div className="flex flex-wrap justify-center gap-2">

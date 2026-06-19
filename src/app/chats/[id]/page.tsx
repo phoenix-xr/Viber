@@ -85,15 +85,17 @@ export default function ChatDetailPage() {
               </Button>
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center relative overflow-hidden">
-                {otherUser ? (
+              <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center relative overflow-hidden">
+                {otherUser?.profileImage ? (
                    <img 
-                    src={`https://picsum.photos/seed/${otherUserId}/200/200`} 
+                    src={otherUser.profileImage} 
                     alt={otherUser.name}
                     className="object-cover w-full h-full"
                   />
                 ) : (
-                  <User className="w-5 h-5 text-muted-foreground" />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-muted-foreground" />
+                  </div>
                 )}
               </div>
               <div>

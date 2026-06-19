@@ -1,8 +1,9 @@
+
 "use client";
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut, BrainCircuit, Globe } from "lucide-react";
+import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut, BrainCircuit, Globe, User } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
 import { useEffect, useState, useMemo } from "react";
@@ -47,13 +48,22 @@ export default function DashboardPage() {
       
       <div className="max-w-7xl mx-auto pt-32 px-4">
         <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
-          <div>
-            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
-              <BrainCircuit className="w-4 h-4" />
-              <span>Identity Pulse</span>
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl">
+              {profile?.profileImage ? (
+                <img src={profile.profileImage} alt={profile.name} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-10 h-10 text-muted-foreground" />
+              )}
             </div>
-            <h1 className="font-headline text-5xl md:text-6xl font-bold mb-4 tracking-tight">Welcome back, {profile?.name || "Explorer"}</h1>
-            <p className="text-muted-foreground text-lg">Your Soul Vector is active and finding resonant signals across the network.</p>
+            <div>
+              <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
+                <BrainCircuit className="w-4 h-4" />
+                <span>Identity Pulse</span>
+              </div>
+              <h1 className="font-headline text-5xl md:text-6xl font-bold mb-2 tracking-tight">Welcome back, {profile?.name || "Explorer"}</h1>
+              <p className="text-muted-foreground text-lg">Your Soul Vector is active and finding resonant signals.</p>
+            </div>
           </div>
           <div className="flex gap-4">
             <Button variant="outline" className="rounded-2xl glass border-white/10 gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest" onClick={handleSignOut}>
@@ -99,17 +109,8 @@ export default function DashboardPage() {
                   <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              {!profile?.spotifyConnected && (
-                <Link href="/onboarding">
-                  <Button size="lg" variant="outline" className="rounded-2xl glass border-[#1DB954]/30 hover:bg-[#1DB954]/5 text-[#1DB954] font-bold px-10 h-16 text-lg gap-3">
-                    <MusicIcon className="w-6 h-6" />
-                    Enrich Profile
-                  </Button>
-                </Link>
-              )}
             </div>
 
-            {/* Background Decorative Circles */}
             <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-primary/20 rounded-full blur-[140px] opacity-30 pointer-events-none" />
             <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] opacity-20 pointer-events-none" />
           </div>

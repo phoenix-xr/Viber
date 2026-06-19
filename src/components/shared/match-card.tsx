@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { CompatibilityRing } from "@/components/ui/compatibility-ring";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Bookmark } from "lucide-react";
+import { Heart, X, MapPin, Bookmark, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { mockDb, useUser } from "@/firebase";
@@ -19,6 +19,7 @@ interface Match {
   compatibilityScore: number;
   interests: string[];
   imageUrl: string;
+  profileImage?: string;
 }
 
 export function MatchCard({ match }: { match: Match }) {
@@ -54,12 +55,17 @@ export function MatchCard({ match }: { match: Match }) {
     >
       <Link href={`/matches/${match.id}`} className="flex-1 flex flex-col">
         <div className="relative h-64 overflow-hidden">
-          <Image
-            src={match.imageUrl || `https://picsum.photos/seed/${match.id}/500/700`}
-            alt={match.name}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
-          />
+          {match.profileImage || match.imageUrl ? (
+            <img
+              src={match.profileImage || match.imageUrl || `https://picsum.photos/seed/${match.id}/500/700`}
+              alt={match.name}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+          ) : (
+             <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                <User className="w-16 h-16 text-muted-foreground/20" />
+             </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           
           <div className="absolute top-4 right-4">
