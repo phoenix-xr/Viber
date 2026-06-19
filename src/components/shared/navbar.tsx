@@ -1,13 +1,26 @@
+
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Sparkles, Menu, X, LogOut, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser, useAuth } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    router.push("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
@@ -25,19 +38,30 @@ export function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <Link href="/matches" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Matches</Link>
-            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
-            <Link href="/saved" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Saved</Link>
+            {user && <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>}
+            {user && <Link href="/saved" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Saved</Link>}
+            {user && <Link href="/chats" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> Chats
+            </Link>}
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">Log in</Button>
-            </Link>
-            <Link href="/onboarding">
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
-                Get Started
+            {user ? (
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
+                <LogOut className="w-4 h-4" /> Sign Out
               </Button>
-            </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">Log in</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -58,16 +82,23 @@ export function Navbar() {
           >
             <div className="glass p-6 rounded-2xl flex flex-col gap-4">
               <Link href="/matches" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Matches</Link>
-              <Link href="/dashboard" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Dashboard</Link>
-              <Link href="/saved" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Saved</Link>
+              {user && <Link href="/dashboard" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Dashboard</Link>}
+              {user && <Link href="/saved" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Saved</Link>}
+              {user && <Link href="/chats" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Chats</Link>}
               <hr className="border-white/10" />
               <div className="flex flex-col gap-2 pt-2">
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="w-full">Log in</Button>
-                </Link>
-                <Link href="/onboarding" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full bg-primary text-primary-foreground">Get Started</Button>
-                </Link>
+                {user ? (
+                  <Button variant="outline" className="w-full" onClick={handleSignOut}>Sign Out</Button>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full">Log in</Button>
+                    </Link>
+                    <Link href="/signup" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full bg-primary text-primary-foreground">Get Started</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

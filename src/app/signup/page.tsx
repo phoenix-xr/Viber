@@ -5,45 +5,33 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mail, Lock, Github, Chrome } from "lucide-react";
+import { Sparkles, Mail, Lock, Github, Chrome, User } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { useAuth, useFirestore, useUser } from "@/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useAuth } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const auth = useAuth();
-  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const checkOnboardingStatus = async (uid: string) => {
-    if (!db) return;
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (userDoc.exists() && userDoc.data().onboarded) {
-      router.push("/dashboard");
-    } else {
-      router.push("/onboarding");
-    }
-  };
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!auth) return;
     setLoading(true);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      await checkOnboardingStatus(cred.user.uid);
+      await createUserWithEmailAndPassword(auth, email, password);
+      router.push("/onboarding");
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Login failed",
+        title: "Signup failed",
         description: error.message,
       });
     } finally {
@@ -54,8 +42,8 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     if (!auth) return;
     try {
-      const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-      await checkOnboardingStatus(cred.user.uid);
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      router.push("/onboarding");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -78,13 +66,13 @@ export default function LoginPage() {
           
           <div className="text-center mb-10">
             <div className="w-12 h-12 bg-gradient-to-tr from-primary to-secondary rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-6 h-6 text-white" />
+              <User className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-headline font-bold">Welcome Back</h1>
-            <p className="text-muted-foreground mt-2">Log in to your soul vector</p>
+            <h1 className="text-3xl font-headline font-bold">Join Soulmatter</h1>
+            <p className="text-muted-foreground mt-2">Start your semantic matching journey</p>
           </div>
 
-          <form className="space-y-4" onSubmit={handleEmailLogin}>
+          <form className="space-y-4" onSubmit={handleEmailSignup}>
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Email</label>
               <div className="relative">
@@ -100,10 +88,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Password</label>
-                <Link href="#" className="text-[10px] text-primary hover:underline font-bold uppercase tracking-widest">Forgot?</Link>
-              </div>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input 
@@ -122,13 +107,13 @@ export default function LoginPage() {
               className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg mt-6 shadow-xl shadow-primary/20"
               disabled={loading}
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
 
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5" /></div>
-            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest"><span className="bg-transparent px-4 text-muted-foreground">Or continue with</span></div>
+            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest"><span className="bg-transparent px-4 text-muted-foreground">Or sign up with</span></div>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -138,7 +123,7 @@ export default function LoginPage() {
           </div>
 
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Don't have an account? <Link href="/signup" className="text-primary font-bold hover:underline">Sign up</Link>
+            Already have an account? <Link href="/login" className="text-primary font-bold hover:underline">Log in</Link>
           </p>
         </motion.div>
       </div>

@@ -1,0 +1,74 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stored user profile information including personality traits and preferences.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "age": { "type": "integer" },
+        "city": { "type": "string" },
+        "bio": { "type": "string" },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "personalityTraits": {
+          "type": "object",
+          "properties": {
+            "introvertExtrovert": { "type": "number" },
+            "creativeAnalytical": { "type": "number" },
+            "plannerSpontaneous": { "type": "number" },
+            "logicalEmotional": { "type": "number" },
+            "adventurousCareful": { "type": "number" }
+          }
+        },
+        "musicProfile": {
+          "type": "object",
+          "properties": {
+            "genres": { "type": "array", "items": { "type": "string" } },
+            "favoriteArtists": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "onboarded": { "type": "boolean" },
+        "soulVector": { "type": "string" }
+      },
+      "required": ["name", "onboarded"]
+    },
+    "Interaction": {
+      "title": "Interaction",
+      "description": "Records likes, passes, or saves between users.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["like", "pass", "save"] },
+        "targetUserId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A single message in a chat room.",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "#/backend/entities/UserProfile",
+      "description": "Main user document"
+    },
+    "/users/{userId}/interactions/{targetUserId}": {
+      "schema": "#/backend/entities/Interaction",
+      "description": "User's interactions with others"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "#/backend/entities/ChatMessage",
+      "description": "Messages within a chat"
+    }
+  }
+}

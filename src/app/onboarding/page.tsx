@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import {
   ArrowLeft, 
   Sparkles, 
   Music, 
-  User, 
+  User as UserIcon, 
   Brain, 
   Heart,
   Search,
@@ -20,6 +21,10 @@ import {
   Loader2
 } from "lucide-react";
 import { Navbar } from "@/components/shared/navbar";
+import { useUser, useFirestore } from "@/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { generateSoulVector } from "@/ai/flows/generate-soul-vector";
 
 const STEPS = ["Basic", "Interests", "Personality", "Music", "Review"];
 
@@ -29,6 +34,9 @@ const INTEREST_OPTIONS = [
 ];
 
 export default function OnboardingPage() {
+  const { user, loading: authLoading } = useUser();
+  const db = useFirestore();
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,6 +58,12 @@ export default function OnboardingPage() {
     }
   });
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
   const nextStep = () => setStep(s => Math.min(s + 1, STEPS.length - 1));
   const prevStep = () => setStep(s => Math.max(s - 1, 0));
 
@@ -63,13 +77,47 @@ export default function OnboardingPage() {
   };
 
   const handleFinish = async () => {
+    if (!user || !db) return;
     setLoading(true);
-    // Simulate API call to generate soul vector
-    await new Promise(r => setTimeout(r, 3000));
-    window.location.href = "/dashboard";
+    
+    try {
+      // Generate Soul Vector essence via AI
+      const aiResult = await generateSoulVector({
+        name: formData.name,
+        age: parseInt(formData.age),
+        city: formData.city,
+        bio: formData.bio,
+        interests: formData.interests,
+        personalityTraits: {
+          introvertExtrovert: formData.personality.introvertExtrovert / 10,
+          creativeAnalytical: formData.personality.creativeAnalytical / 10,
+          plannerSpontaneous: formData.personality.plannerSpontaneous / 10,
+          logicalEmotional: formData.personality.logicalEmotional / 10,
+          adventurousCareful: formData.personality.adventurousCareful / 10,
+        },
+        musicProfile: {
+          genres: formData.music.genres,
+          favoriteArtists: formData.music.artists,
+        }
+      });
+
+      await setDoc(doc(db, "users", user.uid), {
+        ...formData,
+        age: parseInt(formData.age),
+        onboarded: true,
+        soulVector: aiResult.soulVectorDescription,
+        semanticExplanation: aiResult.semanticOverlapExplanation,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
+      router.push("/dashboard");
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
   };
 
-  if (loading) {
+  if (authLoading || (loading && step === STEPS.length - 1)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
         <motion.div
@@ -79,8 +127,14 @@ export default function OnboardingPage() {
         >
           <Sparkles className="w-16 h-16 text-primary" />
         </motion.div>
-        <h2 className="text-3xl font-headline font-bold mb-4 text-center">Generating Your Soul Vector</h2>
-        <p className="text-muted-foreground text-center max-w-sm">Our AI is processing your personality and preferences to create your unique semantic embedding.</p>
+        <h2 className="text-3xl font-headline font-bold mb-4 text-center">
+          {loading ? "Generating Your Soul Vector" : "Checking Access..."}
+        </h2>
+        <p className="text-muted-foreground text-center max-w-sm">
+          {loading 
+            ? "Our AI is processing your personality and preferences to create your unique semantic embedding."
+            : "Hang tight while we get things ready."}
+        </p>
         <div className="mt-12 w-full max-w-xs h-1 bg-white/10 rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
@@ -98,7 +152,6 @@ export default function OnboardingPage() {
       <Navbar />
       
       <div className="max-w-3xl mx-auto px-4">
-        {/* Progress Stepper */}
         <div className="flex justify-between items-center mb-12">
           {STEPS.map((s, idx) => (
             <div key={s} className="flex flex-col items-center gap-2 flex-1 relative">
@@ -173,10 +226,6 @@ export default function OnboardingPage() {
                   <h2 className="text-3xl font-headline font-bold mb-2">Your Interests</h2>
                   <p className="text-muted-foreground">What makes you tick? Select at least 3.</p>
                 </div>
-                <div className="relative mb-6">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Search or add custom interest..." className="pl-11 h-12 bg-white/5 border-white/10 rounded-xl" />
-                </div>
                 <div className="flex flex-wrap gap-3">
                   {INTEREST_OPTIONS.map(interest => (
                     <button
@@ -246,28 +295,24 @@ export default function OnboardingPage() {
                   <p className="text-muted-foreground">The ultimate soul filter.</p>
                 </div>
                 
-                <div className="glass p-8 rounded-[2rem] border-primary/20 bg-primary/5 text-center flex flex-col items-center gap-6">
-                  <div className="w-16 h-16 bg-[#1DB954] rounded-full flex items-center justify-center shadow-lg shadow-[#1DB954]/20">
-                    <Music className="w-8 h-8 text-black" />
-                  </div>
-                  <div>
-                    <h4 className="font-headline font-bold text-xl mb-1">Connect Spotify</h4>
-                    <p className="text-sm text-muted-foreground">Sync your top artists and genres for the most accurate matching.</p>
-                  </div>
-                  <Button className="bg-[#1DB954] hover:bg-[#1DB954]/90 text-black font-bold rounded-full px-8 py-6 h-auto">
-                    Log in with Spotify
-                  </Button>
-                </div>
-
-                <div className="relative py-4">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5" /></div>
-                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-transparent px-2 text-muted-foreground font-bold tracking-widest">or enter manually</span></div>
-                </div>
-
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Favorite Genres</label>
-                    <Input placeholder="Electronic, Jazz, Hip Hop..." className="h-12 bg-white/5 border-white/10 rounded-xl" />
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Favorite Genres (comma separated)</label>
+                    <Input 
+                      placeholder="Electronic, Jazz, Hip Hop..." 
+                      className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      value={formData.music.genres.join(", ")}
+                      onChange={e => setFormData({...formData, music: {...formData.music, genres: e.target.value.split(",").map(s => s.trim())}})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Favorite Artists (comma separated)</label>
+                    <Input 
+                      placeholder="Aphex Twin, Radiohead..." 
+                      className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      value={formData.music.artists.join(", ")}
+                      onChange={e => setFormData({...formData, music: {...formData.music, artists: e.target.value.split(",").map(s => s.trim())}})}
+                    />
                   </div>
                 </div>
               </motion.div>
@@ -289,11 +334,11 @@ export default function OnboardingPage() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10">
-                      <User className="w-8 h-8 text-primary" />
+                      <UserIcon className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-headline font-bold text-2xl">{formData.name || "John Doe"}, {formData.age || "24"}</h3>
-                      <p className="text-muted-foreground">{formData.city || "San Francisco, CA"}</p>
+                      <h3 className="font-headline font-bold text-2xl">{formData.name || "User"}, {formData.age || "??"}</h3>
+                      <p className="text-muted-foreground">{formData.city || "Earth"}</p>
                     </div>
                   </div>
 
@@ -301,13 +346,7 @@ export default function OnboardingPage() {
                     <h4 className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Interests</h4>
                     <div className="flex flex-wrap gap-2">
                       {formData.interests.map(i => <Badge key={i} className="bg-primary/20 border-primary/20 text-primary">{i}</Badge>)}
-                      {formData.interests.length === 0 && <span className="text-sm text-muted-foreground italic">No interests selected</span>}
                     </div>
-                  </div>
-
-                  <div className="glass p-6 rounded-2xl border-white/5">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-secondary mb-3">Soul Signature</h4>
-                    <p className="text-sm text-muted-foreground line-clamp-2 italic">"{formData.bio || "No bio provided yet."}"</p>
                   </div>
                 </div>
               </motion.div>
@@ -315,31 +354,18 @@ export default function OnboardingPage() {
           </AnimatePresence>
 
           <div className="mt-12 flex justify-between gap-4">
-            <Button 
-              variant="ghost" 
-              onClick={prevStep} 
-              disabled={step === 0}
-              className="rounded-xl px-8 h-12"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+            <Button variant="ghost" onClick={prevStep} disabled={step === 0} className="rounded-xl px-8 h-12">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back
             </Button>
             
             {step === STEPS.length - 1 ? (
-              <Button 
-                onClick={handleFinish}
-                className="rounded-xl px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg shadow-primary/20"
-              >
+              <Button onClick={handleFinish} className="rounded-xl px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold" disabled={loading}>
+                {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 Generate Soul Vector
-                <Sparkles className="w-4 h-4 ml-2" />
               </Button>
             ) : (
-              <Button 
-                onClick={nextStep}
-                className="rounded-xl px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4 ml-2" />
+              <Button onClick={nextStep} className="rounded-xl px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
+                Continue <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             )}
           </div>

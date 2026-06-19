@@ -1,77 +1,65 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Navbar } from "@/components/shared/navbar";
 import { MatchCard } from "@/components/shared/match-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import { Search, SlidersHorizontal, Sparkles, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-
-const DUMMY_MATCHES = [
-  {
-    id: "1",
-    name: "Alex Rivers",
-    age: 26,
-    city: "San Francisco, CA",
-    compatibilityScore: 92,
-    interests: ["Coding", "Jazz", "Philosophy", "Photography"],
-    imageUrl: "https://picsum.photos/seed/soul1/500/700",
-  },
-  {
-    id: "2",
-    name: "Jordan Smith",
-    age: 24,
-    city: "Brooklyn, NY",
-    compatibilityScore: 88,
-    interests: ["Vinyl", "Plants", "Art", "Startups"],
-    imageUrl: "https://picsum.photos/seed/soul2/500/700",
-  },
-  {
-    id: "3",
-    name: "Elena Vance",
-    age: 28,
-    city: "Austin, TX",
-    compatibilityScore: 81,
-    interests: ["AI", "Gaming", "Fitness", "Nature"],
-    imageUrl: "https://picsum.photos/seed/soul3/500/700",
-  },
-  {
-    id: "4",
-    name: "Marcus Chen",
-    age: 25,
-    city: "Chicago, IL",
-    compatibilityScore: 75,
-    interests: ["Cooking", "Movies", "Travel", "Books"],
-    imageUrl: "https://picsum.photos/seed/soul4/500/700",
-  },
-  {
-    id: "5",
-    name: "Sofia Rossi",
-    age: 27,
-    city: "Los Angeles, CA",
-    compatibilityScore: 94,
-    interests: ["Design", "Fashion", "Art History", "Techno"],
-    imageUrl: "https://picsum.photos/seed/soul5/500/700",
-  },
-  {
-    id: "6",
-    name: "Kai Nakamoto",
-    age: 23,
-    city: "Seattle, WA",
-    compatibilityScore: 79,
-    interests: ["Cycling", "Coffee", "Books", "Startups"],
-    imageUrl: "https://picsum.photos/seed/soul6/500/700",
-  },
-];
+import { useUser, useFirestore, useCollection } from "@/firebase";
+import { collection, query, where, limit } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function MatchesPage() {
+  const { user, loading: authLoading } = useUser();
+  const db = useFirestore();
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
-  const filteredMatches = DUMMY_MATCHES.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase()) || 
-    m.city.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  const usersQuery = useMemo(() => {
+    if (!db || !user) return null;
+    // Fetch other users to match with
+    return query(collection(db, "users"), where("onboarded", "==", true), limit(20));
+  }, [db, user]);
+
+  const { data: allUsers, loading: usersLoading } = useCollection(usersQuery);
+
+  const filteredMatches = useMemo(() => {
+    if (!allUsers || !user) return [];
+    return allUsers
+      .filter(u => u.id !== user.uid) // Don't show self
+      .filter(m => 
+        (m.name?.toLowerCase() || "").includes(search.toLowerCase()) || 
+        (m.city?.toLowerCase() || "").includes(search.toLowerCase()) ||
+        (m.interests || []).some((i: string) => i.toLowerCase().includes(search.toLowerCase()))
+      )
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        age: u.age,
+        city: u.city,
+        compatibilityScore: Math.floor(Math.random() * 20) + 80, // Simulation of score for now
+        interests: u.interests || [],
+        imageUrl: `https://picsum.photos/seed/${u.id}/500/700`,
+      }));
+  }, [allUsers, user, search]);
+
+  if (authLoading || usersLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20">
