@@ -10,20 +10,17 @@ import { motion } from "framer-motion";
 import { Heart, X, MessageSquare, MapPin, Sparkles, Brain, Music, UserCheck, Share2, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useUser, useFirestore, useDoc } from "@/firebase";
+import { useUser, useDoc, mockDb } from "@/firebase";
 import { useMemo, useEffect } from "react";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function MatchDetailPage() {
   const { id } = useParams();
   const { user, loading: authLoading } = useUser();
-  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
-  const matchDocRef = useMemo(() => (id && db ? doc(db, "users", id as string) : null), [id, db]);
-  const { data: match, loading: matchLoading } = useDoc(matchDocRef);
+  const { data: match, loading: matchLoading } = useDoc(id ? { collection: 'users', id: id as string } : null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -31,29 +28,28 @@ export default function MatchDetailPage() {
     }
   }, [user, authLoading, router]);
 
-  const handleAction = async (type: 'like' | 'pass' | 'save') => {
-    if (!user || !db || !id) return;
+  const handleAction = (type: 'like' | 'pass' | 'save') => {
+    if (!user || !id) return;
     
-    const docRef = doc(db, "users", user.uid, "interactions", id as string);
-    await setDoc(docRef, {
+    mockDb.add("interactions", {
       type,
-      targetUserId: id,
-      timestamp: serverTimestamp()
-    }, { merge: true });
+      userId: user.uid,
+      targetUserId: id as string,
+      timestamp: new Date().toISOString()
+    });
 
     toast({
       title: type.charAt(0).toUpperCase() + type.slice(1) + "d!",
       description: `You ${type}d ${match?.name || 'this user'}.`,
     });
 
-    if (type === 'pass') {
+    if (type === 'pass' || type === 'like') {
       router.push('/matches');
     }
   };
 
   const startChat = () => {
     if (!id || !user) return;
-    // Simple chatId logic: sorted uids joined by underscore
     const chatId = [user.uid, id].sort().join("_");
     router.push(`/chats/${chatId}`);
   };
@@ -75,8 +71,7 @@ export default function MatchDetailPage() {
     );
   }
 
-  // Compatibility simulation
-  const compatibilityScore = 92;
+  const compatibilityScore = match.compatibilityScore || 92;
 
   return (
     <div className="min-h-screen pb-20">
@@ -85,7 +80,6 @@ export default function MatchDetailPage() {
       <div className="max-w-7xl mx-auto pt-32 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
-          {/* Left Column: Media & Actions */}
           <div className="lg:col-span-5 space-y-6">
             <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden glass border-white/10 shadow-2xl">
               <Image 
@@ -121,7 +115,6 @@ export default function MatchDetailPage() {
             </Button>
           </div>
 
-          {/* Right Column: Deep Insights */}
           <div className="lg:col-span-7 space-y-8">
             <section className="glass p-8 rounded-[2.5rem] border-white/5">
               <h2 className="font-headline text-2xl font-bold mb-4">About {match.name}</h2>
@@ -130,7 +123,6 @@ export default function MatchDetailPage() {
               </p>
             </section>
 
-            {/* AI Explanation Card */}
             <section className="glass p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20 relative overflow-hidden">
               <div className="relative z-10">
                 <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-4">
@@ -168,9 +160,9 @@ export default function MatchDetailPage() {
                 </h3>
                 <div className="space-y-6">
                   {[
-                    { label: "Introvert / Extrovert", value: match.personalityTraits?.introvertExtrovert * 10 },
-                    { label: "Creative / Analytical", value: match.personalityTraits?.creativeAnalytical * 10 },
-                    { label: "Planner / Spontaneous", value: match.personalityTraits?.plannerSpontaneous * 10 },
+                    { label: "Introvert / Extrovert", value: (match.personalityTraits?.introvertExtrovert || 5) * 10 },
+                    { label: "Creative / Analytical", value: (match.personalityTraits?.creativeAnalytical || 5) * 10 },
+                    { label: "Planner / Spontaneous", value: (match.personalityTraits?.plannerSpontaneous || 5) * 10 },
                   ].map((trait, idx) => (
                     <div key={idx} className="space-y-2">
                       <div className="flex justify-between text-xs font-bold uppercase tracking-tighter">
@@ -199,12 +191,14 @@ export default function MatchDetailPage() {
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Top Genres</h4>
                     <div className="flex flex-wrap gap-2">
                       {match.musicProfile?.genres?.map((g: string) => <Badge key={g} variant="outline" className="border-white/10 text-white/70">{g}</Badge>)}
+                      {match.music?.genres?.map((g: string) => <Badge key={g} variant="outline" className="border-white/10 text-white/70">{g}</Badge>)}
                     </div>
                   </div>
                   <div>
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Favorite Artists</h4>
                     <div className="flex flex-wrap gap-2">
                       {match.musicProfile?.favoriteArtists?.map((a: string) => <Badge key={a} variant="outline" className="border-white/10 text-white/70">{a}</Badge>)}
+                      {match.music?.artists?.map((a: string) => <Badge key={a} variant="outline" className="border-white/10 text-white/70">{a}</Badge>)}
                     </div>
                   </div>
                 </div>
