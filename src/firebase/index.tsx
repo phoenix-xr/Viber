@@ -5,7 +5,7 @@
  * Centralized Auth Context to ensure synchronization across components.
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 // --- INITIAL DATA SEEDING ---
 const INITIAL_USERS = [
@@ -16,7 +16,7 @@ const INITIAL_USERS = [
 ];
 
 const getDb = () => {
-  if (typeof window === 'undefined') return {};
+  if (typeof window === 'undefined') return { users: INITIAL_USERS, interactions: [], chat_messages: {} };
   const stored = localStorage.getItem('soulmatter_db');
   if (!stored) {
     const initialDb = { users: INITIAL_USERS, interactions: [], chat_messages: {} };
@@ -139,10 +139,10 @@ export function useDoc(docInfo: any) {
       const collection = db[docInfo.collection] || [];
       const item = collection.find((i: any) => i.id === docInfo.id);
       
+      const nextData = item ? { ...item } : null;
       setData((prev) => {
-        const nextStr = JSON.stringify(item || null);
-        const prevStr = JSON.stringify(prev);
-        return nextStr === prevStr ? prev : (item || null);
+        if (JSON.stringify(prev) === JSON.stringify(nextData)) return prev;
+        return nextData;
       });
       setLoading(false);
     };

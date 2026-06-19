@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -24,13 +23,23 @@ export default function MatchesPage() {
 
   // Fetch mock users
   const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
+  
+  // Fetch interactions to filter out passed or liked users
+  const { data: interactions, loading: interactionsLoading } = useCollection(
+    user ? { collection: 'interactions', where: ['userId', '==', user.uid] } : null
+  );
 
   const filteredMatches = useMemo(() => {
     if (!allUsers || !user) return [];
     
-    // We want to show other users, not the current one
+    // Get list of IDs that the user has already 'passed' or 'liked'
+    const ignoredIds = (interactions || [])
+      .filter(i => i.type === 'pass' || i.type === 'like')
+      .map(i => i.targetUserId);
+
     return allUsers
       .filter(u => u.id !== user.uid)
+      .filter(u => !ignoredIds.includes(u.id))
       .filter(m => 
         (m.name?.toLowerCase() || "").includes(search.toLowerCase()) || 
         (m.city?.toLowerCase() || "").includes(search.toLowerCase()) ||
@@ -38,12 +47,12 @@ export default function MatchesPage() {
       )
       .map(u => ({
         ...u,
-        compatibilityScore: Math.floor(Math.random() * 15) + 85, // High compatibility for matches
+        compatibilityScore: u.compatibilityScore || Math.floor(Math.random() * 15) + 85,
         imageUrl: `https://picsum.photos/seed/${u.id}/500/700`,
       }));
-  }, [allUsers, user, search]);
+  }, [allUsers, user, search, interactions]);
 
-  if (authLoading || usersLoading) {
+  if (authLoading || usersLoading || interactionsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
@@ -88,6 +97,7 @@ export default function MatchesPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
+              layout
             >
               <MatchCard match={match} />
               {match.spotifyConnected && (
@@ -103,7 +113,7 @@ export default function MatchesPage() {
         {filteredMatches.length === 0 && (
           <div className="text-center py-20 glass rounded-[3rem] border-white/5">
             <Sparkles className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No matches found. Try refining your profile essence.</p>
+            <p className="text-muted-foreground">No matches found. Try refining your profile essence or checking back later.</p>
           </div>
         )}
       </div>

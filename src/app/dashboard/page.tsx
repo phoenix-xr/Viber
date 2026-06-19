@@ -1,9 +1,8 @@
-
 "use client";
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut } from "lucide-react";
+import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight, LogOut, BrainCircuit, Globe } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
 import { useEffect, useState, useMemo } from "react";
@@ -13,7 +12,6 @@ import { motion } from "framer-motion";
 export default function DashboardPage() {
   const { user, loading: authLoading, logout } = useUser();
   const router = useRouter();
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Memoize the doc query to prevent infinite loops
   const profileQuery = useMemo(() => 
@@ -48,94 +46,109 @@ export default function DashboardPage() {
       <Navbar />
       
       <div className="max-w-7xl mx-auto pt-32 px-4">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
           <div>
-            <h1 className="font-headline text-4xl font-bold mb-2">Welcome back, {profile?.name || "Explorer"}</h1>
-            <p className="text-muted-foreground">Your Soul Vector is active and finding resonant signals.</p>
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-3">
+              <BrainCircuit className="w-4 h-4" />
+              <span>Identity Pulse</span>
+            </div>
+            <h1 className="font-headline text-5xl md:text-6xl font-bold mb-4 tracking-tight">Welcome back, {profile?.name || "Explorer"}</h1>
+            <p className="text-muted-foreground text-lg">Your Soul Vector is active and finding resonant signals across the network.</p>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="rounded-xl glass border-white/10 gap-2" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4" /> Sign Out
+          <div className="flex gap-4">
+            <Button variant="outline" className="rounded-2xl glass border-white/10 gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest" onClick={handleSignOut}>
+              <LogOut className="w-5 h-5" /> Sign Out
             </Button>
             <Link href="/onboarding">
-              <Button className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <Button className="rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground gap-3 h-14 px-8 font-bold text-sm uppercase tracking-widest shadow-xl shadow-primary/20">
+                <RefreshCw className="w-5 h-5" />
                 Sync Vector
               </Button>
             </Link>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="md:col-span-2 glass rounded-[2rem] p-8 border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[450px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          {/* Main Soul Card */}
+          <div className="lg:col-span-2 glass rounded-[3rem] p-12 border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[500px] group">
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-4">
-                <TrendingUp className="w-3 h-3" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-8">
+                <TrendingUp className="w-4 h-4" />
                 Soul Identity Live
               </div>
-              <h2 className="text-4xl font-headline font-bold mb-4">Your essence is <br /><span className="text-gradient">evolving daily</span>.</h2>
+              <h2 className="text-5xl font-headline font-bold mb-8 leading-tight">Your essence is <br /><span className="text-gradient">evolving daily</span>.</h2>
               
-              <div className="mt-6 p-6 glass bg-white/5 rounded-2xl border-white/5 max-w-lg">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Soul Vector Essence</h4>
-                <p className="text-sm italic leading-relaxed text-muted-foreground">"{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your AI-generated essence."}"</p>
+              <div className="mt-8 p-8 glass bg-white/5 rounded-3xl border-white/5 max-w-2xl relative">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+                  <Sparkles className="w-3 h-3" />
+                  Soul Vector Essence
+                </h4>
+                <p className="text-xl italic leading-relaxed text-foreground font-medium">
+                  "{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your AI-generated essence."}"
+                </p>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Globe className="w-24 h-24" />
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 relative z-10 mt-8">
+            <div className="flex flex-wrap gap-6 relative z-10 mt-12">
               <Link href="/matches">
-                <Button size="lg" className="rounded-xl bg-white text-black hover:bg-white/90 font-bold px-8 h-14 group">
+                <Button size="lg" className="rounded-2xl bg-white text-black hover:bg-white/90 font-bold px-12 h-16 text-lg group shadow-2xl">
                   Find Resonance
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               {!profile?.spotifyConnected && (
                 <Link href="/onboarding">
-                  <Button size="lg" variant="outline" className="rounded-xl glass border-[#1DB954]/30 hover:bg-[#1DB954]/5 text-[#1DB954] font-bold px-8 h-14 gap-2">
-                    <MusicIcon className="w-5 h-5" />
+                  <Button size="lg" variant="outline" className="rounded-2xl glass border-[#1DB954]/30 hover:bg-[#1DB954]/5 text-[#1DB954] font-bold px-10 h-16 text-lg gap-3">
+                    <MusicIcon className="w-6 h-6" />
                     Enrich Profile
                   </Button>
                 </Link>
               )}
             </div>
 
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-primary rounded-full blur-[120px] opacity-20" />
-            <div className="absolute top-10 right-10 w-32 h-32 glass border-white/10 rounded-3xl flex items-center justify-center rotate-12 hidden md:flex">
-              <Zap className="w-12 h-12 text-primary animate-pulse" />
-            </div>
+            {/* Background Decorative Circles */}
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-80 h-80 bg-primary/20 rounded-full blur-[140px] opacity-30 pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] opacity-20 pointer-events-none" />
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
-            <div className="glass rounded-[2rem] p-8 border-white/5 flex flex-col justify-center">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-muted-foreground text-sm font-medium">Vector Stability</p>
-                <span className="text-primary font-bold">98%</span>
+          {/* Stats Column */}
+          <div className="flex flex-col gap-8">
+            <div className="glass rounded-[3rem] p-10 border-white/5 flex flex-col justify-center flex-1">
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">Vector Stability</p>
+                <span className="text-primary font-bold text-2xl tracking-tighter">98.4%</span>
               </div>
-              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
-                  animate={{ width: "98%" }}
-                  className="h-full bg-primary" 
+                  animate={{ width: "98.4%" }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="h-full bg-gradient-to-r from-primary to-secondary" 
                 />
               </div>
+              <p className="mt-6 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Signal strength optimal</p>
             </div>
 
-            <div className="glass rounded-[2rem] p-8 border-white/5 flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile?.spotifyConnected ? 'bg-[#1DB954]/10' : 'bg-white/5'}`}>
-                <MusicIcon className={`w-6 h-6 ${profile?.spotifyConnected ? 'text-[#1DB954]' : 'text-muted-foreground'}`} />
+            <div className="glass rounded-[3rem] p-8 border-white/5 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-default group">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${profile?.spotifyConnected ? 'bg-[#1DB954]/10' : 'bg-white/5'}`}>
+                <MusicIcon className={`w-8 h-8 ${profile?.spotifyConnected ? 'text-[#1DB954]' : 'text-muted-foreground'}`} />
               </div>
               <div>
-                <p className="text-lg font-bold">{profile?.spotifyConnected ? "Spotify Linked" : (profile?.music?.genres?.length ? "Manual Profile" : "No Music Sync")}</p>
-                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Profile Enrichment</p>
+                <p className="text-xl font-bold leading-tight">{profile?.spotifyConnected ? "Spotify Linked" : (profile?.music?.genres?.length ? "Manual Profile" : "No Music Sync")}</p>
+                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">Profile Enrichment</p>
               </div>
             </div>
 
-            <div className="glass rounded-[2rem] p-8 border-white/5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center">
-                <Heart className="w-6 h-6 text-pink-500" />
+            <div className="glass rounded-[3rem] p-8 border-white/5 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-default group">
+              <div className="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center transition-all group-hover:scale-110">
+                <Heart className="w-8 h-8 text-pink-500" />
               </div>
               <div>
-                <p className="text-lg font-bold">Semantic Mode</p>
-                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Active Discovery</p>
+                <p className="text-xl font-bold leading-tight">Semantic Mode</p>
+                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">Active Discovery</p>
               </div>
             </div>
           </div>
