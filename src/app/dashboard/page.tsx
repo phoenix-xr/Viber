@@ -3,22 +3,17 @@
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Heart, MessageSquare, Zap, Activity, User, Settings, Sparkles, TrendingUp } from "lucide-react";
-import Image from "next/image";
+import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { useUser, useFirestore, useDoc } from "@/firebase";
+import { useUser, useDoc } from "@/firebase";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { doc } from "firebase/firestore";
 
 export default function DashboardPage() {
-  const { user, loading: authLoading } = useUser();
-  const db = useFirestore();
+  const { user, loading: authLoading, logout } = useUser();
   const router = useRouter();
 
-  const userDocRef = useMemo(() => (user && db ? doc(db, "users", user.uid) : null), [user, db]);
-  const { data: profile, loading: profileLoading } = useDoc(userDocRef);
+  const { data: profile, loading: profileLoading } = useDoc(user ? { collection: 'users', id: user.uid } : null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -47,9 +42,8 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Your Soul Vector is active and finding new connections.</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="rounded-xl glass border-white/10 gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
+            <Button variant="outline" className="rounded-xl glass border-white/10 gap-2" onClick={logout}>
+              Sign Out
             </Button>
             <Link href="/onboarding">
               <Button className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground gap-2">
@@ -68,7 +62,6 @@ export default function DashboardPage() {
                 Soul Identity Live
               </div>
               <h2 className="text-4xl font-headline font-bold mb-4">Your essence is <br /><span className="text-primary">evolving daily</span>.</h2>
-              <p className="text-muted-foreground max-w-sm">Our AI detected a refined semantic resonance based on your recent activity.</p>
               
               <div className="mt-6 p-4 glass bg-white/5 rounded-2xl border-white/5 max-w-md">
                 <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Soul Vector Essence</h4>
@@ -104,8 +97,8 @@ export default function DashboardPage() {
                 <Heart className="w-6 h-6 text-secondary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">12</p>
-                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Active Likes</p>
+                <p className="text-2xl font-bold">Local</p>
+                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Active Mode</p>
               </div>
             </div>
 
@@ -114,8 +107,8 @@ export default function DashboardPage() {
                 <MessageSquare className="w-6 h-6 text-pink-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold">2</p>
-                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest">New Messages</p>
+                <p className="text-2xl font-bold">Live</p>
+                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Soul Sync</p>
               </div>
             </div>
           </div>

@@ -5,64 +5,52 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mail, Lock, Github, Chrome } from "lucide-react";
+import { Sparkles, Mail, Lock, Chrome } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { useAuth, useFirestore, useUser } from "@/firebase";
+import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
-  const auth = useAuth();
-  const db = useFirestore();
+  const { login } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const checkOnboardingStatus = async (uid: string) => {
-    if (!db) return;
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (userDoc.exists() && userDoc.data().onboarded) {
-      router.push("/dashboard");
-    } else {
-      router.push("/onboarding");
-    }
-  };
-
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) return;
     setLoading(true);
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      await checkOnboardingStatus(cred.user.uid);
-    } catch (error: any) {
+    
+    // Simulate API delay
+    setTimeout(() => {
+      const mockUser = {
+        uid: "user_" + Math.random().toString(36).substr(2, 5),
+        email,
+        name: email.split('@')[0],
+      };
+      login(mockUser);
       toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message,
+        title: "Welcome back!",
+        description: "Successfully logged into your soul vector.",
       });
-    } finally {
-      setLoading(false);
-    }
+      router.push("/dashboard");
+    }, 1000);
   };
 
-  const handleGoogleSignIn = async () => {
-    if (!auth) return;
-    try {
-      const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-      await checkOnboardingStatus(cred.user.uid);
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message,
-      });
-    }
+  const handleSocialLogin = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const mockUser = {
+        uid: "user_google_" + Math.random().toString(36).substr(2, 5),
+        email: "google.user@example.com",
+        name: "Google Explorer",
+      };
+      login(mockUser);
+      router.push("/onboarding");
+    }, 800);
   };
 
   return (
@@ -132,7 +120,7 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            <Button variant="outline" className="h-12 rounded-xl glass border-white/10 gap-2" onClick={handleGoogleSignIn}>
+            <Button variant="outline" className="h-12 rounded-xl glass border-white/10 gap-2" onClick={handleSocialLogin}>
               <Chrome className="w-4 h-4" /> Google
             </Button>
           </div>

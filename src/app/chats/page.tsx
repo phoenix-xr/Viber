@@ -2,9 +2,8 @@
 "use client";
 
 import { Navbar } from "@/components/shared/navbar";
-import { useUser, useFirestore, useCollection } from "@/firebase";
-import { collection, query, where, orderBy } from "firebase/firestore";
-import { MessageSquare, User, Sparkles, Loader2 } from "lucide-react";
+import { useUser, useCollection } from "@/firebase";
+import { MessageSquare, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -12,7 +11,6 @@ import { useRouter } from "next/navigation";
 
 export default function ChatsPage() {
   const { user, loading: authLoading } = useUser();
-  const db = useFirestore();
   const router = useRouter();
 
   useEffect(() => {
@@ -21,27 +19,20 @@ export default function ChatsPage() {
     }
   }, [user, authLoading, router]);
 
-  // For MVP, we define "chats" as people the user has liked
-  const likedQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return query(collection(db, "users", user.uid, "interactions"), where("type", "==", "like"));
-  }, [db, user]);
+  // Mock interaction query for chats
+  const { data: interactions, loading: interactionsLoading } = useCollection({
+    collection: 'interactions',
+    where: ['type', '==', 'like']
+  });
 
-  const { data: likedInteractions, loading: interactionsLoading } = useCollection(likedQuery);
-
-  const usersQuery = useMemo(() => {
-    if (!db) return null;
-    return query(collection(db, "users"), where("onboarded", "==", true));
-  }, [db]);
-
-  const { data: allUsers, loading: usersLoading } = useCollection(usersQuery);
+  const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
 
   const activeChats = useMemo(() => {
-    if (!likedInteractions || !allUsers || !user) return [];
-    const likedIds = likedInteractions.map(i => i.targetUserId);
+    if (!interactions || !allUsers || !user) return [];
     
+    // In our mock logic, any 'like' interaction by the user is a potential chat
     return allUsers
-      .filter(u => likedIds.includes(u.id))
+      .filter(u => interactions.some(i => i.targetUserId === u.id))
       .map(u => ({
         id: [user.uid, u.id].sort().join("_"),
         otherUserName: u.name,
@@ -49,7 +40,7 @@ export default function ChatsPage() {
         time: "Just matched",
         otherUserId: u.id
       }));
-  }, [likedInteractions, allUsers, user]);
+  }, [interactions, allUsers, user]);
 
   if (authLoading || (interactionsLoading && usersLoading)) {
     return (

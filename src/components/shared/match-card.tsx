@@ -8,8 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, X, MapPin, Bookmark } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFirestore, useUser } from "@/firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { mockDb, useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 
 interface Match {
@@ -24,18 +23,19 @@ interface Match {
 
 export function MatchCard({ match }: { match: Match }) {
   const { user } = useUser();
-  const db = useFirestore();
   const { toast } = useToast();
 
   const handleAction = (type: 'like' | 'pass' | 'save') => {
-    if (!user || !db) return;
+    if (!user) {
+      toast({ title: "Auth required", description: "Please log in to interact." });
+      return;
+    }
     
-    const docRef = doc(db, "users", user.uid, "interactions", match.id);
-    setDoc(docRef, {
+    mockDb.add("interactions", {
       type,
       targetUserId: match.id,
-      timestamp: serverTimestamp()
-    }, { merge: true });
+      timestamp: new Date().toISOString()
+    });
 
     toast({
       title: type.charAt(0).toUpperCase() + type.slice(1) + "d!",
@@ -89,14 +89,11 @@ export function MatchCard({ match }: { match: Match }) {
 
       <div className="p-6 flex flex-col flex-1">
         <div className="flex flex-wrap gap-2 mb-6">
-          {match.interests.slice(0, 3).map((interest) => (
+          {match.interests?.slice(0, 3).map((interest) => (
             <Badge key={interest} variant="secondary" className="bg-white/5 border-none text-[10px] py-0 px-2 uppercase font-bold tracking-wider">
               {interest}
             </Badge>
           ))}
-          {match.interests.length > 3 && (
-            <span className="text-[10px] text-muted-foreground self-center">+{match.interests.length - 3} more</span>
-          )}
         </div>
 
         <div className="mt-auto grid grid-cols-2 gap-3">

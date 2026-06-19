@@ -6,19 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Menu, X, LogOut, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser, useAuth } from "@/firebase";
-import { signOut } from "firebase/auth";
+import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
-  const auth = useAuth();
+  const { user, logout } = useUser();
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    if (!auth) return;
-    await signOut(auth);
+  const handleSignOut = () => {
+    logout();
     router.push("/");
   };
 

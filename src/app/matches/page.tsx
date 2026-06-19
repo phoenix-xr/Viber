@@ -1,21 +1,18 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/shared/navbar";
 import { MatchCard } from "@/components/shared/match-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, Sparkles, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useUser, useFirestore, useCollection } from "@/firebase";
-import { collection, query, where, limit } from "firebase/firestore";
+import { useUser, useCollection } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function MatchesPage() {
   const { user, loading: authLoading } = useUser();
-  const db = useFirestore();
   const router = useRouter();
   const [search, setSearch] = useState("");
 
@@ -25,30 +22,30 @@ export default function MatchesPage() {
     }
   }, [user, authLoading, router]);
 
-  const usersQuery = useMemo(() => {
-    if (!db || !user) return null;
-    // Fetch other users to match with
-    return query(collection(db, "users"), where("onboarded", "==", true), limit(20));
-  }, [db, user]);
-
-  const { data: allUsers, loading: usersLoading } = useCollection(usersQuery);
+  // Fetch mock users
+  const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
 
   const filteredMatches = useMemo(() => {
     if (!allUsers || !user) return [];
-    return allUsers
-      .filter(u => u.id !== user.uid) // Don't show self
+    
+    // Default mock profiles if none exist in local storage yet
+    const baseProfiles = allUsers.length > 0 ? allUsers : [
+      { id: '1', name: 'Alex', age: 26, city: 'London', interests: ['AI', 'Jazz'], onboarded: true },
+      { id: '2', name: 'Sam', age: 29, city: 'NYC', interests: ['Coding', 'Music'], onboarded: true },
+      { id: '3', name: 'Jordan', age: 24, city: 'Berlin', interests: ['Art', 'Philosophy'], onboarded: true },
+      { id: '4', name: 'Casey', age: 31, city: 'Tokyo', interests: ['Gaming', 'Photography'], onboarded: true },
+    ];
+
+    return baseProfiles
+      .filter(u => u.id !== user.uid)
       .filter(m => 
         (m.name?.toLowerCase() || "").includes(search.toLowerCase()) || 
         (m.city?.toLowerCase() || "").includes(search.toLowerCase()) ||
         (m.interests || []).some((i: string) => i.toLowerCase().includes(search.toLowerCase()))
       )
       .map(u => ({
-        id: u.id,
-        name: u.name,
-        age: u.age,
-        city: u.city,
-        compatibilityScore: Math.floor(Math.random() * 20) + 80, // Simulation of score for now
-        interests: u.interests || [],
+        ...u,
+        compatibilityScore: Math.floor(Math.random() * 20) + 80,
         imageUrl: `https://picsum.photos/seed/${u.id}/500/700`,
       }));
   }, [allUsers, user, search]);
@@ -89,20 +86,9 @@ export default function MatchesPage() {
             <SlidersHorizontal className="w-4 h-4" />
             Filters
           </Button>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">Sort by:</span>
-            <select className="bg-white/5 border border-white/10 rounded-xl h-12 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
-              <option>Compatibility Score</option>
-              <option>Distance</option>
-              <option>Recently Active</option>
-            </select>
-          </div>
         </div>
 
-        <motion.div 
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredMatches.map((match) => (
             <MatchCard key={match.id} match={match} />
           ))}
@@ -110,7 +96,7 @@ export default function MatchesPage() {
 
         {filteredMatches.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No matches found matching your search. Try broadening your criteria.</p>
+            <p className="text-muted-foreground">No matches found. Try refining your profile or search.</p>
           </div>
         )}
       </div>

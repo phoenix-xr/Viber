@@ -3,16 +3,14 @@
 
 import { Navbar } from "@/components/shared/navbar";
 import { MatchCard } from "@/components/shared/match-card";
-import { useCollection, useUser, useFirestore } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+import { useCollection, useUser } from "@/firebase";
 import { motion } from "framer-motion";
-import { Sparkles, Bookmark, Loader2 } from "lucide-react";
+import { Bookmark, Loader2 } from "lucide-react";
 import { useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SavedMatchesPage() {
   const { user, loading: authLoading } = useUser();
-  const db = useFirestore();
   const router = useRouter();
 
   useEffect(() => {
@@ -21,20 +19,13 @@ export default function SavedMatchesPage() {
     }
   }, [user, authLoading, router]);
 
-  const savedQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return query(collection(db, "users", user.uid, "interactions"), where("type", "==", "save"));
-  }, [db, user]);
+  // Fetch interactions of type 'save'
+  const { data: savedInteractions, loading: interactionsLoading } = useCollection({
+    collection: 'interactions',
+    where: ['type', '==', 'save']
+  });
 
-  const { data: savedInteractions, loading: interactionsLoading } = useCollection(savedQuery);
-
-  // We fetch all onboarded users and filter locally for the saved ones for MVP simplicity
-  const usersQuery = useMemo(() => {
-    if (!db) return null;
-    return query(collection(db, "users"), where("onboarded", "==", true));
-  }, [db]);
-
-  const { data: allUsers, loading: usersLoading } = useCollection(usersQuery);
+  const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
 
   const filteredMatches = useMemo(() => {
     if (!savedInteractions || !allUsers) return [];
@@ -43,12 +34,8 @@ export default function SavedMatchesPage() {
     return allUsers
       .filter(u => savedIds.includes(u.id))
       .map(u => ({
-        id: u.id,
-        name: u.name,
-        age: u.age,
-        city: u.city,
-        compatibilityScore: 90, // Static for saved
-        interests: u.interests || [],
+        ...u,
+        compatibilityScore: 90,
         imageUrl: `https://picsum.photos/seed/${u.id}/500/700`,
       }));
   }, [savedInteractions, allUsers]);
@@ -77,7 +64,7 @@ export default function SavedMatchesPage() {
 
         {filteredMatches.length > 0 ? (
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredMatches.map((match) => (
+            {filteredMatches.map((match: any) => (
               <MatchCard key={match.id} match={match} />
             ))}
           </motion.div>

@@ -3,8 +3,7 @@
 
 import { useParams } from "next/navigation";
 import { Navbar } from "@/components/shared/navbar";
-import { useUser, useFirestore, useCollection } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
+import { useUser, useCollection, mockDb } from "@/firebase";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Send, User, ChevronLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,16 +14,14 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatDetailPage() {
   const { id } = useParams();
   const { user } = useUser();
-  const db = useFirestore();
   const [inputText, setInputText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const messagesQuery = useMemo(() => {
-    if (!db || !id) return null;
-    return query(collection(db, "chats", id as string, "messages"), orderBy("timestamp", "asc"));
-  }, [db, id]);
-
-  const { data: messages, loading } = useCollection(messagesQuery);
+  // Use mock collection for messages
+  const { data: messages, loading } = useCollection({
+    collection: `chat_messages_${id}`,
+    // orderBy: 'timestamp' is simulated in useCollection currently by fetching everything
+  });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -32,17 +29,17 @@ export default function ChatDetailPage() {
     }
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim() || !user || !db || !id) return;
+    if (!inputText.trim() || !user || !id) return;
 
     const text = inputText;
     setInputText("");
 
-    await addDoc(collection(db, "chats", id as string, "messages"), {
+    mockDb.add(`chat_messages_${id}`, {
       text,
       senderId: user.uid,
-      timestamp: serverTimestamp(),
+      timestamp: new Date().toISOString(),
     });
   };
 
@@ -83,7 +80,7 @@ export default function ChatDetailPage() {
           )}
           
           <AnimatePresence>
-            {messages?.map((msg) => (
+            {messages?.map((msg: any) => (
               <motion.div
                 key={msg.id}
                 initial={{ opacity: 0, y: 10 }}

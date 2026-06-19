@@ -5,16 +5,15 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mail, Lock, Github, Chrome, User } from "lucide-react";
+import { Sparkles, Mail, Lock, User, Chrome } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { useAuth } from "@/firebase";
+import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SignupPage() {
-  const auth = useAuth();
+  const { login } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
@@ -23,34 +22,35 @@ export default function SignupPage() {
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) return;
     setLoading(true);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/onboarding");
-    } catch (error: any) {
+    
+    // Simulate delay
+    setTimeout(() => {
+      const mockUser = {
+        uid: "user_" + Math.random().toString(36).substr(2, 5),
+        email,
+        name: email.split('@')[0],
+      };
+      login(mockUser);
       toast({
-        variant: "destructive",
-        title: "Signup failed",
-        description: error.message,
+        title: "Account created!",
+        description: "Let's set up your soul vector.",
       });
-    } finally {
-      setLoading(false);
-    }
+      router.push("/onboarding");
+    }, 1000);
   };
 
-  const handleGoogleSignIn = async () => {
-    if (!auth) return;
-    try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+  const handleSocialSignup = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const mockUser = {
+        uid: "user_google_" + Math.random().toString(36).substr(2, 5),
+        email: "google.user@example.com",
+        name: "New Explorer",
+      };
+      login(mockUser);
       router.push("/onboarding");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message,
-      });
-    }
+    }, 800);
   };
 
   return (
@@ -117,7 +117,7 @@ export default function SignupPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            <Button variant="outline" className="h-12 rounded-xl glass border-white/10 gap-2" onClick={handleGoogleSignIn}>
+            <Button variant="outline" className="h-12 rounded-xl glass border-white/10 gap-2" onClick={handleSocialSignup}>
               <Chrome className="w-4 h-4" /> Google
             </Button>
           </div>
