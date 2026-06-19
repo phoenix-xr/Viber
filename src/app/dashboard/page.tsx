@@ -3,7 +3,7 @@
 
 import { Navbar } from "@/components/shared/navbar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw } from "lucide-react";
+import { Heart, MessageSquare, Zap, Activity, Settings, Sparkles, TrendingUp, Music as MusicIcon, RefreshCw, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc } from "@/firebase";
 import { useEffect, useState } from "react";
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="md:col-span-2 glass rounded-[2rem] p-8 border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[400px]">
+          <div className="md:col-span-2 glass rounded-[2rem] p-8 border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[450px]">
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest mb-4">
                 <TrendingUp className="w-3 h-3" />
@@ -72,21 +72,22 @@ export default function DashboardPage() {
               
               <div className="mt-6 p-6 glass bg-white/5 rounded-2xl border-white/5 max-w-lg">
                 <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Soul Vector Essence</h4>
-                <p className="text-sm italic leading-relaxed text-muted-foreground">"{profile?.soulVector || "Still refining your unique signal. Complete onboarding to see your AI-generated essence."}"</p>
+                <p className="text-sm italic leading-relaxed text-muted-foreground">"{profile?.soulVector || "Refining your unique signal. Complete onboarding to see your AI-generated essence."}"</p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-4 relative z-10 mt-8">
               <Link href="/matches">
-                <Button size="lg" className="rounded-xl bg-white text-black hover:bg-white/90 font-bold px-8 h-14">
+                <Button size="lg" className="rounded-xl bg-white text-black hover:bg-white/90 font-bold px-8 h-14 group">
                   Find Resonance
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               {!profile?.spotifyConnected && (
                 <Link href="/onboarding">
                   <Button size="lg" variant="outline" className="rounded-xl glass border-[#1DB954]/30 hover:bg-[#1DB954]/5 text-[#1DB954] font-bold px-8 h-14 gap-2">
                     <MusicIcon className="w-5 h-5" />
-                    Enrich with Spotify
+                    Enrich Profile
                   </Button>
                 </Link>
               )}
@@ -99,7 +100,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            <div className="glass rounded-[2rem] p-6 border-white/5 flex flex-col justify-center">
+            <div className="glass rounded-[2rem] p-8 border-white/5 flex flex-col justify-center">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-muted-foreground text-sm font-medium">Vector Stability</p>
                 <span className="text-primary font-bold">98%</span>
@@ -113,17 +114,17 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="glass rounded-[2rem] p-6 border-white/5 flex items-center gap-4">
+            <div className="glass rounded-[2rem] p-8 border-white/5 flex items-center gap-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile?.spotifyConnected ? 'bg-[#1DB954]/10' : 'bg-white/5'}`}>
                 <MusicIcon className={`w-6 h-6 ${profile?.spotifyConnected ? 'text-[#1DB954]' : 'text-muted-foreground'}`} />
               </div>
               <div>
-                <p className="text-lg font-bold">{profile?.spotifyConnected ? "Spotify Linked" : "No Music Sync"}</p>
+                <p className="text-lg font-bold">{profile?.spotifyConnected ? "Spotify Linked" : (profile?.music?.genres?.length ? "Manual Profile" : "No Music Sync")}</p>
                 <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">Profile Enrichment</p>
               </div>
             </div>
 
-            <div className="glass rounded-[2rem] p-6 border-white/5 flex items-center gap-4">
+            <div className="glass rounded-[2rem] p-8 border-white/5 flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center">
                 <Heart className="w-6 h-6 text-pink-500" />
               </div>
