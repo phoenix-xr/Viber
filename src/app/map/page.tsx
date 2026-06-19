@@ -7,60 +7,88 @@ import { MatchCard } from "@/components/shared/match-card";
 import { useUser, useCollection, useDoc } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map as MapIcon, Navigation, Search, Loader2, Info, Sparkles, MapPin, Globe, Zap, Crosshair } from "lucide-react";
+import { Map as MapIcon, Navigation, Search, Loader2, Info, Sparkles, MapPin, Globe, Zap, Crosshair, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// A stylized Radar component to represent the "actual map" of resonance
+// A high-fidelity Tactical Radar component
 function ResonanceRadar({ matches, userCity }: { matches: any[], userCity: string }) {
+  const [scanRotation, setScanRotation] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setScanRotation(prev => (prev + 2) % 360);
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="relative w-full aspect-video md:aspect-[21/9] glass rounded-[3rem] border-white/10 overflow-hidden bg-black/40 mb-12 group">
-      {/* Grid Background */}
-      <div className="absolute inset-0 opacity-20" 
-           style={{ backgroundImage: 'radial-gradient(circle, #9F75FF 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+    <div className="relative w-full aspect-video md:aspect-[21/9] glass rounded-[3rem] border-white/10 overflow-hidden bg-black/60 mb-12 group shadow-2xl">
+      {/* Topology / Grid Background */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none" 
+           style={{ 
+             backgroundImage: `linear-gradient(#primary 1px, transparent 1px), linear-gradient(90deg, #primary 1px, transparent 1px)`,
+             backgroundSize: '100px 100px',
+             borderColor: 'rgba(159,117,255,0.1)'
+           }} 
+      />
       
+      {/* Scanning Sweep Line */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          background: `conic-gradient(from ${scanRotation}deg, transparent, rgba(159,117,255,0.2) 10%, transparent 20%)`,
+        }}
+      />
+      
+      {/* Tactical Crosshair Sweep */}
+      <div 
+        className="absolute top-1/2 left-1/2 w-full h-[1px] bg-primary/20 pointer-events-none z-10"
+        style={{ transform: `translate(-50%, -50%) rotate(${scanRotation}deg)` }}
+      />
+
       {/* Radar Rings */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {[1, 2, 3].map((ring) => (
-          <motion.div
+        {[0.5, 1, 1.5, 2, 2.5].map((ring) => (
+          <div
             key={ring}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1.2, opacity: [0, 0.2, 0] }}
-            transition={{ duration: 4, repeat: Infinity, delay: ring * 1.3 }}
-            className="absolute border border-primary/40 rounded-full"
-            style={{ width: `${ring * 30}%`, height: `${ring * 60}%` }}
+            className="absolute border border-primary/10 rounded-full"
+            style={{ width: `${ring * 20}%`, height: `${ring * 40}%` }}
           />
         ))}
       </div>
 
       {/* Map Content */}
-      <div className="relative z-10 w-full h-full p-12 flex items-center justify-center">
-        <div className="text-center mb-8 absolute top-8 left-1/2 -translate-x-1/2">
+      <div className="relative z-20 w-full h-full p-12 flex items-center justify-center">
+        <div className="text-center mb-8 absolute top-8 left-8 text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
-            <Zap className="w-3 h-3" />
-            Live Resonance Scanning
+            <Activity className="w-3 h-3 animate-pulse" />
+            Signal Analysis Active
           </div>
-          <h3 className="text-sm font-bold opacity-60 uppercase tracking-tighter">Scanning for signals near {userCity}</h3>
+          <h3 className="text-xl font-headline font-bold text-white/90">Sector: {userCity.toUpperCase()}</h3>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">Coords: 51.5074° N, 0.1278° W</p>
         </div>
 
         <TooltipProvider>
           <div className="relative w-full h-full">
             {/* User Center Point */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-              <div className="w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(159,117,255,0.8)] animate-pulse" />
-              <div className="absolute -inset-4 border border-primary/20 rounded-full animate-spin-slow" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
+              <div className="w-6 h-6 bg-primary rounded-full shadow-[0_0_30px_rgba(159,117,255,1)] animate-pulse flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full" />
+              </div>
+              <div className="absolute -inset-8 border border-primary/10 rounded-full animate-spin-slow" />
+              <div className="absolute -inset-16 border border-white/5 rounded-full animate-spin-slow reverse" />
             </div>
 
-            {/* Match Points */}
+            {/* Match Points (Radar Blips) */}
             {matches.map((match, idx) => {
-              // Generate semi-random positions based on city vs other
               const isNearby = match.city === userCity;
               const angle = (idx * (360 / matches.length)) * (Math.PI / 180);
-              const distance = isNearby ? (20 + Math.random() * 20) : (60 + Math.random() * 20);
+              const distance = isNearby ? (15 + Math.random() * 15) : (55 + Math.random() * 25);
               
               return (
-                <Tooltip key={match.id}>
+                <Tooltip key={match.id} delayDuration={0}>
                   <TooltipTrigger asChild>
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
@@ -70,22 +98,32 @@ function ResonanceRadar({ matches, userCity }: { matches: any[], userCity: strin
                         x: Math.cos(angle) * distance + '%',
                         y: Math.sin(angle) * distance + '%',
                       }}
-                      whileHover={{ scale: 1.5, zIndex: 30 }}
-                      className="absolute top-1/2 left-1/2 cursor-pointer"
+                      whileHover={{ scale: 1.4, zIndex: 50 }}
+                      className="absolute top-1/2 left-1/2 cursor-pointer group/blip"
                     >
                       <Link href={`/matches/${match.id}`}>
-                        <div className={`w-3 h-3 rounded-full border-2 border-background shadow-lg transition-colors ${isNearby ? 'bg-primary' : 'bg-secondary'}`} />
+                        <div className="relative">
+                          {/* Pulse Effect */}
+                          <div className={`absolute -inset-2 rounded-full animate-ping opacity-20 ${isNearby ? 'bg-primary' : 'bg-secondary'}`} />
+                          <div className={`w-4 h-4 rounded-full border-2 border-white/20 shadow-lg transition-all ${isNearby ? 'bg-primary' : 'bg-secondary'} group-hover/blip:shadow-primary/50 group-hover/blip:scale-110`} />
+                        </div>
                       </Link>
                     </motion.div>
                   </TooltipTrigger>
-                  <TooltipContent className="glass border-white/10 p-3 rounded-xl bg-black/80 backdrop-blur-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg overflow-hidden border border-white/10">
+                  <TooltipContent className="glass border-white/10 p-4 rounded-2xl bg-black/90 backdrop-blur-2xl shadow-2xl min-w-[200px]">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shadow-inner">
                         <img src={match.profileImage || match.imageUrl} alt={match.name} className="w-full h-full object-cover" />
                       </div>
-                      <div>
-                        <p className="text-xs font-bold">{match.name}, {match.age}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{match.compatibilityScore}% Match</p>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                           <p className="text-sm font-bold text-white">{match.name}, {match.age}</p>
+                           <span className="text-[10px] font-mono text-primary">{match.compatibilityScore}%</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-3 h-3 text-muted-foreground" />
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{match.city}</p>
+                        </div>
                       </div>
                     </div>
                   </TooltipContent>
@@ -96,21 +134,35 @@ function ResonanceRadar({ matches, userCity }: { matches: any[], userCity: strin
         </TooltipProvider>
       </div>
 
-      {/* Radar Overlay Decorations */}
-      <div className="absolute bottom-8 right-8 text-right font-code text-[10px] text-primary/40 leading-tight hidden md:block">
-        LAT: 51.5074 N<br />
-        LONG: 0.1278 W<br />
-        RESONANCE: ACTIVE
+      {/* Interface Decorations */}
+      <div className="absolute bottom-8 right-8 flex flex-col gap-2 pointer-events-none">
+        <div className="font-mono text-[9px] text-primary/60 text-right">
+          SIGNAL_STRENGTH: OPTIMAL<br />
+          DIMENSIONAL_OFFSET: +0.0042<br />
+          RESONANCE_SCAN: COMPLETE
+        </div>
+        <div className="flex gap-4 mt-2 justify-end">
+          <div className="flex items-center gap-2 text-[8px] font-bold text-primary uppercase tracking-widest">
+            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(159,117,255,0.8)]" />
+            Local Signal
+          </div>
+          <div className="flex items-center gap-2 text-[8px] font-bold text-secondary uppercase tracking-widest">
+            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(84,122,255,0.8)]" />
+            Global Drift
+          </div>
+        </div>
       </div>
-      <div className="absolute top-8 left-8 flex gap-2">
-         <div className="flex items-center gap-1.5 text-[8px] font-bold text-primary uppercase tracking-[0.2em]">
-            <div className="w-2 h-2 rounded-full bg-primary" />
-            Local
-         </div>
-         <div className="flex items-center gap-1.5 text-[8px] font-bold text-secondary uppercase tracking-[0.2em]">
-            <div className="w-2 h-2 rounded-full bg-secondary" />
-            Global
-         </div>
+
+      {/* Scanning HUD bars */}
+      <div className="absolute top-8 right-8 flex gap-1 items-end pointer-events-none opacity-40">
+        {[4, 7, 5, 9, 3, 6, 8].map((h, i) => (
+          <motion.div 
+            key={i}
+            animate={{ height: [h*2, h*4, h*2] }}
+            transition={{ duration: 1 + Math.random(), repeat: Infinity }}
+            className="w-1 bg-primary/40 rounded-t-sm"
+          />
+        ))}
       </div>
     </div>
   );
@@ -120,16 +172,13 @@ export default function MapPage() {
   const { user, loading: authLoading } = useUser();
   const router = useRouter();
 
-  // Fetch current user's profile to know their city
   const profileQuery = useMemo(() => 
     user ? { collection: 'users', id: user.uid } : null
   , [user?.uid]);
   const { data: profile } = useDoc(profileQuery);
 
-  // Fetch all users
   const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
   
-  // Fetch interactions to exclude passed/liked users
   const { data: interactions } = useCollection(
     user ? { collection: 'interactions', where: ['userId', '==', user.uid] } : null
   );
@@ -184,28 +233,28 @@ export default function MapPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
               <Crosshair className="w-3 h-3" />
-              <span>Vector Mapping</span>
+              <span>Vector Mapping Interface</span>
             </div>
-            <h1 className="font-headline text-5xl font-bold mb-4 tracking-tight">Resonance Map</h1>
-            <div className="flex items-center gap-3 glass py-2 px-4 rounded-full border-white/10 w-fit">
+            <h1 className="font-headline text-5xl font-bold mb-4 tracking-tight">Geographic Resonance</h1>
+            <div className="flex items-center gap-3 glass py-2.5 px-6 rounded-full border-white/10 w-fit shadow-xl">
               <MapPin className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Scanning around <span className="text-primary font-bold">{userCity}</span></span>
+              <span className="text-sm font-medium">Stationed at <span className="text-primary font-bold">{userCity}</span></span>
             </div>
           </div>
           <div className="flex gap-3">
-             <Button variant="outline" className="rounded-2xl glass border-white/10 h-12 gap-2">
-                <Search className="w-4 h-4" /> Expand Radius
+             <Button variant="outline" className="rounded-2xl glass border-white/10 h-14 gap-3 px-8 font-bold uppercase tracking-widest text-xs">
+                <Search className="w-4 h-4" /> Expand Sensor Radius
              </Button>
           </div>
         </header>
 
-        {/* The Actual "Map" Visualization */}
+        {/* The Tactical Radar Visualization */}
         <ResonanceRadar matches={allFilteredMatches} userCity={userCity} />
 
         <section className="mb-16">
           <div className="flex items-center gap-2 mb-8">
             <Sparkles className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-headline font-bold">Resonating Near You</h2>
+            <h2 className="text-2xl font-headline font-bold">Local Proximity Signals</h2>
           </div>
           
           {nearbyMatches.length > 0 ? (
@@ -228,8 +277,8 @@ export default function MapPage() {
           ) : (
             <div className="text-center py-20 glass rounded-[3rem] border-white/5 bg-white/5">
               <Navigation className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-              <p className="text-muted-foreground font-medium">No one in {userCity} matches your current filters.</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Try expanding your search or updating your Soul Vector.</p>
+              <p className="text-muted-foreground font-medium">No signals detected in {userCity} matching your current vector.</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Try refining your Soul Vector or broadening your interests.</p>
             </div>
           )}
         </section>
@@ -237,7 +286,7 @@ export default function MapPage() {
         <section>
           <div className="flex items-center gap-2 mb-8">
             <Globe className="w-5 h-5 text-secondary" />
-            <h2 className="text-2xl font-headline font-bold">Global Vibrations</h2>
+            <h2 className="text-2xl font-headline font-bold">Global Resonance Feed</h2>
           </div>
           
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -252,8 +301,9 @@ export default function MapPage() {
                   layout
                 >
                   <MatchCard match={match} />
-                  <div className="mt-2 text-[10px] uppercase font-bold tracking-widest text-muted-foreground px-4">
-                    Residing in {match.city}
+                  <div className="mt-2 text-[10px] uppercase font-bold tracking-widest text-muted-foreground px-4 flex items-center gap-2">
+                    <Globe className="w-3 h-3 text-secondary/60" />
+                    Transmitting from {match.city}
                   </div>
                 </motion.div>
               ))}
@@ -264,12 +314,12 @@ export default function MapPage() {
         <div className="mt-20 p-12 glass rounded-[3rem] border-white/5 relative overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 text-center">
           <div className="relative z-10">
             <Info className="w-10 h-10 text-primary mx-auto mb-6" />
-            <h3 className="text-2xl font-bold mb-4 font-headline">Geographic vs. Semantic Map</h3>
-            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              While the list shows geographic groupings, our Resonance Radar plots users based on the high-dimensional proximity of your Soul Vectors. The closer they appear to the center, the higher the cognitive alignment.
+            <h3 className="text-3xl font-bold mb-4 font-headline">The Resonance Radar</h3>
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-lg">
+              Unlike traditional maps based purely on GPS, our Tactical Radar plots users in a combined Geosemantic Space. The Y-axis represents physical distance, while the X-axis represents your shared cognitive harmonic. Closer to the center means they are both physically and spiritually near.
             </p>
           </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/20 rounded-full blur-[120px] opacity-20 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 rounded-full blur-[120px] opacity-10 pointer-events-none" />
         </div>
       </div>
     </div>
