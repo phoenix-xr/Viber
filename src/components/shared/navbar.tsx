@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark, LayoutDashboard, Globe, Map as MapIcon } from "lucide-react";
+import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark, LayoutDashboard, Globe } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/firebase";
@@ -23,7 +22,6 @@ export function Navbar() {
   const navLinks = [
     { name: "Home", href: "/", icon: Globe },
     { name: "Matches", href: "/matches", icon: Heart },
-    { name: "Map", href: "/map", icon: MapIcon },
     { name: "Dashboard", href: "/dashboard", auth: true, icon: LayoutDashboard },
     { name: "Saved", href: "/saved", auth: true, icon: Bookmark },
     { name: "Chats", href: "/chats", auth: true, icon: MessageSquare },
