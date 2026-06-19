@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -16,7 +15,6 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background selection:bg-primary/30">
       <Navbar />
       
-      {/* Hero Section */}
       <section className="relative pt-48 pb-32 px-4 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div
@@ -68,14 +66,12 @@ export default function LandingPage() {
           </motion.div>
         </div>
 
-        {/* Animated Background Elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-[800px] pointer-events-none opacity-40">
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[140px] animate-pulse-slow" />
           <div className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] bg-secondary/20 rounded-full blur-[160px] animate-pulse-slow delay-1000" />
         </div>
       </section>
 
-      {/* Feature Grid */}
       <section className="py-32 px-4 relative border-t border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">

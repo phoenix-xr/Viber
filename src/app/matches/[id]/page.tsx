@@ -6,8 +6,7 @@ import { CompatibilityRing } from "@/components/ui/compatibility-ring";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Heart, X, MessageSquare, MapPin, Sparkles, Brain, Music, UserCheck, Share2, Loader2, User } from "lucide-react";
-import Image from "next/image";
+import { Heart, X, MessageSquare, MapPin, Sparkles, Brain, Music, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useDoc, mockDb } from "@/firebase";
 import { useMemo, useEffect } from "react";
@@ -19,7 +18,6 @@ export default function MatchDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Memoize query to prevent loops
   const matchQuery = useMemo(() => 
     id ? { collection: 'users', id: id as string } : null
   , [id]);
@@ -202,14 +200,12 @@ export default function MatchDetailPage() {
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Top Genres</h4>
                     <div className="flex flex-wrap gap-2">
                       {match.musicProfile?.genres?.map((g: string) => <Badge key={g} variant="outline" className="border-white/10 text-white/70">{g}</Badge>)}
-                      {match.music?.genres?.map((g: string) => <Badge key={g} variant="outline" className="border-white/10 text-white/70">{g}</Badge>)}
                     </div>
                   </div>
                   <div>
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Favorite Artists</h4>
                     <div className="flex flex-wrap gap-2">
                       {match.musicProfile?.favoriteArtists?.map((a: string) => <Badge key={a} variant="outline" className="border-white/10 text-white/70">{a}</Badge>)}
-                      {match.music?.artists?.map((a: string) => <Badge key={a} variant="outline" className="border-white/10 text-white/70">{a}</Badge>)}
                     </div>
                   </div>
                 </div>

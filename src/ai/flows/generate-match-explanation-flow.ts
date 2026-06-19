@@ -1,11 +1,4 @@
 'use server';
-/**
- * @fileOverview A Genkit flow that generates a semantic-powered explanation for why two users matched, highlighting shared interests, personality traits, and music overlaps.
- *
- * - generateMatchExplanation - A function that handles the match explanation generation process.
- * - GenerateMatchExplanationInput - The input type for the generateMatchExplanation function.
- * - GenerateMatchExplanationOutput - The return type for the generateMatchExplanation function.
- */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -6,7 +5,6 @@ import { CompatibilityRing } from "@/components/ui/compatibility-ring";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MapPin, Bookmark, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { mockDb, useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";

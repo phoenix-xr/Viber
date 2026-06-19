@@ -9,7 +9,6 @@ import {
   Search, 
   Sparkles, 
   Loader2, 
-  X,
   MapPin
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,7 +18,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";

@@ -1,11 +1,10 @@
-
 "use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mail, Lock, User, Chrome } from "lucide-react";
+import { Mail, Lock, User, Chrome } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { useUser } from "@/firebase";
@@ -24,7 +23,6 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate delay
     setTimeout(() => {
       const mockUser = {
         uid: "user_" + Math.random().toString(36).substr(2, 5),

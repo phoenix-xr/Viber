@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -18,21 +17,18 @@ export default function ChatDetailPage() {
   const [inputText, setInputText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Parse the other user's ID from the composite chat ID
   const otherUserId = useMemo(() => {
     if (!id || !user) return null;
     const parts = (id as string).split("_");
     return parts.find(p => p !== user.uid) || null;
   }, [id, user]);
 
-  // Fetch all users to find the name of the person we're chatting with
   const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
   const otherUser = useMemo(() => {
     if (!allUsers || !otherUserId) return null;
     return allUsers.find(u => u.id === otherUserId);
   }, [allUsers, otherUserId]);
 
-  // Fetch messages for this specific chat ID
   const { data: messages, loading: messagesLoading } = useCollection({
     collection: `chat_messages_${id}`,
   });
@@ -76,7 +72,6 @@ export default function ChatDetailPage() {
       <Navbar />
       
       <div className="flex-1 max-w-4xl mx-auto w-full pt-32 pb-6 px-4 flex flex-col overflow-hidden">
-        {/* Chat Header */}
         <div className="glass p-4 rounded-t-3xl border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/chats">
@@ -106,7 +101,6 @@ export default function ChatDetailPage() {
           </div>
         </div>
 
-        {/* Messages Area */}
         <div 
           ref={scrollRef}
           className="flex-1 glass bg-black/20 border-white/5 p-6 overflow-y-auto space-y-4 scroll-smooth"
@@ -143,7 +137,6 @@ export default function ChatDetailPage() {
           )}
         </div>
 
-        {/* Input Area */}
         <div className="glass p-4 rounded-b-3xl border-white/10">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <Input 

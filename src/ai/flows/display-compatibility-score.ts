@@ -1,11 +1,4 @@
 'use server';
-/**
- * @fileOverview A Genkit flow for calculating and displaying compatibility scores between two users.
- *
- * - displayCompatibilityScore - A function that calculates the compatibility score between two user profiles.
- * - DisplayCompatibilityScoreInput - The input type for the displayCompatibilityScore function.
- * - DisplayCompatibilityScoreOutput - The return type for the displayCompatibilityScore function.
- */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';

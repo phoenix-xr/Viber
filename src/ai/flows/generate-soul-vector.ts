@@ -1,12 +1,4 @@
 'use server';
-/**
- * @fileOverview A Genkit flow for generating a unique 'Soul Vector' (neural embedding) and a semantic explanation
- * based on a user's interests, personality, and music taste for the Soulmatter matchmaking platform.
- *
- * - generateSoulVector - A function that handles the soul vector generation process.
- * - GenerateSoulVectorInput - The input type for the generateSoulVector function.
- * - GenerateSoulVectorOutput - The return type for the generateSoulVector function.
- */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';

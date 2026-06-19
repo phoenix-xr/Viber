@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Navbar } from "@/components/shared/navbar";
@@ -19,7 +18,6 @@ export default function SavedMatchesPage() {
     }
   }, [user, authLoading, router]);
 
-  // Fetch interactions of type 'save' created by the current user
   const { data: savedInteractions, loading: interactionsLoading } = useCollection(
     user ? {
       collection: 'interactions',
