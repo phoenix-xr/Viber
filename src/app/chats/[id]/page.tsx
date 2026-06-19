@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/shared/navbar";
 import { useUser, useCollection, mockDb } from "@/firebase";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Send, User, ChevronLeft, Sparkles } from "lucide-react";
+import { Send, User, ChevronLeft, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -13,15 +13,35 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChatDetailPage() {
   const { id } = useParams();
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
+  const router = useRouter();
   const [inputText, setInputText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Use mock collection for messages
-  const { data: messages, loading } = useCollection({
+  // Parse the other user's ID from the composite chat ID
+  const otherUserId = useMemo(() => {
+    if (!id || !user) return null;
+    const parts = (id as string).split("_");
+    return parts.find(p => p !== user.uid) || null;
+  }, [id, user]);
+
+  // Fetch all users to find the name of the person we're chatting with
+  const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
+  const otherUser = useMemo(() => {
+    if (!allUsers || !otherUserId) return null;
+    return allUsers.find(u => u.id === otherUserId);
+  }, [allUsers, otherUserId]);
+
+  // Fetch messages for this specific chat ID
+  const { data: messages, loading: messagesLoading } = useCollection({
     collection: `chat_messages_${id}`,
-    // orderBy: 'timestamp' is simulated in useCollection currently by fetching everything
   });
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -43,6 +63,14 @@ export default function ChatDetailPage() {
     });
   };
 
+  if (authLoading || usersLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col">
       <Navbar />
@@ -57,11 +85,19 @@ export default function ChatDetailPage() {
               </Button>
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center">
-                <User className="w-5 h-5 text-muted-foreground" />
+              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center relative overflow-hidden">
+                {otherUser ? (
+                   <img 
+                    src={`https://picsum.photos/seed/${otherUserId}/200/200`} 
+                    alt={otherUser.name}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-muted-foreground" />
+                )}
               </div>
               <div>
-                <h3 className="font-bold">Match Connection</h3>
+                <h3 className="font-bold">{otherUser?.name || "Match Connection"}</h3>
                 <span className="text-[10px] text-primary uppercase tracking-widest font-bold">Online</span>
               </div>
             </div>
@@ -73,13 +109,13 @@ export default function ChatDetailPage() {
           ref={scrollRef}
           className="flex-1 glass bg-black/20 border-white/5 p-6 overflow-y-auto space-y-4 scroll-smooth"
         >
-          {loading && (
+          {messagesLoading && (
             <div className="flex justify-center py-10">
               <Sparkles className="w-6 h-6 text-primary animate-pulse" />
             </div>
           )}
           
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {messages?.map((msg: any) => (
               <motion.div
                 key={msg.id}
@@ -98,7 +134,7 @@ export default function ChatDetailPage() {
             ))}
           </AnimatePresence>
           
-          {!loading && (!messages || messages.length === 0) && (
+          {!messagesLoading && (!messages || messages.length === 0) && (
             <div className="text-center py-10">
               <p className="text-muted-foreground text-sm italic">Start the conversation with a semantic spark.</p>
             </div>

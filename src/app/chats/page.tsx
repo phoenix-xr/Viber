@@ -19,11 +19,13 @@ export default function ChatsPage() {
     }
   }, [user, authLoading, router]);
 
-  // Mock interaction query for chats
-  const { data: interactions, loading: interactionsLoading } = useCollection({
-    collection: 'interactions',
-    where: ['type', '==', 'like']
-  });
+  // Fetch interactions created by the user of type 'like'
+  const { data: interactions, loading: interactionsLoading } = useCollection(
+    user ? {
+      collection: 'interactions',
+      where: ['userId', '==', user.uid]
+    } : null
+  );
 
   const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
 
@@ -31,8 +33,13 @@ export default function ChatsPage() {
     if (!interactions || !allUsers || !user) return [];
     
     // In our mock logic, any 'like' interaction by the user is a potential chat
+    // We only show chats for the user's likes
+    const likedTargetIds = interactions
+      .filter(i => i.type === 'like')
+      .map(i => i.targetUserId);
+
     return allUsers
-      .filter(u => interactions.some(i => i.targetUserId === u.id))
+      .filter(u => likedTargetIds.includes(u.id))
       .map(u => ({
         id: [user.uid, u.id].sort().join("_"),
         otherUserName: u.name,

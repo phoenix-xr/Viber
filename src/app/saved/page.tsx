@@ -19,17 +19,22 @@ export default function SavedMatchesPage() {
     }
   }, [user, authLoading, router]);
 
-  // Fetch interactions of type 'save'
-  const { data: savedInteractions, loading: interactionsLoading } = useCollection({
-    collection: 'interactions',
-    where: ['type', '==', 'save']
-  });
+  // Fetch interactions of type 'save' created by the current user
+  const { data: savedInteractions, loading: interactionsLoading } = useCollection(
+    user ? {
+      collection: 'interactions',
+      where: ['userId', '==', user.uid]
+    } : null
+  );
 
   const { data: allUsers, loading: usersLoading } = useCollection({ collection: 'users' });
 
   const filteredMatches = useMemo(() => {
     if (!savedInteractions || !allUsers) return [];
-    const savedIds = savedInteractions.map(i => i.targetUserId);
+    
+    const savedIds = savedInteractions
+      .filter(i => i.type === 'save')
+      .map(i => i.targetUserId);
     
     return allUsers
       .filter(u => savedIds.includes(u.id))

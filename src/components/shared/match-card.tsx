@@ -33,6 +33,7 @@ export function MatchCard({ match }: { match: Match }) {
     
     mockDb.add("interactions", {
       type,
+      userId: user.uid,
       targetUserId: match.id,
       timestamp: new Date().toISOString()
     });

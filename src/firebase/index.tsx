@@ -89,12 +89,18 @@ export function useCollection(queryInfo: any) {
         });
       }
 
-      setData(items);
+      // Simple deep equality check to prevent unnecessary re-renders
+      setData((prev) => {
+        const nextStr = JSON.stringify(items);
+        const prevStr = JSON.stringify(prev);
+        return nextStr === prevStr ? prev : items;
+      });
       setLoading(false);
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 1000);
+    // Poll more frequently for a responsive chat experience
+    const interval = setInterval(fetchData, 500);
     return () => clearInterval(interval);
   }, [queryInfo]);
 
