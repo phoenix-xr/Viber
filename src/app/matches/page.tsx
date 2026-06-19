@@ -47,6 +47,7 @@ export default function MatchesPage() {
     user ? { collection: 'interactions', where: ['userId', '==', user.uid] } : null
   );
 
+  // Dynamically extract cities from all users to populate the filter
   const cities = useMemo(() => {
     if (!allUsers) return [];
     const uniqueCities = Array.from(new Set(allUsers.map(u => u.city).filter(Boolean)));
@@ -127,11 +128,13 @@ export default function MatchesPage() {
                 <DropdownMenuItem onClick={() => setSelectedCity(null)} className="cursor-pointer">
                   All Cities
                 </DropdownMenuItem>
-                {cities.map(city => (
+                {cities.length > 0 ? cities.map(city => (
                   <DropdownMenuItem key={city} onClick={() => setSelectedCity(city)} className="cursor-pointer">
                     {city}
                   </DropdownMenuItem>
-                ))}
+                )) : (
+                  <DropdownMenuItem disabled className="text-muted-foreground text-xs italic">No cities available</DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -159,10 +162,10 @@ export default function MatchesPage() {
                 layout
               >
                 <MatchCard match={match} />
-                {match.spotifyConnected && (
+                {(match.spotifyConnected || (match.music?.genres?.length > 0)) && (
                   <div className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-[#1DB954] uppercase tracking-widest px-4">
                     <MusicIcon className="w-3 h-3" />
-                    Spotify Enriched
+                    Music Profile Active
                   </div>
                 )}
               </motion.div>

@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark, LayoutDashboard } from "lucide-react";
+import { Sparkles, Menu, X, LogOut, MessageSquare, Heart, Bookmark, LayoutDashboard, Globe } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/firebase";
@@ -21,6 +21,7 @@ export function Navbar() {
   };
 
   const navLinks = [
+    { name: "Home", href: "/", icon: Globe },
     { name: "Matches", href: "/matches", icon: Heart },
     { name: "Dashboard", href: "/dashboard", auth: true, icon: LayoutDashboard },
     { name: "Saved", href: "/saved", auth: true, icon: Bookmark },
