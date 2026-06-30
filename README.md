@@ -108,11 +108,13 @@ Human connection is multi-faceted: two individuals may share an identical taste 
 3. `interests_vector` — Built from creative endeavors, intellectual pursuits, and lifestyle habits.
 
 At query time, overall semantic resonance is computed via a dynamically weighted linear combination of cosine similarities across distinct `$vectorSearch` or aggregation stages:
+
 $$
 \text{Resonance Score} = w_1 \cdot \cos(\vec{u}_{\text{music}}, \vec{v}_{\text{music}}) + w_2 \cdot \cos(\vec{u}_{\text{personality}}, \vec{v}_{\text{personality}}) + w_3 \cdot \cos(\vec{u}_{\text{interests}}, \vec{v}_{\text{interests}})
 $$
 
 Where our default equilibrium weights are set to: 
+
 $$
 \text{Score} = 0.40 \cdot \text{Music} + 0.40 \cdot \text{Personality} + 0.20 \cdot \text{Interests}
 $$
