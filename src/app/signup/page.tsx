@@ -66,7 +66,7 @@ export default function SignupPage() {
             <div className="w-12 h-12 bg-gradient-to-tr from-primary to-secondary rounded-xl flex items-center justify-center mx-auto mb-4">
               <User className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-headline font-bold">Join Soulmatter</h1>
+            <h1 className="text-3xl font-headline font-bold">Join Viberr</h1>
             <p className="text-muted-foreground mt-2">Start your semantic matching journey</p>
           </div>
 

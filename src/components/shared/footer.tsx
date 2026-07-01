@@ -11,7 +11,7 @@ export function Footer() {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="font-headline font-bold text-xl tracking-tight">
-              Soulmatter
+              Viberr
             </span>
           </Link>
           <p className="text-sm text-muted-foreground max-w-[240px]">
@@ -52,7 +52,7 @@ export function Footer() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Soulmatter Inc. All rights reserved. Built for the future of connection.
+        © {new Date().getFullYear()} Viberr Inc. All rights reserved. Built for the future of connection.
       </div>
     </footer>
   );

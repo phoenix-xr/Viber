@@ -43,7 +43,7 @@ export default function LandingPage() {
             transition={{ delay: 0.2 }}
             className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium opacity-80"
           >
-            Soulmatter uses high-dimensional neural embeddings to find people who resonate with your personality, values, and musical soul.
+            Viberr uses high-dimensional neural embeddings to find people who resonate with your personality, values, and musical soul.
           </motion.p>
           
           <motion.div

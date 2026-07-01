@@ -37,7 +37,7 @@ export function Navbar() {
             <div className="w-10 h-10 bg-gradient-to-tr from-primary to-secondary rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="font-headline font-bold text-2xl tracking-tight">Soulmatter</span>
+            <span className="font-headline font-bold text-2xl tracking-tight">Viberr</span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-10">
