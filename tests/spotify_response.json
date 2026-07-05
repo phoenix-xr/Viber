@@ -1,0 +1,770 @@
+{
+    "items": [
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                        "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                        "name": "The Weeknd",
+                        "type": "artist",
+                        "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/2FgMWuwMeTgJArP2RF3upF"
+                },
+                "href": "https://api.spotify.com/v1/albums/2FgMWuwMeTgJArP2RF3upF",
+                "id": "2FgMWuwMeTgJArP2RF3upF",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2730cc6c8a864d2d16a2bc507d4",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e020cc6c8a864d2d16a2bc507d4",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048510cc6c8a864d2d16a2bc507d4",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "Kiss Land",
+                "release_date": "2013-01-01",
+                "release_date_precision": "day",
+                "total_tracks": 10,
+                "type": "album",
+                "uri": "spotify:album:2FgMWuwMeTgJArP2RF3upF"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                    "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "name": "The Weeknd",
+                    "type": "artist",
+                    "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 455333,
+            "explicit": true,
+            "external_ids": {
+                "isrc": "USUM71310346"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/634tM1Us7Z6bsbZhRbrRr2"
+            },
+            "href": "https://api.spotify.com/v1/tracks/634tM1Us7Z6bsbZhRbrRr2",
+            "id": "634tM1Us7Z6bsbZhRbrRr2",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Kiss Land",
+            "track_number": 8,
+            "type": "track",
+            "uri": "spotify:track:634tM1Us7Z6bsbZhRbrRr2"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                        "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                        "name": "The Weeknd",
+                        "type": "artist",
+                        "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/6F87lH0I09qlrzvCCKc7lz"
+                },
+                "href": "https://api.spotify.com/v1/albums/6F87lH0I09qlrzvCCKc7lz",
+                "id": "6F87lH0I09qlrzvCCKc7lz",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273e01c2631218e2de27765b7d5",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02e01c2631218e2de27765b7d5",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851e01c2631218e2de27765b7d5",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "Thursday (Original)",
+                "release_date": "2011-08-18",
+                "release_date_precision": "day",
+                "total_tracks": 9,
+                "type": "album",
+                "uri": "spotify:album:6F87lH0I09qlrzvCCKc7lz"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                    "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "name": "The Weeknd",
+                    "type": "artist",
+                    "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 296286,
+            "explicit": false,
+            "external_ids": {
+                "isrc": "USUM72111917"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/6eJbjaoLRlfwrfWpeS6alF"
+            },
+            "href": "https://api.spotify.com/v1/tracks/6eJbjaoLRlfwrfWpeS6alF",
+            "id": "6eJbjaoLRlfwrfWpeS6alF",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Life Of The Party",
+            "track_number": 2,
+            "type": "track",
+            "uri": "spotify:track:6eJbjaoLRlfwrfWpeS6alF"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                        "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                        "name": "The Weeknd",
+                        "type": "artist",
+                        "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/7zCODUHkfuRxsUjtuzNqbd"
+                },
+                "href": "https://api.spotify.com/v1/albums/7zCODUHkfuRxsUjtuzNqbd",
+                "id": "7zCODUHkfuRxsUjtuzNqbd",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273274b406a7e18acebcf743079",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02274b406a7e18acebcf743079",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851274b406a7e18acebcf743079",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "House Of Balloons (Original)",
+                "release_date": "2011-03-21",
+                "release_date_precision": "day",
+                "total_tracks": 9,
+                "type": "album",
+                "uri": "spotify:album:7zCODUHkfuRxsUjtuzNqbd"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                    "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "name": "The Weeknd",
+                    "type": "artist",
+                    "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 459659,
+            "explicit": true,
+            "external_ids": {
+                "isrc": "USUM72104141"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/0GROiXm03OrMC5ltXLhGIu"
+            },
+            "href": "https://api.spotify.com/v1/tracks/0GROiXm03OrMC5ltXLhGIu",
+            "id": "0GROiXm03OrMC5ltXLhGIu",
+            "is_local": false,
+            "is_playable": true,
+            "name": "The Party & The After Party",
+            "track_number": 6,
+            "type": "track",
+            "uri": "spotify:track:0GROiXm03OrMC5ltXLhGIu"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                        "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                        "name": "The Weeknd",
+                        "type": "artist",
+                        "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/7zCODUHkfuRxsUjtuzNqbd"
+                },
+                "href": "https://api.spotify.com/v1/albums/7zCODUHkfuRxsUjtuzNqbd",
+                "id": "7zCODUHkfuRxsUjtuzNqbd",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273274b406a7e18acebcf743079",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02274b406a7e18acebcf743079",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851274b406a7e18acebcf743079",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "House Of Balloons (Original)",
+                "release_date": "2011-03-21",
+                "release_date_precision": "day",
+                "total_tracks": 9,
+                "type": "album",
+                "uri": "spotify:album:7zCODUHkfuRxsUjtuzNqbd"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                    "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "name": "The Weeknd",
+                    "type": "artist",
+                    "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 363057,
+            "explicit": true,
+            "external_ids": {
+                "isrc": "USUM72104143"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/2yBz1hupoOBncorzuKcJ2z"
+            },
+            "href": "https://api.spotify.com/v1/tracks/2yBz1hupoOBncorzuKcJ2z",
+            "id": "2yBz1hupoOBncorzuKcJ2z",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Loft Music",
+            "track_number": 8,
+            "type": "track",
+            "uri": "spotify:track:2yBz1hupoOBncorzuKcJ2z"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/3MZsBdqDrRTJihTHQrO6Dq"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/3MZsBdqDrRTJihTHQrO6Dq",
+                        "id": "3MZsBdqDrRTJihTHQrO6Dq",
+                        "name": "Joji",
+                        "type": "artist",
+                        "uri": "spotify:artist:3MZsBdqDrRTJihTHQrO6Dq"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/5mIImcsuqpiSXg8XvFr81I"
+                },
+                "href": "https://api.spotify.com/v1/albums/5mIImcsuqpiSXg8XvFr81I",
+                "id": "5mIImcsuqpiSXg8XvFr81I",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2734cc52cd7a712842234e4fce2",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e024cc52cd7a712842234e4fce2",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048514cc52cd7a712842234e4fce2",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "BALLADS 1",
+                "release_date": "2018-10-26",
+                "release_date_precision": "day",
+                "total_tracks": 12,
+                "type": "album",
+                "uri": "spotify:album:5mIImcsuqpiSXg8XvFr81I"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/3MZsBdqDrRTJihTHQrO6Dq"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/3MZsBdqDrRTJihTHQrO6Dq",
+                    "id": "3MZsBdqDrRTJihTHQrO6Dq",
+                    "name": "Joji",
+                    "type": "artist",
+                    "uri": "spotify:artist:3MZsBdqDrRTJihTHQrO6Dq"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 174357,
+            "explicit": true,
+            "external_ids": {
+                "isrc": "USUYG1194991"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/52ooD6LHuXFubM6d1CDD93"
+            },
+            "href": "https://api.spotify.com/v1/tracks/52ooD6LHuXFubM6d1CDD93",
+            "id": "52ooD6LHuXFubM6d1CDD93",
+            "is_local": false,
+            "is_playable": true,
+            "name": "YEAH RIGHT",
+            "track_number": 6,
+            "type": "track",
+            "uri": "spotify:track:52ooD6LHuXFubM6d1CDD93"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                        "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                        "name": "The Weeknd",
+                        "type": "artist",
+                        "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/4qZBW3f2Q8y0k1A84d4iAO"
+                },
+                "href": "https://api.spotify.com/v1/albums/4qZBW3f2Q8y0k1A84d4iAO",
+                "id": "4qZBW3f2Q8y0k1A84d4iAO",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2731f6a2a40bb692936879db730",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e021f6a2a40bb692936879db730",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048511f6a2a40bb692936879db730",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "My Dear Melancholy,",
+                "release_date": "2018-03-30",
+                "release_date_precision": "day",
+                "total_tracks": 7,
+                "type": "album",
+                "uri": "spotify:album:4qZBW3f2Q8y0k1A84d4iAO"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ",
+                    "id": "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "name": "The Weeknd",
+                    "type": "artist",
+                    "uri": "spotify:artist:1Xyo4u8uXC1ZmMpatF05PJ"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 228373,
+            "explicit": false,
+            "external_ids": {
+                "isrc": "USUG11800560"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/09mEdoA6zrmBPgTEN5qXmN"
+            },
+            "href": "https://api.spotify.com/v1/tracks/09mEdoA6zrmBPgTEN5qXmN",
+            "id": "09mEdoA6zrmBPgTEN5qXmN",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Call Out My Name",
+            "track_number": 1,
+            "type": "track",
+            "uri": "spotify:track:09mEdoA6zrmBPgTEN5qXmN"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/3fMbdgg4jU18AjLCKBhRSm"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/3fMbdgg4jU18AjLCKBhRSm",
+                        "id": "3fMbdgg4jU18AjLCKBhRSm",
+                        "name": "Michael Jackson",
+                        "type": "artist",
+                        "uri": "spotify:artist:3fMbdgg4jU18AjLCKBhRSm"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/7pomP86PUhoJpY3fsC0WDQ"
+                },
+                "href": "https://api.spotify.com/v1/albums/7pomP86PUhoJpY3fsC0WDQ",
+                "id": "7pomP86PUhoJpY3fsC0WDQ",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b27335f36cb686b0d5a12ab3a9f0",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e0235f36cb686b0d5a12ab3a9f0",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d0000485135f36cb686b0d5a12ab3a9f0",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "XSCAPE",
+                "release_date": "2014-05-09",
+                "release_date_precision": "day",
+                "total_tracks": 17,
+                "type": "album",
+                "uri": "spotify:album:7pomP86PUhoJpY3fsC0WDQ"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/3fMbdgg4jU18AjLCKBhRSm"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/3fMbdgg4jU18AjLCKBhRSm",
+                    "id": "3fMbdgg4jU18AjLCKBhRSm",
+                    "name": "Michael Jackson",
+                    "type": "artist",
+                    "uri": "spotify:artist:3fMbdgg4jU18AjLCKBhRSm"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 245565,
+            "explicit": false,
+            "external_ids": {
+                "isrc": "USSM11401745"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/5BKKy9fIJL5uM9fz1SnqyP"
+            },
+            "href": "https://api.spotify.com/v1/tracks/5BKKy9fIJL5uM9fz1SnqyP",
+            "id": "5BKKy9fIJL5uM9fz1SnqyP",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Chicago",
+            "track_number": 2,
+            "type": "track",
+            "uri": "spotify:track:5BKKy9fIJL5uM9fz1SnqyP"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/3MZsBdqDrRTJihTHQrO6Dq"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/3MZsBdqDrRTJihTHQrO6Dq",
+                        "id": "3MZsBdqDrRTJihTHQrO6Dq",
+                        "name": "Joji",
+                        "type": "artist",
+                        "uri": "spotify:artist:3MZsBdqDrRTJihTHQrO6Dq"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/7MLyEn1CPizpS8bjZ7zzrT"
+                },
+                "href": "https://api.spotify.com/v1/albums/7MLyEn1CPizpS8bjZ7zzrT",
+                "id": "7MLyEn1CPizpS8bjZ7zzrT",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b27304316985c2c333c86874dad3",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e0204316985c2c333c86874dad3",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d0000485104316985c2c333c86874dad3",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "Piss In The Wind",
+                "release_date": "2026-02-06",
+                "release_date_precision": "day",
+                "total_tracks": 21,
+                "type": "album",
+                "uri": "spotify:album:7MLyEn1CPizpS8bjZ7zzrT"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/3MZsBdqDrRTJihTHQrO6Dq"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/3MZsBdqDrRTJihTHQrO6Dq",
+                    "id": "3MZsBdqDrRTJihTHQrO6Dq",
+                    "name": "Joji",
+                    "type": "artist",
+                    "uri": "spotify:artist:3MZsBdqDrRTJihTHQrO6Dq"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 201186,
+            "explicit": false,
+            "external_ids": {
+                "isrc": "USA2P2554902"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/4eFV1LfWlYCVJnPTuSo3db"
+            },
+            "href": "https://api.spotify.com/v1/tracks/4eFV1LfWlYCVJnPTuSo3db",
+            "id": "4eFV1LfWlYCVJnPTuSo3db",
+            "is_local": false,
+            "is_playable": true,
+            "name": "LOVE YOU LESS",
+            "track_number": 4,
+            "type": "track",
+            "uri": "spotify:track:4eFV1LfWlYCVJnPTuSo3db"
+        },
+        {
+            "album": {
+                "album_type": "single",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/3ycxRkcZ67ALN3GQJ57Vig"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/3ycxRkcZ67ALN3GQJ57Vig",
+                        "id": "3ycxRkcZ67ALN3GQJ57Vig",
+                        "name": "Masego",
+                        "type": "artist",
+                        "uri": "spotify:artist:3ycxRkcZ67ALN3GQJ57Vig"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/3NQxrzLOQvUi82RbGIMgIA"
+                },
+                "href": "https://api.spotify.com/v1/albums/3NQxrzLOQvUi82RbGIMgIA",
+                "id": "3NQxrzLOQvUi82RbGIMgIA",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b27306de20f41b4189396a704160",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e0206de20f41b4189396a704160",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d0000485106de20f41b4189396a704160",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "Unhinged",
+                "release_date": "2025-10-15",
+                "release_date_precision": "day",
+                "total_tracks": 1,
+                "type": "album",
+                "uri": "spotify:album:3NQxrzLOQvUi82RbGIMgIA"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/3ycxRkcZ67ALN3GQJ57Vig"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/3ycxRkcZ67ALN3GQJ57Vig",
+                    "id": "3ycxRkcZ67ALN3GQJ57Vig",
+                    "name": "Masego",
+                    "type": "artist",
+                    "uri": "spotify:artist:3ycxRkcZ67ALN3GQJ57Vig"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 184711,
+            "explicit": true,
+            "external_ids": {
+                "isrc": "USUM72510746"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/5hvyS23Ya468Sp4VeL48U5"
+            },
+            "href": "https://api.spotify.com/v1/tracks/5hvyS23Ya468Sp4VeL48U5",
+            "id": "5hvyS23Ya468Sp4VeL48U5",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Unhinged",
+            "track_number": 1,
+            "type": "track",
+            "uri": "spotify:track:5hvyS23Ya468Sp4VeL48U5"
+        },
+        {
+            "album": {
+                "album_type": "album",
+                "artists": [
+                    {
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/artist/1uNFoZAHBGtllmzznpCI3s"
+                        },
+                        "href": "https://api.spotify.com/v1/artists/1uNFoZAHBGtllmzznpCI3s",
+                        "id": "1uNFoZAHBGtllmzznpCI3s",
+                        "name": "Justin Bieber",
+                        "type": "artist",
+                        "uri": "spotify:artist:1uNFoZAHBGtllmzznpCI3s"
+                    }
+                ],
+                "external_urls": {
+                    "spotify": "https://open.spotify.com/album/0PZY8Rxtm8ujGlGIQISqRL"
+                },
+                "href": "https://api.spotify.com/v1/albums/0PZY8Rxtm8ujGlGIQISqRL",
+                "id": "0PZY8Rxtm8ujGlGIQISqRL",
+                "images": [
+                    {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b27386b35d0bfa6bbceed7541a3d",
+                        "width": 640
+                    },
+                    {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e0286b35d0bfa6bbceed7541a3d",
+                        "width": 300
+                    },
+                    {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d0000485186b35d0bfa6bbceed7541a3d",
+                        "width": 64
+                    }
+                ],
+                "is_playable": true,
+                "name": "Journals",
+                "release_date": "2013-01-01",
+                "release_date_precision": "day",
+                "total_tracks": 15,
+                "type": "album",
+                "uri": "spotify:album:0PZY8Rxtm8ujGlGIQISqRL"
+            },
+            "artists": [
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1uNFoZAHBGtllmzznpCI3s"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1uNFoZAHBGtllmzznpCI3s",
+                    "id": "1uNFoZAHBGtllmzznpCI3s",
+                    "name": "Justin Bieber",
+                    "type": "artist",
+                    "uri": "spotify:artist:1uNFoZAHBGtllmzznpCI3s"
+                },
+                {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/artist/1anyVhU62p31KFi8MEzkbf"
+                    },
+                    "href": "https://api.spotify.com/v1/artists/1anyVhU62p31KFi8MEzkbf",
+                    "id": "1anyVhU62p31KFi8MEzkbf",
+                    "name": "Chance the Rapper",
+                    "type": "artist",
+                    "uri": "spotify:artist:1anyVhU62p31KFi8MEzkbf"
+                }
+            ],
+            "disc_number": 1,
+            "duration_ms": 248146,
+            "explicit": false,
+            "external_ids": {
+                "isrc": "USUM71319306"
+            },
+            "external_urls": {
+                "spotify": "https://open.spotify.com/track/6czM6UMQD9qE5GAUp68oud"
+            },
+            "href": "https://api.spotify.com/v1/tracks/6czM6UMQD9qE5GAUp68oud",
+            "id": "6czM6UMQD9qE5GAUp68oud",
+            "is_local": false,
+            "is_playable": true,
+            "name": "Confident - Single Version",
+            "track_number": 10,
+            "type": "track",
+            "uri": "spotify:track:6czM6UMQD9qE5GAUp68oud"
+        }
+    ],
+    "total": 192,
+    "limit": 10,
+    "offset": 0,
+    "href": "https://api.spotify.com/v1/me/top/tracks?limit=10",
+    "next": "https://api.spotify.com/v1/me/top/tracks?offset=10&limit=10",
+    "previous": null
+}
