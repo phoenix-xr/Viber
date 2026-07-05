@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viberr API Documentation & Swagger UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --surface-hover: #27272a;
+            --border: #27272a;
+            --border-light: #3f3f46;
+            --text: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --accent: #ec4899;
+            --post: #10b981;
+            --post-bg: rgba(16, 185, 129, 0.1);
+            --get: #3b82f6;
+            --get-bg: rgba(59, 130, 246, 0.1);
+            --put: #f59e0b;
+            --put-bg: rgba(245, 158, 11, 0.1);
+            --delete: #ef4444;
+            --delete-bg: rgba(239, 68, 68, 0.1);
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            line-height: 1.5;
+            padding-bottom: 80px;
+        }
+
+        /* Header & Navbar */
+        header {
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-w: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Token Bar */
+        .token-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 99px;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .token-bar label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .token-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: var(--font-code);
+            font-size: 12px;
+            width: 100%;
+            outline: none;
+        }
+
+        .token-bar input::placeholder {
+            color: #52525b;
+        }
+
+        .btn-save-token {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-save-token:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        /* Server Info */
+        .server-info {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .server-url {
+            font-family: var(--font-code);
+            font-size: 13px;
+            background: var(--bg);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tag Groups */
+        .tag-group {
+            margin-bottom: 40px;
+        }
+
+        .tag-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tag-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* Endpoint Card */
+        .endpoint-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .endpoint-card:hover {
+            border-color: var(--border-light);
+        }
+
+        .endpoint-header {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            gap: 16px;
+        }
+
+        .endpoint-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .method-badge {
+            font-family: var(--font-code);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 64px;
+            text-align: center;
+        }
+
+        .method-post { background: var(--post-bg); color: var(--post); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .method-get { background: var(--get-bg); color: var(--get); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .method-put { background: var(--put-bg); color: var(--put); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .method-delete { background: var(--delete-bg); color: var(--delete); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .endpoint-path {
+            font-family: var(--font-code);
+            font-size: 14px;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+
+        .endpoint-summary {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .auth-public {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Endpoint Body (Collapsible) */
+        .endpoint-body {
+            display: none;
+            border-top: 1px solid var(--border);
+            padding: 20px;
+            background: rgba(9, 9, 11, 0.5);
+        }
+
+        .endpoint-card.open .endpoint-body {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Inputs & Textareas */
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #d4d4d8;
+            margin-bottom: 6px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-family: var(--font-code);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .input-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        /* Action Buttons */
+        .btn-execute {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-execute:hover {
+            opacity: 0.9;
+        }
+
+        .btn-execute:active {
+            transform: scale(0.98);
+        }
+
+        /* Response Box */
+        .response-box {
+            margin-top: 24px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .response-header {
+            background: var(--surface);
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            font-family: var(--font-code);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .status-2xx { background: var(--post-bg); color: var(--post); }
+        .status-4xx, .status-5xx { background: var(--delete-bg); color: var(--delete); }
+
+        .response-time {
+            color: var(--text-muted);
+            font-family: var(--font-code);
+        }
+
+        .response-body {
+            padding: 16px;
+            background: #000;
+            font-family: var(--font-code);
+            font-size: 13px;
+            color: #34d399;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 400px;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--surface);
+            border: 1px solid var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">V</div>
+                <div class="logo-text">
+                    <h1>Viberr API Docs</h1>
+                    <span>Express.js Swagger UI</span>
+                </div>
+            </div>
+
+            <!-- Global JWT Token Bar -->
+            <div class="token-bar">
+                <label for="jwtToken">🔒 JWT Auth:</label>
+                <input type="text" id="jwtToken" placeholder="Paste Bearer token here (without 'Bearer ' prefix)...">
+                <button class="btn-save-token" onclick="saveToken()">Save</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Server Info -->
+        <div class="server-info">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Express.js Backend Server</h3>
+                <p style="font-size: 13px; color: var(--text-muted);">Interactive API testing playground. Ensure your server is running locally.</p>
+            </div>
+            <div class="server-url">
+                <span>🌐 Base URL:</span>
+                <strong id="baseUrlDisplay">http://localhost:5000</strong>
+            </div>
+        </div>
+
+        <!-- 1. AUTHENTICATION -->
+        <div class="tag-group">
+            <div class="tag-title">🔑 Authentication</div>
+            <div class="tag-desc">Endpoints for registering new users and logging in to acquire JWT access tokens.</div>
+
+            <!-- REGISTER -->
+            <div class="endpoint-card" id="card-register">
+                <div class="endpoint-header" onclick="toggleCard('card-register')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/api/auth/register</span>
+                        <span class="endpoint-summary">Register a new user vector</span>
+                    </div>
+                    <span class="auth-badge auth-public">🌐 Public</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Request Body (JSON)</div>
+                    <div class="input-group">
+                        <textarea id="body-register">{
+  "username": "alex_viberr",
+  "email": "alex@example.com",
+  "password": "secretpassword123",
+  "bio": "Researcher and jazz pianist looking for harmonic resonance.",
+  "profilePicture": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500",
+  "spotifyId": "spotify_alex_123"
+}</textarea>
+                    </div>
+                    <button class="btn-execute" onclick="executeRequest('POST', '/api/auth/register', 'body-register', null, 'res-register')">
+                        🚀 Execute Request
+                    </button>
+                    <div class="response-box" id="res-register">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-register-status">201</span></div>
+                            <div class="response-time" id="res-register-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-register-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="endpoint-card" id="card-login">
+                <div class="endpoint-header" onclick="toggleCard('card-login')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/api/auth/login</span>
+                        <span class="endpoint-summary">Login with email & password</span>
+                    </div>
+                    <span class="auth-badge auth-public">🌐 Public</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Request Body (JSON)</div>
+                    <div class="input-group">
+                        <textarea id="body-login">{
+  "email": "alex@example.com",
+  "password": "secretpassword123"
+}</textarea>
+                    </div>
+                    <button class="btn-execute" onclick="executeLogin()">
+                        🚀 Execute Login & Auto-Save Token
+                    </button>
+                    <div class="response-box" id="res-login">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-login-status">200</span></div>
+                            <div class="response-time" id="res-login-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-login-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. USER PROFILE -->
+        <div class="tag-group">
+            <div class="tag-title">👤 User Profile</div>
+            <div class="tag-desc">Endpoints for retrieving and updating high-dimensional user identity and preferences.</div>
+
+            <!-- GET MY PROFILE -->
+            <div class="endpoint-card" id="card-get-me">
+                <div class="endpoint-header" onclick="toggleCard('card-get-me')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/api/profile/me</span>
+                        <span class="endpoint-summary">Get authenticated user's profile</span>
+                    </div>
+                    <span class="auth-badge">🔒 Bearer JWT</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Authentication Required</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                        This request will automatically attach <code style="color: var(--primary);">Authorization: Bearer &lt;token&gt;</code> using the token in the top bar.
+                    </p>
+                    <button class="btn-execute" onclick="executeRequest('GET', '/api/profile/me', null, null, 'res-get-me', true)">
+                        🚀 Execute Request
+                    </button>
+                    <div class="response-box" id="res-get-me">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-get-me-status">200</span></div>
+                            <div class="response-time" id="res-get-me-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-get-me-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPDATE MY PROFILE -->
+            <div class="endpoint-card" id="card-put-me">
+                <div class="endpoint-header" onclick="toggleCard('card-put-me')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-put">PUT</span>
+                        <span class="endpoint-path">/api/profile/me</span>
+                        <span class="endpoint-summary">Update authenticated user's bio & profile picture</span>
+                    </div>
+                    <span class="auth-badge">🔒 Bearer JWT</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Request Body (JSON)</div>
+                    <div class="input-group">
+                        <textarea id="body-put-me">{
+  "bio": "Updated bio: Exploring high-dimensional neural embeddings and synthwave.",
+  "profilePicture": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600"
+}</textarea>
+                    </div>
+                    <button class="btn-execute" onclick="executeRequest('PUT', '/api/profile/me', 'body-put-me', null, 'res-put-me', true)">
+                        🚀 Execute Request
+                    </button>
+                    <div class="response-box" id="res-put-me">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-put-me-status">200</span></div>
+                            <div class="response-time" id="res-put-me-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-put-me-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GET USER BY ID -->
+            <div class="endpoint-card" id="card-get-user">
+                <div class="endpoint-header" onclick="toggleCard('card-get-user')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/api/profile/{id}</span>
+                        <span class="endpoint-summary">Get public profile of any user by ID</span>
+                    </div>
+                    <span class="auth-badge">🔒 Bearer JWT</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Path Parameters</div>
+                    <div class="input-group">
+                        <label for="param-user-id">User ID (MongoDB _id)</label>
+                        <input type="text" id="param-user-id" placeholder="e.g. 6688f1a2b3c4d5e6f7a8b9c0">
+                    </div>
+                    <button class="btn-execute" onclick="executeGetUser()">
+                        🚀 Execute Request
+                    </button>
+                    <div class="response-box" id="res-get-user">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-get-user-status">200</span></div>
+                            <div class="response-time" id="res-get-user-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-get-user-body"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- GENERATE EMBEDDINGS -->
+            <div class="endpoint-card" id="card-post-embeddings">
+                <div class="endpoint-header" onclick="toggleCard('card-post-embeddings')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/api/profile/embeddings</span>
+                        <span class="endpoint-summary">Generate/fetch user music taste embedding data</span>
+                    </div>
+                    <span class="auth-badge">🔒 Bearer JWT</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Authentication Required</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                        This endpoint uses the user's saved Spotify access token to fetch top tracks and audio features. Ensure you have connected Spotify first.
+                    </p>
+                    <button class="btn-execute" onclick="executeRequest('POST', '/api/profile/embeddings', null, null, 'res-post-embeddings', true)">
+                        🚀 Execute Request
+                    </button>
+                    <div class="response-box" id="res-post-embeddings">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-post-embeddings-status">200</span></div>
+                            <div class="response-time" id="res-post-embeddings-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-post-embeddings-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. SPOTIFY INTEGRATION -->
+        <div class="tag-group">
+            <div class="tag-title">🎵 Spotify Integration</div>
+            <div class="tag-desc">OAuth endpoints for synchronizing top artists and musical genres into the neural vector.</div>
+
+            <!-- SPOTIFY LOGIN -->
+            <div class="endpoint-card" id="card-spotify-login">
+                <div class="endpoint-header" onclick="toggleCard('card-spotify-login')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/spotify/login</span>
+                        <span class="endpoint-summary">Initiate Spotify OAuth redirect</span>
+                    </div>
+                    <span class="auth-badge">🔒 Bearer JWT</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">OAuth Redirect</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                        This endpoint signs a JWT state parameter and redirects the browser to Spotify's authorization screen.
+                    </p>
+                    <button class="btn-execute" onclick="executeSpotifyLogin()">
+                        🌐 Open Spotify Auth in New Tab
+                    </button>
+                </div>
+            </div>
+
+            <!-- SPOTIFY CALLBACK -->
+            <div class="endpoint-card" id="card-spotify-callback">
+                <div class="endpoint-header" onclick="toggleCard('card-spotify-callback')">
+                    <div class="endpoint-info">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/callback</span>
+                        <span class="endpoint-summary">Spotify OAuth callback handler</span>
+                    </div>
+                    <span class="auth-badge auth-public">🌐 Public (Spotify Direct)</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="section-title">Query Parameters</div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                        Spotify automatically hits this endpoint with <code style="color: #38bdf8;">?code=...&state=...</code> after the user approves access.
+                    </p>
+                    <div class="input-group">
+                        <label>code</label>
+                        <input type="text" id="param-spotify-code" placeholder="Authorization code from Spotify">
+                    </div>
+                    <div class="input-group">
+                        <label>state</label>
+                        <input type="text" id="param-spotify-state" placeholder="Signed JWT state string">
+                    </div>
+                    <button class="btn-execute" onclick="executeSpotifyCallback()">
+                        🚀 Execute Callback Test
+                    </button>
+                    <div class="response-box" id="res-spotify">
+                        <div class="response-header">
+                            <div>Status: <span class="status-badge" id="res-spotify-status">200</span></div>
+                            <div class="response-time" id="res-spotify-time">0 ms</div>
+                        </div>
+                        <div class="response-body" id="res-spotify-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
+    <script>
+        const BASE_URL = window.location.origin;
+        document.getElementById('baseUrlDisplay').innerText = BASE_URL;
+
+        // Load saved token on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('viberr_jwt_token');
+            if (saved) {
+                document.getElementById('jwtToken').value = saved;
+            }
+        });
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function saveToken() {
+            const token = document.getElementById('jwtToken').value.trim();
+            if (token) {
+                localStorage.setItem('viberr_jwt_token', token);
+                showToast('✅ JWT Token Saved!');
+            } else {
+                localStorage.removeItem('viberr_jwt_token');
+                showToast('🗑️ JWT Token Cleared!');
+            }
+        }
+
+        function toggleCard(id) {
+            const card = document.getElementById(id);
+            card.classList.toggle('open');
+        }
+
+        async function executeRequest(method, path, bodyId, queryParams, resId, requireAuth = false) {
+            const resBox = document.getElementById(resId);
+            const statusEl = document.getElementById(`${resId}-status`);
+            const timeEl = document.getElementById(`${resId}-time`);
+            const bodyEl = document.getElementById(`${resId}-body`);
+
+            resBox.style.display = 'block';
+            bodyEl.innerText = '⏳ Sending request...';
+            statusEl.innerText = '...';
+            statusEl.className = 'status-badge';
+
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (requireAuth) {
+                const token = document.getElementById('jwtToken').value.trim() || localStorage.getItem('viberr_jwt_token');
+                if (!token) {
+                    bodyEl.innerText = '❌ Error: No JWT Token provided. Please paste your token in the top bar.';
+                    statusEl.innerText = '401';
+                    statusEl.classList.add('status-4xx');
+                    return;
+                }
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            let body = null;
+            if (bodyId) {
+                try {
+                    body = JSON.stringify(JSON.parse(document.getElementById(bodyId).value));
+                } catch (e) {
+                    bodyEl.innerText = '❌ Error: Invalid JSON format in request body.';
+                    statusEl.innerText = 'ERR';
+                    statusEl.classList.add('status-4xx');
+                    return;
+                }
+            }
+
+            const startTime = performance.now();
+            try {
+                const response = await fetch(`${BASE_URL}${path}`, {
+                    method,
+                    headers,
+                    body: method !== 'GET' ? body : null
+                });
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+
+                statusEl.innerText = response.status;
+                if (response.status >= 200 && response.status < 300) {
+                    statusEl.classList.add('status-2xx');
+                } else {
+                    statusEl.classList.add('status-4xx');
+                }
+                timeEl.innerText = `${duration} ms`;
+
+                const data = await response.json();
+                bodyEl.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                const endTime = performance.now();
+                timeEl.innerText = `${Math.round(endTime - startTime)} ms`;
+                statusEl.innerText = 'FAIL';
+                statusEl.classList.add('status-5xx');
+                bodyEl.innerText = `❌ Network or Server Error:\n${err.message}\n\nMake sure your Express server is running on ${BASE_URL} and CORS is enabled.`;
+            }
+        }
+
+        async function executeLogin() {
+            await executeRequest('POST', '/api/auth/login', 'body-login', null, 'res-login');
+            try {
+                const bodyText = document.getElementById('res-login-body').innerText;
+                const data = JSON.parse(bodyText);
+                if (data && data.token) {
+                    document.getElementById('jwtToken').value = data.token;
+                    localStorage.setItem('viberr_jwt_token', data.token);
+                    showToast('🎉 Login Successful! Token auto-saved to top bar.');
+                }
+            } catch (e) {}
+        }
+
+        function executeGetUser() {
+            const id = document.getElementById('param-user-id').value.trim();
+            if (!id) {
+                alert('Please enter a User ID');
+                return;
+            }
+            executeRequest('GET', `/api/profile/${id}`, null, null, 'res-get-user', true);
+        }
+
+        function executeSpotifyLogin() {
+            const token = document.getElementById('jwtToken').value.trim() || localStorage.getItem('viberr_jwt_token');
+            if (!token) {
+                alert('Please enter a JWT token in the top bar first!');
+                return;
+            }
+            // Open in new tab with token or redirect
+            window.open(`${BASE_URL}/spotify/login?token=${token}`, '_blank');
+        }
+
+        function executeSpotifyCallback() {
+            const code = document.getElementById('param-spotify-code').value.trim();
+            const state = document.getElementById('param-spotify-state').value.trim();
+            if (!code || !state) {
+                alert('Please provide both code and state parameters.');
+                return;
+            }
+            executeRequest('GET', `/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`, null, null, 'res-spotify', false);
+        }
+    </script>
+</body>
+</html>
