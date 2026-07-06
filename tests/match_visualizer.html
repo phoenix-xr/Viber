@@ -1,0 +1,6139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viberr - Match Analysis & Visualisation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #090b11;
+      --bg-secondary: #0f121d;
+      --bg-card: rgba(22, 28, 45, 0.45);
+      --bg-card-hover: rgba(30, 38, 61, 0.7);
+      --border-color: rgba(255, 255, 255, 0.05);
+      --border-hover: rgba(139, 92, 246, 0.3);
+      --border-active: #8b5cf6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      
+      --gradient-host: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+      --gradient-match: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+      --gradient-score: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+      
+      --glow-purple: 0 0 20px rgba(139, 92, 246, 0.2);
+      --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.2);
+      --shadow-main: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background: rgba(9, 11, 17, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: var(--gradient-score);
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.4rem;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -1px;
+      box-shadow: var(--glow-purple);
+    }
+
+    .logo-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #fff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-info {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Sidebar - Host Selection */
+    .sidebar {
+      width: 320px;
+      background: rgba(15, 18, 29, 0.6);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .host-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .host-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .host-card.active {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--border-active);
+      box-shadow: var(--glow-purple);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .gender-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 1rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .gender-badge.female {
+      background: rgba(236, 72, 153, 0.15);
+      color: #f472b6;
+      border: 1px solid rgba(236, 72, 153, 0.2);
+    }
+
+    .gender-badge.male {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .card-snippet {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Dashboard Main Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .workspace-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 1rem;
+    }
+
+    .workspace-placeholder svg {
+      width: 4rem;
+      height: 4rem;
+      stroke: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .workspace-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 1.5rem 2rem;
+      gap: 1.5rem;
+    }
+
+    /* Tabs for Matches Selection */
+    .tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .tab-button {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-button:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .tab-button.active {
+      background: var(--bg-secondary);
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .match-percentage-badge {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      padding: 0.1rem 0.4rem;
+      font-size: 0.75rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Panels Grid Layout */
+    .comparison-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr auto;
+      gap: 1.5rem;
+      overflow: hidden;
+      padding-right: 0.5rem;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+      max-height: 700px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-title.host-color {
+      background: var(--gradient-host);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .panel-title.match-color {
+      background: var(--gradient-match);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .panel-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    /* Sub-tabs Profile vs Tracks */
+    .sub-tabs-container {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .sub-tab-button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .sub-tab-button:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .sub-tab-button.active {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
+      font-weight: 600;
+    }
+
+    .profile-details-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .narration-box {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      border: 1px dashed rgba(255, 255, 255, 0.05);
+      font-size: 0.925rem;
+      line-height: 1.6;
+      color: rgba(243, 244, 246, 0.95);
+      min-height: 120px;
+      flex-shrink: 0;
+    }
+
+    /* Interest Pills */
+    .interests-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .interests-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text-muted);
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag-pill {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .tag-pill.shared {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      font-weight: 500;
+    }
+
+    .tag-pill.unique {
+      color: var(--text-muted);
+    }
+
+    /* Personality Visualisation */
+    .personality-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .personality-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chart-container {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .chart-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .chart-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .row-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .bar-wrapper {
+      height: 24px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      overflow: hidden;
+    }
+
+    .bar-center-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.15);
+      z-index: 2;
+    }
+
+    .bar-fill {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 3px;
+      z-index: 1;
+      opacity: 0.85;
+      transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .bar-fill.host-fill {
+      background: var(--gradient-host);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    }
+
+    .bar-fill.match-fill {
+      background: var(--gradient-match);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+    }
+
+    /* Tracks List CSS */
+    .tracks-details-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .tracks-list-scrollable {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-right: 0.25rem;
+      flex: 1;
+    }
+
+    .track-item {
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .track-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .track-main-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .track-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .track-artist {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .track-album {
+      font-size: 0.75rem;
+      color: rgba(156, 163, 175, 0.55);
+      font-style: italic;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 60%;
+    }
+
+    .track-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .track-tag-pill {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.4rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+
+    .track-item.shared-track {
+      border-color: rgba(16, 185, 129, 0.25);
+      background: rgba(16, 185, 129, 0.04);
+    }
+
+    .track-item.shared-artist {
+      border-color: rgba(139, 92, 246, 0.25);
+      background: rgba(139, 92, 246, 0.03);
+    }
+
+    .shared-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .shared-badge.track {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .shared-badge.artist {
+      background: rgba(139, 92, 246, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    /* Global Comparative Panel (Affinity Score Card) */
+    .affinity-panel {
+      grid-column: span 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(22, 28, 45, 0.6) 0%, rgba(15, 18, 29, 0.8) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 1.25rem;
+      padding: 1.5rem 2rem;
+    }
+
+    .affinity-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 60%;
+    }
+
+    .affinity-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .affinity-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .score-circle-container {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circular-chart {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 3.2;
+    }
+
+    .circle {
+      fill: none;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.8s ease;
+    }
+
+    .circle.purple-stroke {
+      stroke: url(#scoreGradient);
+      filter: drop-shadow(0px 0px 8px rgba(139, 92, 246, 0.5));
+    }
+
+    .score-text {
+      position: absolute;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .score-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        height: auto;
+        overflow: auto;
+      }
+      .main-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        max-height: 250px;
+      }
+      .workspace {
+        overflow: visible;
+      }
+      .workspace-content {
+        overflow: visible;
+        height: auto;
+      }
+      .comparison-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        overflow: visible;
+      }
+      .affinity-panel {
+        grid-column: span 1;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge">V</div>
+      <div class="logo-title">Viberr Match Analysis</div>
+    </div>
+    <div class="header-info">
+      Vector Engine: <strong>Qdrant (DBSF Fusion)</strong>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- Sidebar - Host Users Selector -->
+    <div class="sidebar">
+      <div class="section-title">Host Profile Analysis</div>
+      <div id="host-list">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Main Content Workspace -->
+    <div class="workspace">
+      <div id="placeholder" class="workspace-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.97 5.97 0 0 0-.75-2.906m-.173-4.059a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM3.74 18.72a9.094 9.094 0 0 1 3.741-.479 3 3 0 0 1-4.682-2.72m.94 3.198.002.031c0 .225-.012.447-.038.666A11.944 11.944 0 0 0 12 21c2.17 0 4.207-.576 5.963-1.584A6.062 6.062 0 0 0 18 18.72M3 18.72a5.97 5.97 0 0 1 .75-2.906m-.173-4.059a4.5 4.5 0 1 0-9 0 4.5 4.5 0 0 0 9 0Z" />
+        </svg>
+        <p>Select a host profile from the sidebar to visualize and analyze matches</p>
+      </div>
+
+      <div id="workspace-content" class="workspace-content" style="display: none;">
+        <!-- Tabs bar for Matches selection -->
+        <div class="tabs-container">
+          <div class="interests-label" style="margin-right: 0.5rem;">Select Match:</div>
+          <div id="match-tabs" style="display: flex; gap: 0.75rem;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Comparative Columns -->
+        <div class="comparison-grid">
+          
+          <!-- Host Panel -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="panel-title host-color" id="host-title-name">Cynthia Reese</span>
+              <span class="panel-label">Host Profile</span>
+            </div>
+
+            <!-- Sub-tabs Profile vs Tracks -->
+            <div class="sub-tabs-container">
+              <button class="sub-tab-button active" id="host-subtab-profile" onclick="toggleCardTab('host', 'profile')">Profile Analysis</button>
+              <button class="sub-tab-button" id="host-subtab-tracks" onclick="toggleCardTab('host', 'tracks')">Top 30 Tracks</button>
+            </div>
+            
+            <!-- Profile Info Container -->
+            <div class="profile-details-container" id="host-profile-details">
+              <div class="narration-box" id="host-narration">
+                Loading...
+              </div>
+              
+              <div class="interests-box">
+                <span class="interests-label">Interests Profile</span>
+                <div class="tags-container" id="host-interests-tags">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <div class="personality-section">
+                <div class="personality-header">
+                  <span class="interests-label">Personality Coordinates</span>
+                  <span class="gender-badge female" id="host-gender-tag">Female</span>
+                </div>
+                
+                <div class="chart-container" id="host-personality-chart">
+                  <!-- Bidirectional Bars Rendered via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tracks List Container -->
+            <div class="tracks-details-container" id="host-tracks-details" style="display: none;">
+              <span class="interests-label">Tracks History (Top 30)</span>
+              <div class="tracks-list-scrollable" id="host-tracks-list">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Matched User Panel -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="panel-title match-color" id="match-title-name">Rank 1 Match</span>
+              <span class="panel-label">Best Fit Matched Profile</span>
+            </div>
+
+            <!-- Sub-tabs Profile vs Tracks -->
+            <div class="sub-tabs-container">
+              <button class="sub-tab-button active" id="match-subtab-profile" onclick="toggleCardTab('match', 'profile')">Profile Analysis</button>
+              <button class="sub-tab-button" id="match-subtab-tracks" onclick="toggleCardTab('match', 'tracks')">Top 30 Tracks</button>
+            </div>
+            
+            <!-- Profile Info Container -->
+            <div class="profile-details-container" id="match-profile-details">
+              <div class="narration-box" id="match-narration">
+                Loading...
+              </div>
+              
+              <div class="interests-box">
+                <span class="interests-label">Interests Profile</span>
+                <div class="tags-container" id="match-interests-tags">
+                  <!-- Rendered via JS -->
+                </div>
+              </div>
+
+              <div class="personality-section">
+                <div class="personality-header">
+                  <span class="interests-label">Personality Coordinates</span>
+                  <span class="gender-badge male" id="match-gender-tag">Male</span>
+                </div>
+                
+                <div class="chart-container" id="match-personality-chart">
+                  <!-- Bidirectional Bars Rendered via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tracks List Container -->
+            <div class="tracks-details-container" id="match-tracks-details" style="display: none;">
+              <span class="interests-label">Tracks History (Top 30)</span>
+              <div class="tracks-list-scrollable" id="match-tracks-list">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Affinity Score Card -->
+          <div class="affinity-panel">
+            <div class="affinity-info">
+              <div class="affinity-title" id="affinity-score-heading">Calculated Fusion Affinity</div>
+              <div class="affinity-desc" id="affinity-explanation">
+                The DBSF Fusion query evaluates music vibes, interests alignment, and psychological coordinates.
+              </div>
+            </div>
+            
+            <div class="score-circle-container">
+              <svg viewBox="0 0 36 36" class="circular-chart">
+                <defs>
+                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#8b5cf6" />
+                    <stop offset="100%" stop-color="#06b6d4" />
+                  </linearGradient>
+                </defs>
+                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle purple-stroke" id="score-circle-stroke" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <div class="score-text">
+                <span id="affinity-score-percent">0.00</span>
+                <span class="score-label">Affinity</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded Data from search_test.py
+    const appData = [
+  {
+    "host": {
+      "id": 1,
+      "name": "Cynthia Reese",
+      "gender": "female",
+      "interests": [
+        "Coding & Tech",
+        "Podcasting",
+        "Gardening",
+        "Photography",
+        "Volunteering",
+        "Gaming",
+        "Fashion & Styling",
+        "History & Museums"
+      ],
+      "narration": "The listening profile oscillates between high\u2011tempo, glossy club aesthetics\u2014characterized by polished EDM synths, funk\u2011infused Afrobeats, reggaeton rhythmic drives, K\u2011pop sheen, and hard\u2011edge trap/UK\u2011drill aggression\u2014and low\u2011energy, texturally sparse ambient soundscapes and intimate folk\u2011pop singer\u2011songwriter settings that foreground warm acoustic guitar timbres, melancholic lyricism, and restrained vocal delivery, revealing a dual preference for exuberant, dance\u2011floor catharsis and introspective, emotive contemplation. Culturally the selections span Anglophone mainstream rock and pop\u2011punk nostalgia, 70\u201180s soul\u2011disco grooves, 90s West\u2011Coast hip\u2011hop empowerment, contemporary Latin and Nigerian urban styles, and South\u2011Asian Punjabi rap, indicating a pronounced cosmopolitan taste that embraces both sentimental romance (e.g., Ed\u202fSheeran, Tamia) and confrontational bravado (e.g., Kendrick\u202fLamar, Gunna, Shubh).",
+      "personality": [
+        -0.39904296,
+        -0.32441732,
+        -0.39993405,
+        -0.15556291,
+        0.7425437,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tracks": [
+        {
+          "track_name": "Leave Before You Love Me (with Jonas Brothers)",
+          "track_artist": "Marshmello, Jonas Brothers",
+          "track_album_name": "Leave Before You Love Me",
+          "tags": []
+        },
+        {
+          "track_name": "Whistle (feat. Calum Scott)",
+          "track_artist": "Jax Jones, Calum Scott",
+          "track_album_name": "Whistle (feat. Calum Scott)",
+          "tags": [
+            "dance"
+          ]
+        },
+        {
+          "track_name": "memories",
+          "track_artist": "leadwave",
+          "track_album_name": "memories",
+          "tags": [
+            "ambient",
+            "chillout",
+            "instrumental",
+            "dark ambient",
+            "dreamscape",
+            "russian"
+          ]
+        },
+        {
+          "track_name": "The Rock Show",
+          "track_artist": "blink-182",
+          "track_album_name": "Take Off Your Pants And Jacket",
+          "tags": [
+            "punk rock",
+            "pop punk",
+            "punk",
+            "rock",
+            "Blink 182",
+            "alternative",
+            "alternative rock",
+            "happy",
+            "fun",
+            "catchy"
+          ]
+        },
+        {
+          "track_name": "Photograph",
+          "track_artist": "Ed Sheeran",
+          "track_album_name": "x (Deluxe Edition)",
+          "tags": [
+            "pop",
+            "love at first listen",
+            "emotional",
+            "my song",
+            "best song of the world",
+            "Love",
+            "british",
+            "lovely",
+            "Ed Sheeran",
+            "beautiful lyrics"
+          ]
+        },
+        {
+          "track_name": "This Girl (Kungs Vs. Cookin' On 3 Burners)",
+          "track_artist": "Kungs, Cookin' On 3 Burners",
+          "track_album_name": "Layers",
+          "tags": []
+        },
+        {
+          "track_name": "Jump - 2015 Remaster",
+          "track_artist": "Van Halen",
+          "track_album_name": "1984 (Remastered)",
+          "tags": [
+            "hard rock",
+            "80s",
+            "pop",
+            "rock",
+            "mistagged",
+            "pop rock",
+            "1984",
+            "classic tracks",
+            "adult oriented rock",
+            "van halen"
+          ]
+        },
+        {
+          "track_name": "Best of My Love",
+          "track_artist": "The Emotions",
+          "track_album_name": "Rejoice",
+          "tags": [
+            "soul",
+            "70s",
+            "USA",
+            "female vocalists",
+            "laptop",
+            "albums I have to listen to",
+            "1977",
+            "american group",
+            "disco soul",
+            "one of the best emotions jams"
+          ]
+        },
+        {
+          "track_name": "Keep Ya Head Up",
+          "track_artist": "2Pac",
+          "track_album_name": "Strictly 4 My N.I.G.G.A.Z...",
+          "tags": [
+            "rap",
+            "2pac",
+            "Hip-Hop",
+            "hip hop",
+            "90s",
+            "Gangsta Rap",
+            "West Coast Rap",
+            "west coast",
+            "inspirational",
+            "Keep ya head up"
+          ]
+        },
+        {
+          "track_name": "Are you there?",
+          "track_artist": "Ayo Maff",
+          "track_album_name": "MAFFIAN",
+          "tags": [
+            "lagos"
+          ]
+        },
+        {
+          "track_name": "Loading",
+          "track_artist": "Central Cee",
+          "track_album_name": "Wild West",
+          "tags": [
+            "UK hip-hop",
+            "UK hip hop",
+            "UK rap",
+            "UK Drill"
+          ]
+        },
+        {
+          "track_name": "My Sharona",
+          "track_artist": "The Knack",
+          "track_album_name": "Get The Knack",
+          "tags": [
+            "1979",
+            "new wave",
+            "power pop",
+            "rock",
+            "classic rock",
+            "vinyl",
+            "Playful",
+            "Get the Knack",
+            "powerpop",
+            "rock and roll party"
+          ]
+        },
+        {
+          "track_name": "In A Good Way",
+          "track_artist": "Faye Webster",
+          "track_album_name": "I Know I'm Funny haha",
+          "tags": [
+            "WSUM 91.7 FM Madison",
+            "Digital Tendencies",
+            "Picturesque Playlists with DJ Owen",
+            "soft rock",
+            "singer-songwriter",
+            "romantic",
+            "The Rewind",
+            "indie",
+            "Alt-country",
+            "Love"
+          ]
+        },
+        {
+          "track_name": "End Of The Road",
+          "track_artist": "Boyz II Men",
+          "track_album_name": "Cooleyhighharmony (Bonus Tracks Version)",
+          "tags": [
+            "rnb",
+            "soul",
+            "90s",
+            "pop",
+            "r and b",
+            "r&b",
+            "male vocalists",
+            "new jack swing",
+            "american",
+            "motown"
+          ]
+        },
+        {
+          "track_name": "fukumean",
+          "track_artist": "Gunna",
+          "track_album_name": "a Gift & a Curse",
+          "tags": [
+            "hip hop",
+            "rap",
+            "trap",
+            "jazz",
+            "funk",
+            "indie",
+            "electronica",
+            "Hard",
+            "USA",
+            "sex"
+          ]
+        },
+        {
+          "track_name": "Unstoppable",
+          "track_artist": "Sia",
+          "track_album_name": "This Is Acting (Deluxe Version)",
+          "tags": [
+            "powerful",
+            "pop",
+            "my top songs",
+            "electropop",
+            "sia",
+            "australian",
+            "female vocalists",
+            "singer-songwriter",
+            "Confident",
+            "perfect"
+          ]
+        },
+        {
+          "track_name": "Solo",
+          "track_artist": "Myles Smith",
+          "track_album_name": "Solo",
+          "tags": [
+            "folk",
+            "british",
+            "americana",
+            "pop",
+            "singer-songwriter",
+            "alternative",
+            "UK Pop",
+            "indie folk",
+            "United Kingdom",
+            "male vocalists"
+          ]
+        },
+        {
+          "track_name": "Tailor Swif",
+          "track_artist": "A$AP Rocky",
+          "track_album_name": "Tailor Swif",
+          "tags": [
+            "east coast hip hop",
+            "trap",
+            "cloud rap",
+            "memphis rap",
+            "ASAP Rocky",
+            "motomano",
+            "plugg"
+          ]
+        },
+        {
+          "track_name": "So Into You",
+          "track_artist": "Tamia",
+          "track_album_name": "Tamia",
+          "tags": [
+            "rnb",
+            "soulful",
+            "cool breeze",
+            "grooves",
+            "Talent",
+            "r and b",
+            "female vocalists",
+            "slow sessions",
+            "Seduction",
+            "grown n sexy"
+          ]
+        },
+        {
+          "track_name": "Stacy's Mom",
+          "track_artist": "Fountains Of Wayne",
+          "track_album_name": "Welcome Interstate Managers",
+          "tags": [
+            "power pop",
+            "pop",
+            "rock",
+            "alternative",
+            "fun",
+            "00s",
+            "2003",
+            "indie",
+            "catchy",
+            "MILF"
+          ]
+        },
+        {
+          "track_name": "edamame",
+          "track_artist": "bbno$, Rich Brian",
+          "track_album_name": "eat ya veggies",
+          "tags": []
+        },
+        {
+          "track_name": "Si Se Da - Remix",
+          "track_artist": "Myke Towers, Farruko, Arc\u00e1ngel, Sech, Zion",
+          "track_album_name": "Si Se da Remix",
+          "tags": []
+        },
+        {
+          "track_name": "My Home",
+          "track_artist": "Myles Smith",
+          "track_album_name": "My Home",
+          "tags": [
+            "folk",
+            "british",
+            "americana",
+            "pop",
+            "singer-songwriter",
+            "alternative",
+            "UK Pop",
+            "indie folk",
+            "United Kingdom",
+            "male vocalists"
+          ]
+        },
+        {
+          "track_name": "Tan Bonita",
+          "track_artist": "Piso 21",
+          "track_album_name": "El Amor En Los Tiempos Del Perreo",
+          "tags": [
+            "latin",
+            "Reggaeton",
+            "All",
+            "pop",
+            "Colombia",
+            "spanish",
+            "Brutal Death Metal",
+            "boy band",
+            "shit music",
+            "boybands"
+          ]
+        },
+        {
+          "track_name": "Pa' Que Retozen",
+          "track_artist": "Tego Calder\u00f3n",
+          "track_album_name": "El Abayarde",
+          "tags": [
+            "Latin Rap",
+            "Reggaeton",
+            "regaton",
+            "horny",
+            "sexual style",
+            "latin lover",
+            "Regayton",
+            "busting it down",
+            "pa ke retozen"
+          ]
+        },
+        {
+          "track_name": "LIKE THAT",
+          "track_artist": "BABYMONSTER",
+          "track_album_name": "BABYMONS7ER",
+          "tags": [
+            "Korean",
+            "k-pop",
+            "2024",
+            "Kpop"
+          ]
+        },
+        {
+          "track_name": "Stronger",
+          "track_artist": "Young Jonn",
+          "track_album_name": "Jiggy Forever",
+          "tags": [
+            "afrobeats",
+            "nigeria",
+            "singer",
+            "african",
+            "young john",
+            "naija",
+            "producer",
+            "the wicked producer"
+          ]
+        },
+        {
+          "track_name": "Let's Groove",
+          "track_artist": "Earth, Wind & Fire",
+          "track_album_name": "Raise!",
+          "tags": [
+            "funk",
+            "Disco",
+            "soul",
+            "80s",
+            "dance",
+            "70s",
+            "rnb",
+            "Earth Wind and Fire",
+            "funky",
+            "1981"
+          ]
+        },
+        {
+          "track_name": "euphoria",
+          "track_artist": "Kendrick Lamar",
+          "track_album_name": "euphoria",
+          "tags": [
+            "Diss",
+            "diss track",
+            "hardcore hip hop",
+            "Hip-Hop",
+            "trap",
+            "2024",
+            "rap",
+            "hip hop",
+            "kendrick lamar",
+            "jazz rap"
+          ]
+        },
+        {
+          "track_name": "King Shit",
+          "track_artist": "Shubh",
+          "track_album_name": "Leo",
+          "tags": [
+            "rap",
+            "Hip-Hop",
+            "india",
+            "Indian",
+            "punjabi rap",
+            "Punjabi"
+          ]
+        }
+      ]
+    },
+    "matches": [
+      {
+        "rank": 1,
+        "id": 18,
+        "name": "Natalie Mendoza",
+        "gender": "female",
+        "interests": [
+          "Gardening",
+          "Hiking & Outdoors",
+          "Wine Tasting",
+          "Reading & Literature",
+          "Gaming",
+          "Coffee & Cafes",
+          "Songwriting",
+          "Podcasting"
+        ],
+        "narration": "The listening pattern alternates between high\u2011octane, distortion\u2011laden rock and rap aggression\u2014punk anthems, grunge gloom, trap thuds and EDM surges\u2014and low\u2011tempo, introspective soundscapes of ambient pop, piano\u2011driven melancholy, and soulful croons, indicating a dual drive for cathartic release and contemplative solace. This juxtaposition of nostalgically warm vintage soul and classic pop duets with contemporary hyper\u2011modern hip\u2011hop hybrids and Latin\u2011urban rhythms reveals a simultaneous attraction to retro authenticity and cutting\u2011edge genre\u2011blending flamboyance, while lyrical content flips from swaggering bravado and rebellious defiance to vulnerable self\u2011reflection and romantic longing.",
+        "personality": [
+          0.07465399,
+          -0.49078873,
+          -0.38157666,
+          -0.20218344,
+          0.0,
+          0.0,
+          0.5324821,
+          0.5324821,
+          0.0,
+          0.0
+        ],
+        "score": 1.9945467,
+        "tracks": [
+          {
+            "track_name": "Both Ways",
+            "track_artist": "Juice WRLD",
+            "track_album_name": "The Pre-Party (Extended)",
+            "tags": [
+              "rap",
+              "Juice WRLD"
+            ]
+          },
+          {
+            "track_name": "I Love Rock 'N Roll",
+            "track_artist": "Joan Jett & the Blackhearts",
+            "track_album_name": "I Love Rock 'N' Roll (Expanded Edition)",
+            "tags": [
+              "Joan Jett and the Blackhearts"
+            ]
+          },
+          {
+            "track_name": "How Soon Is Now? - 2011 Remaster",
+            "track_artist": "The Smiths",
+            "track_album_name": "Hatful of Hollow",
+            "tags": [
+              "post-punk",
+              "psychedelic",
+              "indie",
+              "shoegaze",
+              "indie rock",
+              "baggy",
+              "Neo-Psychedelia",
+              "johnny marr",
+              "the greatest band of all time",
+              "boobs"
+            ]
+          },
+          {
+            "track_name": "Last Night",
+            "track_artist": "Morgan Wallen",
+            "track_album_name": "3 Songs At A Time Sampler",
+            "tags": [
+              "country pop",
+              "country",
+              "bro-country",
+              "us number one",
+              "pop",
+              "2020s",
+              "2023",
+              "rnb",
+              "american",
+              "sexy"
+            ]
+          },
+          {
+            "track_name": "Hypnotize - 2014 Remaster",
+            "track_artist": "The Notorious B.I.G.",
+            "track_album_name": "Life After Death (2014 Remastered Edition)",
+            "tags": [
+              "pop rap",
+              "Gangsta Rap",
+              "east coast hip hop",
+              "old school hiphop",
+              "G-funk",
+              "hip hop soul"
+            ]
+          },
+          {
+            "track_name": "I'm Good Luv, Enjoy.",
+            "track_artist": "Aaron May",
+            "track_album_name": "CHASE",
+            "tags": [
+              "rap",
+              "hip hop",
+              "underground hip hop",
+              "jazz rap",
+              "Indie Hip Hop",
+              "underground hip-hop",
+              "Hip-Hop",
+              "United States",
+              "Houston",
+              "texas"
+            ]
+          },
+          {
+            "track_name": "Unstoppable",
+            "track_artist": "Sia",
+            "track_album_name": "This Is Acting (Deluxe Version)",
+            "tags": [
+              "powerful",
+              "pop",
+              "my top songs",
+              "electropop",
+              "sia",
+              "australian",
+              "female vocalists",
+              "singer-songwriter",
+              "Confident",
+              "perfect"
+            ]
+          },
+          {
+            "track_name": "Infinity 2008 - Klaas Vocal Edit",
+            "track_artist": "Guru Josh Project, Klaas",
+            "track_album_name": "Infinity 2008",
+            "tags": []
+          },
+          {
+            "track_name": "American Idiot",
+            "track_artist": "Green Day",
+            "track_album_name": "American Idiot",
+            "tags": [
+              "punk rock",
+              "rock",
+              "punk",
+              "alternative",
+              "green day",
+              "test",
+              "testing",
+              "pop punk",
+              "alternative rock",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "Sorry Not Sorry",
+            "track_artist": "Lil Yachty, Veeze",
+            "track_album_name": "Sorry Not Sorry",
+            "tags": []
+          },
+          {
+            "track_name": "Get Up (Rattle) [feat. Far East Movement] - Vocal Edit",
+            "track_artist": "Bingo Players, Far East Movement",
+            "track_album_name": "Get Up (Rattle) [feat. Far East Movement]",
+            "tags": []
+          },
+          {
+            "track_name": "Control",
+            "track_artist": "Zoe Wees",
+            "track_album_name": "Control",
+            "tags": [
+              "pop",
+              "german",
+              "singer-songwriter",
+              "female vocalists",
+              "yandex music",
+              "3-5",
+              "electropop",
+              "sad pop",
+              "contemporary rnb",
+              "electronic"
+            ]
+          },
+          {
+            "track_name": "Stand By Me",
+            "track_artist": "Ben E. King",
+            "track_album_name": "Don't Play That Song (Mono)",
+            "tags": [
+              "soul",
+              "oldies",
+              "60s",
+              "blues",
+              "classic",
+              "Love",
+              "stand by me",
+              "romantic",
+              "pop",
+              "Ben E King"
+            ]
+          },
+          {
+            "track_name": "Don't Go Breaking My Heart",
+            "track_artist": "Elton John, Kiki Dee",
+            "track_album_name": "Rock Of The Westies",
+            "tags": []
+          },
+          {
+            "track_name": "Getting Older",
+            "track_artist": "Billie Eilish",
+            "track_album_name": "Happier Than Ever",
+            "tags": [
+              "ambient pop",
+              "alternative",
+              "singer-songwriter",
+              "indie",
+              "pop",
+              "downtempo",
+              "electropop",
+              "alt-pop",
+              "pop soul",
+              "electronic"
+            ]
+          },
+          {
+            "track_name": "Sunflower - Spider-Man: Into the Spider-Verse",
+            "track_artist": "Post Malone, Swae Lee",
+            "track_album_name": "Hollywood's Bleeding",
+            "tags": [
+              "american"
+            ]
+          },
+          {
+            "track_name": "DOS D\u00cdAS",
+            "track_artist": "Tito Double P, Peso Pluma",
+            "track_album_name": "INC\u00d3MODO",
+            "tags": []
+          },
+          {
+            "track_name": "Riptide",
+            "track_artist": "Vance Joy",
+            "track_album_name": "Dream Your Life Away (Deluxe Edition)",
+            "tags": [
+              "folk",
+              "indie",
+              "australian",
+              "alternative",
+              "indie folk",
+              "2013",
+              "pop",
+              "indie pop",
+              "singer-songwriter",
+              "2014"
+            ]
+          },
+          {
+            "track_name": "See You Again (feat. Kali Uchis)",
+            "track_artist": "Tyler, The Creator, Kali Uchis",
+            "track_album_name": "Flower Boy",
+            "tags": []
+          },
+          {
+            "track_name": "Bed Chem",
+            "track_artist": "Sabrina Carpenter",
+            "track_album_name": "Short n' Sweet",
+            "tags": [
+              "pop",
+              "2024",
+              "funk",
+              "female vocalist",
+              "rnb",
+              "synthpop",
+              "dance",
+              "boogie",
+              "american",
+              "slim"
+            ]
+          },
+          {
+            "track_name": "Mask Off",
+            "track_artist": "Future",
+            "track_album_name": "FUTURE",
+            "tags": [
+              "future",
+              "trap",
+              "hip hop",
+              "Hip-Hop",
+              "rap",
+              "flute",
+              "2017",
+              "american",
+              "Dope",
+              "Southern Hip Hop"
+            ]
+          },
+          {
+            "track_name": "Wild Ones (feat. Sia)",
+            "track_artist": "Flo Rida, Sia",
+            "track_album_name": "Wild Ones",
+            "tags": [
+              "dance",
+              "pop",
+              "Hip-Hop",
+              "rap",
+              "party",
+              "Flo Rida",
+              "dance pop",
+              "rnb",
+              "club",
+              "summer"
+            ]
+          },
+          {
+            "track_name": "Black Hole Sun",
+            "track_artist": "Soundgarden",
+            "track_album_name": "Superunknown (Deluxe Edition)",
+            "tags": [
+              "Grunge",
+              "90s",
+              "rock",
+              "alternative rock",
+              "alternative",
+              "soundgarden",
+              "hard rock",
+              "seattle",
+              "1994",
+              "Chris Cornell"
+            ]
+          },
+          {
+            "track_name": "A Thousand Miles",
+            "track_artist": "Vanessa Carlton",
+            "track_album_name": "Be Not Nobody",
+            "tags": [
+              "pop",
+              "female vocalists",
+              "piano",
+              "singer-songwriter",
+              "vanessa carlton",
+              "Love",
+              "00s",
+              "beautiful",
+              "american",
+              "female vocalist"
+            ]
+          },
+          {
+            "track_name": "Tessera sanitaria (feat. Nerissima Serpe & Papa V)",
+            "track_artist": "Night Skinny, Nerissima Serpe, Papa V",
+            "track_album_name": "Containers",
+            "tags": []
+          },
+          {
+            "track_name": "What About Us",
+            "track_artist": "P!nk",
+            "track_album_name": "Beautiful Trauma",
+            "tags": [
+              "2017",
+              "pop",
+              "pop rock",
+              "electropop",
+              "best of 2017",
+              "2010s",
+              "pink",
+              "\u00c1lbuns \u2705",
+              "2017 listen",
+              "albumsiown"
+            ]
+          },
+          {
+            "track_name": "Cold Heart - PNAU Remix",
+            "track_artist": "Elton John, Dua Lipa, PNAU",
+            "track_album_name": "Cold Heart (PNAU Remix)",
+            "tags": []
+          },
+          {
+            "track_name": "Deus Perdoa",
+            "track_artist": "Filipe Ret, Dallass, Hunter",
+            "track_album_name": "Deus Perdoa",
+            "tags": []
+          },
+          {
+            "track_name": "Sticky (feat. GloRilla, Sexyy Red & Lil Wayne)",
+            "track_artist": "Tyler, The Creator, GloRilla, Sexyy Red, Lil Wayne",
+            "track_album_name": "CHROMAKOPIA",
+            "tags": []
+          },
+          {
+            "track_name": "TUCA DONKA",
+            "track_artist": "CURSEDEVIL, DJ FKU, Skorde",
+            "track_album_name": "TUCA DONKA",
+            "tags": []
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "id": 21,
+        "name": "Lindsey Hughes",
+        "gender": "female",
+        "interests": [
+          "Coding & Tech",
+          "Anime & Manga",
+          "History & Museums",
+          "Photography",
+          "Wine Tasting",
+          "Podcasting",
+          "Fashion & Styling"
+        ],
+        "narration": "The listening profile oscillates between high\u2011BPM, sonically abrasive zones\u2014dense wall\u2011of\u2011guitar nu\u2011metal, trap\u2011driven Southern hip\u2011hop, hard\u2011rock riffs, and synth\u2011saturated club anthems that foreground aggression, swagger and explicit lyrical content\u2014and sparsely arranged, melancholic soundscapes such as minimalist piano minimalism, neo\u2011classical ambience, and emotive pop ballads that foreground yearning, introspection and vocal fragility. This duality is further colored by culturally distinct vantages: British indie\u2011rock/Britpop swagger, French electropop chic, Mexican underground trap grit, and American heartland\u2011rock nostalgia, producing a composite identity that straddles rebellious, confrontational energy and reflective, nostalgic catharsis.",
+        "personality": [
+          0.27255973,
+          -0.06958664,
+          -0.36105007,
+          -0.3047249,
+          0.0,
+          0.48223594,
+          0.48223594,
+          0.0,
+          0.0,
+          0.48223594
+        ],
+        "score": 1.8914407,
+        "tracks": [
+          {
+            "track_name": "Abyss - from Kaiju No. 8",
+            "track_artist": "YUNGBLUD",
+            "track_album_name": "Abyss (from Kaiju No. 8)",
+            "tags": [
+              "indie rock",
+              "rock",
+              "british",
+              "indie",
+              "alternative rock",
+              "alternative",
+              "pop punk",
+              "Hip-Hop",
+              "england",
+              "UK"
+            ]
+          },
+          {
+            "track_name": "My Love (2024)",
+            "track_artist": "Alex Wann, Route 94, Jess Glynne",
+            "track_album_name": "My Love (2024)",
+            "tags": []
+          },
+          {
+            "track_name": "Give It To Me - Full Vocal Mix",
+            "track_artist": "Matt Sassari",
+            "track_album_name": "Give It To Me (Full Vocal Mix)",
+            "tags": [
+              "minimal",
+              "techno",
+              "electronic",
+              "french",
+              "House",
+              "france",
+              "tech-house"
+            ]
+          },
+          {
+            "track_name": "My Own Summer (Shove It)",
+            "track_artist": "Deftones",
+            "track_album_name": "Around the Fur",
+            "tags": [
+              "Nu Metal",
+              "metal",
+              "alternative",
+              "alternative metal",
+              "alternative rock",
+              "rock",
+              "Deftones",
+              "90s",
+              "Nu-metal",
+              "hard rock"
+            ]
+          },
+          {
+            "track_name": "XO Tour Llif3",
+            "track_artist": "Lil Uzi Vert",
+            "track_album_name": "Luv Is Rage 2",
+            "tags": [
+              "emo rap",
+              "trap",
+              "poland",
+              "polish",
+              "2NP",
+              "Lil Uzi Vert",
+              "2017",
+              "cloud rap",
+              "sad",
+              "emo"
+            ]
+          },
+          {
+            "track_name": "Ruc\u00f3n",
+            "track_artist": "Alem\u00e1n",
+            "track_album_name": "Eclipse",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "urban",
+              "mexico",
+              "naco",
+              "mexican hip hop",
+              "underground",
+              "trap mexicano"
+            ]
+          },
+          {
+            "track_name": "Every Rose Has Its Thorn - 2003 Remaster",
+            "track_artist": "Poison",
+            "track_album_name": "Open Up And Say...Ahh! (20th Anniversary Edition)",
+            "tags": [
+              "1988",
+              "1980s"
+            ]
+          },
+          {
+            "track_name": "Wow.",
+            "track_artist": "Post Malone",
+            "track_album_name": "Hollywood's Bleeding",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "trap",
+              "hip hop",
+              "2010s",
+              "2019",
+              "Doom",
+              "pop",
+              "electronica influences",
+              "black metal"
+            ]
+          },
+          {
+            "track_name": "Nuvole Bianche",
+            "track_artist": "Ludovico Einaudi",
+            "track_album_name": "Una Mattina",
+            "tags": [
+              "contemporary classical",
+              "neoclassical",
+              "modern classical",
+              "neo-classical",
+              "post-classical",
+              "piano",
+              "minimalism",
+              "neo classical",
+              "minimalist",
+              "PostClassical"
+            ]
+          },
+          {
+            "track_name": "Saving All My Love for You",
+            "track_artist": "Whitney Houston",
+            "track_album_name": "Whitney Houston",
+            "tags": [
+              "rnb",
+              "80s",
+              "pop",
+              "soul",
+              "whitney houston",
+              "1985",
+              "female vocalists",
+              "vinyl",
+              "rs500",
+              "1980s"
+            ]
+          },
+          {
+            "track_name": "Ambition For Cash",
+            "track_artist": "Key Glock",
+            "track_album_name": "Yellow Tape 2",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "trap",
+              "hip hop",
+              "memphis",
+              "United States",
+              "Gangsta Rap",
+              "Southern Hip Hop",
+              "Go",
+              "art"
+            ]
+          },
+          {
+            "track_name": "Easy On Me",
+            "track_artist": "Adele",
+            "track_album_name": "Easy On Me",
+            "tags": [
+              "2021",
+              "pop",
+              "2020s",
+              "Adele",
+              "unlove",
+              "soul",
+              "piano",
+              "UNLIKE",
+              "Ballad",
+              "playlista rmf fm"
+            ]
+          },
+          {
+            "track_name": "I Adore You (feat. Daecolm)",
+            "track_artist": "HUGEL, Topic, Arash, Daecolm",
+            "track_album_name": "I Adore You (feat. Daecolm)",
+            "tags": []
+          },
+          {
+            "track_name": "K\u00fcle D\u00f6nm\u00fc\u015fs\u00fcn",
+            "track_artist": "Semicenk, Do\u011fu Swag",
+            "track_album_name": "K\u00fcle D\u00f6nm\u00fc\u015fs\u00fcn",
+            "tags": []
+          },
+          {
+            "track_name": "Touches",
+            "track_artist": "Somnum Magnam",
+            "track_album_name": "Touches",
+            "tags": []
+          },
+          {
+            "track_name": "I Smoked Away My Brain (I'm God x Demons Mashup) (feat. Imogen Heap & Clams Casino)",
+            "track_artist": "A$AP Rocky, Imogen Heap, Clams Casino",
+            "track_album_name": "I Smoked Away My Brain (I'm God x Demons Mashup) (feat. Imogen Heap & Clams Casino)",
+            "tags": []
+          },
+          {
+            "track_name": "(I Can't Get No) Satisfaction - Mono Version",
+            "track_artist": "The Rolling Stones",
+            "track_album_name": "Out Of Our Heads",
+            "tags": [
+              "1965",
+              "rock",
+              "classic rock",
+              "60s",
+              "blues rock",
+              "british",
+              "Rock and Roll",
+              "the rolling stones",
+              "1960s",
+              "rolling stone 500 greatest albums of all time"
+            ]
+          },
+          {
+            "track_name": "Fluorescent Adolescent",
+            "track_artist": "Arctic Monkeys",
+            "track_album_name": "Favourite Worst Nightmare",
+            "tags": [
+              "indie rock",
+              "indie",
+              "british",
+              "rock",
+              "alternative",
+              "alternative rock",
+              "arctic monkeys",
+              "00s",
+              "britpop",
+              "Garage Rock"
+            ]
+          },
+          {
+            "track_name": "Get Up (Rattle) [feat. Far East Movement] - Vocal Edit",
+            "track_artist": "Bingo Players, Far East Movement",
+            "track_album_name": "Get Up (Rattle) [feat. Far East Movement]",
+            "tags": []
+          },
+          {
+            "track_name": "Papaoutai",
+            "track_artist": "Stromae",
+            "track_album_name": "racine carr\u00e9e",
+            "tags": [
+              "french",
+              "pop",
+              "dance",
+              "electronic",
+              "2013",
+              "belgian",
+              "electropop",
+              "catchy",
+              "male vocalists",
+              "summer"
+            ]
+          },
+          {
+            "track_name": "HACIENDO QUE ME AMAS",
+            "track_artist": "Bad Bunny",
+            "track_album_name": "EL \u00daLTIMO TOUR DEL MUNDO",
+            "tags": [
+              "rock",
+              "rap",
+              "Reggaeton",
+              "trap",
+              "2020",
+              "Hip-Hop",
+              "male vocals",
+              "king of pop",
+              "bad bunny",
+              "rey del pop"
+            ]
+          },
+          {
+            "track_name": "Chill Bae",
+            "track_artist": "Lil Uzi Vert",
+            "track_album_name": "Eternal Atake 2",
+            "tags": [
+              "nitrous",
+              "rap",
+              "AOTY",
+              "aldi",
+              "nitrous rap",
+              "2024",
+              "Lil Uzi Vert"
+            ]
+          },
+          {
+            "track_name": "With You",
+            "track_artist": "Chris Brown",
+            "track_album_name": "Exclusive (Expanded Edition)",
+            "tags": [
+              "rnb",
+              "Chris Brown",
+              "Hip-Hop",
+              "Love",
+              "pop",
+              "r&b",
+              "soul",
+              "hip hop",
+              "With You",
+              "sweet"
+            ]
+          },
+          {
+            "track_name": "Born in the U.S.A.",
+            "track_artist": "Bruce Springsteen",
+            "track_album_name": "Born In The U.S.A.",
+            "tags": [
+              "rock",
+              "classic rock",
+              "80s",
+              "Bruce Springsteen",
+              "the boss",
+              "singer-songwriter",
+              "american",
+              "heartland rock",
+              "wrong track streaming",
+              "political"
+            ]
+          },
+          {
+            "track_name": "Apple",
+            "track_artist": "Charli xcx",
+            "track_album_name": "BRAT",
+            "tags": [
+              "synthpop",
+              "electropop",
+              "dance-pop",
+              "synthwave",
+              "pop",
+              "brat",
+              "electronic",
+              "2024",
+              "my top songs",
+              "dance"
+            ]
+          },
+          {
+            "track_name": "Si Se Da - Remix",
+            "track_artist": "Myke Towers, Farruko, Arc\u00e1ngel, Sech, Zion",
+            "track_album_name": "Si Se da Remix",
+            "tags": []
+          },
+          {
+            "track_name": "TUCA DONKA",
+            "track_artist": "CURSEDEVIL, DJ FKU, Skorde",
+            "track_album_name": "TUCA DONKA",
+            "tags": []
+          },
+          {
+            "track_name": "TUMB\u00c1TUM",
+            "track_artist": "Tropa do Bruxo, SMU, Dj Vitin do Pc, MC JF, MC NAHARA",
+            "track_album_name": "Baile do Bruxo (DELUXE)",
+            "tags": []
+          },
+          {
+            "track_name": "You Really Got Me - 2015 Remaster",
+            "track_artist": "Van Halen",
+            "track_album_name": "Van Halen (Remastered)",
+            "tags": [
+              "hard rock",
+              "rock",
+              "classic rock",
+              "80s",
+              "heavy metal",
+              "1970s",
+              "1980s",
+              "elsa jean",
+              "1001 Albums You Must Hear Before You Die",
+              "jessa rhodes"
+            ]
+          },
+          {
+            "track_name": "In the End",
+            "track_artist": "Linkin Park",
+            "track_album_name": "Hybrid Theory (Bonus Edition)",
+            "tags": [
+              "rock",
+              "Nu Metal",
+              "alternative rock",
+              "Linkin Park",
+              "alternative",
+              "metal",
+              "rapcore",
+              "alternative metal",
+              "hard rock",
+              "In the End"
+            ]
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "id": 4,
+        "name": "Jasmine Daniels",
+        "gender": "female",
+        "interests": [
+          "Gardening",
+          "Karaoke",
+          "Wine Tasting",
+          "Coffee & Cafes",
+          "Hiking & Outdoors",
+          "Cycling",
+          "Cooking & Baking"
+        ],
+        "narration": "The listening profile is dominated by high\u2011tempo, synth\u2011laden electropop and house\u2011derived productions\u2014e.g., Daft\u202fPunk, Disclosure, Kygo, 80s new\u2011wave, Euro\u2011dance and K\u2011pop/J\u2011pop entries\u2014characterized by glossy, rhythmic propulsion, bright digital timbres, and an emphasis on cathartic, party\u2011centric affect, while concurrently allocating significant weight to mid\u2011range guitar\u2011driven alternative rock, pop\u2011punk, and folk\u2011blues tracks (Muse, Avril\u202fLavigne, Hozier, Mrs\u202fGREEN\u202fAPPLE) that employ warm analog textures, plaintive vocal delivery, and introspective or defiant lyrical moods.  \nIn the rap sector the user oscillates between melodic, trap\u2011scented club anthems (Drake, Lil\u202fBaby, Gunna, Lil\u202fSkies) and gritty, socially conscious or aggressively confrontational West\u2011Coast narratives (2Pac, gangsta rap), interwoven with disco\u2011era ABBA, soft\u2011rock Phil\u202fCollins, and Afro\u2011beat/Latin inflections (Rema, Bnxn, DJ\u202fJo\u00e3o\u202fPereira), yielding a bifurcated identity that pivots between hedonistic, high\u2011energy dance euphoria and reflective, guitar\u2011rich melancholy.",
+        "personality": [
+          0.01990233,
+          -0.2944172,
+          0.18516031,
+          -0.20327829,
+          0.45752484,
+          0.0,
+          0.0,
+          0.45752484,
+          0.45752484,
+          0.45752484
+        ],
+        "score": 1.7951556,
+        "tracks": [
+          {
+            "track_name": "Rockstar",
+            "track_artist": "LISA",
+            "track_album_name": "Rockstar",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "pop",
+              "electronic",
+              "Kpop",
+              "k-pop",
+              "hip hop",
+              "mpb",
+              "dance pop",
+              "Psychedelia"
+            ]
+          },
+          {
+            "track_name": "Jimmy Cooks (feat. 21 Savage)",
+            "track_artist": "Drake, 21 Savage",
+            "track_album_name": "Honestly, Nevermind",
+            "tags": [
+              "Drake"
+            ]
+          },
+          {
+            "track_name": "Can't Hold Us (feat. Ray Dalton)",
+            "track_artist": "Macklemore, Ryan Lewis, Macklemore & Ryan Lewis, Ray Dalton",
+            "track_album_name": "The Heist",
+            "tags": []
+          },
+          {
+            "track_name": "Move",
+            "track_artist": "Adam Port, Stryv, Keinemusik, Orso, Malachiii",
+            "track_album_name": "Move",
+            "tags": []
+          },
+          {
+            "track_name": "KICK BACK",
+            "track_artist": "Kenshi Yonezu",
+            "track_album_name": "KICK BACK",
+            "tags": [
+              "j-pop",
+              "anime",
+              "Chainsaw Man",
+              "vocal",
+              "J-rock",
+              "Drum and bass",
+              "japanese",
+              "Wicked",
+              "Playful",
+              "steady"
+            ]
+          },
+          {
+            "track_name": "Dancing Queen",
+            "track_artist": "ABBA",
+            "track_album_name": "Arrival",
+            "tags": [
+              "Disco",
+              "pop",
+              "70s",
+              "abba",
+              "dance",
+              "swedish",
+              "1976",
+              "oldies",
+              "dancing queen",
+              "female vocalists"
+            ]
+          },
+          {
+            "track_name": "DAN\u00c7A PRA ME PROVOCAR",
+            "track_artist": "DJ JO\u00c3O PEREIRA, MC Koringa",
+            "track_album_name": "DAN\u00c7A PRA ME PROVOCAR",
+            "tags": []
+          },
+          {
+            "track_name": "You & Me - Rivo Remix",
+            "track_artist": "Disclosure, Eliza Doolittle, Rivo",
+            "track_album_name": "You & Me (Rivo Remix)",
+            "tags": []
+          },
+          {
+            "track_name": "Take on Me",
+            "track_artist": "a-ha",
+            "track_album_name": "Hunting High and Low",
+            "tags": [
+              "80s",
+              "pop",
+              "new wave",
+              "synthpop",
+              "synth pop",
+              "a-ha",
+              "norwegian",
+              "dance",
+              "electronic",
+              "rock"
+            ]
+          },
+          {
+            "track_name": "Barbie Girl",
+            "track_artist": "Aqua",
+            "track_album_name": "Aquarium (Special Edition)",
+            "tags": [
+              "pop",
+              "90s",
+              "dance",
+              "eurodance",
+              "Aqua",
+              "bubblegum",
+              "1997",
+              "barbie",
+              "fun",
+              "party"
+            ]
+          },
+          {
+            "track_name": "Let Me Love You",
+            "track_artist": "Mario",
+            "track_album_name": "Turning Point",
+            "tags": [
+              "rnb",
+              "Mario",
+              "Love",
+              "soul",
+              "pop",
+              "let me love you - mario",
+              "r&b",
+              "Let Me Love You",
+              "slow jams",
+              "Hip-Hop"
+            ]
+          },
+          {
+            "track_name": "Keep Ya Head Up",
+            "track_artist": "2Pac",
+            "track_album_name": "Strictly 4 My N.I.G.G.A.Z...",
+            "tags": [
+              "rap",
+              "2pac",
+              "Hip-Hop",
+              "hip hop",
+              "90s",
+              "Gangsta Rap",
+              "West Coast Rap",
+              "west coast",
+              "inspirational",
+              "Keep ya head up"
+            ]
+          },
+          {
+            "track_name": "Supermassive Black Hole",
+            "track_artist": "Muse",
+            "track_album_name": "Black Holes and Revelations",
+            "tags": [
+              "alternative rock",
+              "rock",
+              "alternative",
+              "british",
+              "Muse",
+              "twilight",
+              "sexy",
+              "Progressive rock",
+              "indie",
+              "Soundtrack"
+            ]
+          },
+          {
+            "track_name": "IA",
+            "track_artist": "Clarent, Mora",
+            "track_album_name": "IA",
+            "tags": []
+          },
+          {
+            "track_name": "I Took A Pill In Ibiza - Seeb Remix",
+            "track_artist": "Mike Posner, Seeb",
+            "track_album_name": "At Night, Alone.",
+            "tags": []
+          },
+          {
+            "track_name": "Fi Kan We Kan",
+            "track_artist": "Bnxn, Rema",
+            "track_album_name": "Fi Kan We Kan",
+            "tags": []
+          },
+          {
+            "track_name": "My Happy Ending",
+            "track_artist": "Avril Lavigne",
+            "track_album_name": "Under My Skin",
+            "tags": [
+              "pop rock",
+              "rock",
+              "pop",
+              "avril lavigne",
+              "female vocalists",
+              "Canadian",
+              "alternative rock",
+              "pop punk",
+              "alternative",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "Inolvidable",
+            "track_artist": "Ovy On The Drums, Be\u00e9le",
+            "track_album_name": "Inolvidable",
+            "tags": []
+          },
+          {
+            "track_name": "Lust",
+            "track_artist": "Lil Skies",
+            "track_album_name": "Life of a Dark Rose",
+            "tags": [
+              "cloud rap",
+              "nostalgic",
+              "nostalgia",
+              "pop rap",
+              "trap",
+              "emo rap",
+              "plugg",
+              "Lil Skies"
+            ]
+          },
+          {
+            "track_name": "Whatever",
+            "track_artist": "Kygo, Ava Max",
+            "track_album_name": "Whatever",
+            "tags": []
+          },
+          {
+            "track_name": "Don't Let Me Down",
+            "track_artist": "The Chainsmokers, Daya",
+            "track_album_name": "Don't Let Me Down",
+            "tags": []
+          },
+          {
+            "track_name": "JUJU (feat. Shallipopi)",
+            "track_artist": "Smur Lee, ODUMODUBLVCK, Shallipopi",
+            "track_album_name": "JUJU (feat. Shallipopi)",
+            "tags": []
+          },
+          {
+            "track_name": "Another Day in Paradise - 2016 Remaster",
+            "track_artist": "Phil Collins",
+            "track_album_name": "...But Seriously (Deluxe Edition)",
+            "tags": [
+              "Phil Collins",
+              "soft rock",
+              "rock",
+              "80s",
+              "1989",
+              "pop",
+              "90s",
+              "Z3PO like this",
+              "europa plus",
+              "smoth"
+            ]
+          },
+          {
+            "track_name": "Part Of Me",
+            "track_artist": "Katy Perry",
+            "track_album_name": "Teenage Dream: The Complete Confection",
+            "tags": [
+              "pop",
+              "katy perry",
+              "dance",
+              "female vocalists",
+              "2012",
+              "for aerobics",
+              "pop rock",
+              "demo",
+              "max martin",
+              "dance pop"
+            ]
+          },
+          {
+            "track_name": "Darling, I (feat. Teezo Touchdown)",
+            "track_artist": "Tyler, The Creator, Teezo Touchdown",
+            "track_album_name": "CHROMAKOPIA",
+            "tags": []
+          },
+          {
+            "track_name": "One More Time",
+            "track_artist": "Daft Punk",
+            "track_album_name": "Discovery",
+            "tags": [
+              "electronic",
+              "dance",
+              "House",
+              "electronica",
+              "techno",
+              "Daft Punk",
+              "party",
+              "french",
+              "french house",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "Would That I",
+            "track_artist": "Hozier",
+            "track_album_name": "Wasteland, Baby!",
+            "tags": [
+              "WSUM 91.7 FM Madison",
+              "the bookshelf",
+              "folk",
+              "rock",
+              "indie",
+              "blues",
+              "soul",
+              "indie rock"
+            ]
+          },
+          {
+            "track_name": "\u30e9\u30a4\u30e9\u30c3\u30af",
+            "track_artist": "Mrs. GREEN APPLE",
+            "track_album_name": "\u30e9\u30a4\u30e9\u30c3\u30af",
+            "tags": [
+              "japanese",
+              "J-rock",
+              "rock",
+              "indie",
+              "alternative",
+              "japan",
+              "pop rock",
+              "j-pop",
+              "alt-rock",
+              "pop"
+            ]
+          },
+          {
+            "track_name": "Drip Too Hard (Lil Baby & Gunna)",
+            "track_artist": "Lil Baby, Gunna",
+            "track_album_name": "Drip Harder",
+            "tags": []
+          },
+          {
+            "track_name": "Stargazing",
+            "track_artist": "Myles Smith",
+            "track_album_name": "Stargazing",
+            "tags": [
+              "groovy",
+              "instrumental",
+              "loud",
+              "melodic",
+              "my top songs",
+              "Moderate",
+              "pop",
+              "Radio",
+              "upbeat",
+              "british"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "host": {
+      "id": 5,
+      "name": "William Anderson",
+      "gender": "male",
+      "interests": [
+        "Wine Tasting",
+        "Yoga & Meditation",
+        "Cooking & Baking",
+        "Cinema & Movies"
+      ],
+      "narration": "The listener vacillates between aggressive, high\u2011gain, palm\u2011muted riff assaults and pounding, syncopated drum drives that generate kinetic release, and delicate, reverb\u2011saturated vocal harmonies layered over minimalist acoustic guitar and ambient synth pads that evoke wistful introspection; threaded through are bright, melodic Japanese pop lines, pulsating French\u2011style electronic arpeggios, and syncopated Afro\u2011Caribbean percussive grooves that lend a global, dance\u2011floor sheen. This polarity of ferocious, confrontational wall\u2011of\u2011sound passages with soft, dreamy, lo\u2011fi bedroom textures\u2014augmented by occasional reggae\u2011inflected off\u2011beat accents and trap\u2011driven bass slides\u2014marks a bifurcated musical identity that pursues both cathartic aggression and vulnerable melancholy in equal measure.",
+      "personality": [
+        -0.2291251,
+        -0.04909487,
+        0.12961611,
+        -0.20080839,
+        0.47116,
+        0.47116,
+        0.47116,
+        0.0,
+        0.47116,
+        0.0
+      ],
+      "tracks": [
+        {
+          "track_name": "KICK BACK",
+          "track_artist": "Kenshi Yonezu",
+          "track_album_name": "KICK BACK",
+          "tags": [
+            "j-pop",
+            "anime",
+            "Chainsaw Man",
+            "vocal",
+            "J-rock",
+            "Drum and bass",
+            "japanese",
+            "Wicked",
+            "Playful",
+            "steady"
+          ]
+        },
+        {
+          "track_name": "Even Flow",
+          "track_artist": "Pearl Jam",
+          "track_album_name": "Ten",
+          "tags": [
+            "Grunge",
+            "rock",
+            "alternative rock",
+            "90s",
+            "pearl jam",
+            "alternative",
+            "hard rock",
+            "seattle",
+            "american",
+            "classic rock"
+          ]
+        },
+        {
+          "track_name": "Under Control (feat. Hurts)",
+          "track_artist": "Calvin Harris, Alesso, Hurts",
+          "track_album_name": "Motion",
+          "tags": [
+            "Sweden"
+          ]
+        },
+        {
+          "track_name": "Kill Bill",
+          "track_artist": "SZA",
+          "track_album_name": "SOS",
+          "tags": [
+            "pop",
+            "trip hop",
+            "bedroom pop",
+            "psychedelic pop",
+            "rnb",
+            "Neo-Psychedelia",
+            "Neo-Soul",
+            "alt-pop",
+            "indie surf",
+            "soul"
+          ]
+        },
+        {
+          "track_name": "Should I Stay or Should I Go - Remastered",
+          "track_artist": "The Clash",
+          "track_album_name": "Combat Rock (Remastered)",
+          "tags": [
+            "punk rock",
+            "rock",
+            "punk",
+            "classic rock",
+            "new wave",
+            "1982",
+            "80s",
+            "badass",
+            "the clash",
+            "british"
+          ]
+        },
+        {
+          "track_name": "Verte Ir",
+          "track_artist": "DJ Luian, Mambo Kingz, Anuel AA, Nicky Jam, Darell, Brytiago",
+          "track_album_name": "Verte Ir",
+          "tags": []
+        },
+        {
+          "track_name": "Romantic Homicide",
+          "track_artist": "d4vd",
+          "track_album_name": "Romantic Homicide",
+          "tags": [
+            "sad",
+            "indie pop",
+            "slowcore",
+            "dream pop",
+            "alt-pop",
+            "bedroom pop",
+            "indie",
+            "indie rock",
+            "depression",
+            "pop rock"
+          ]
+        },
+        {
+          "track_name": "WAIT FOR U (feat. Drake & Tems)",
+          "track_artist": "Future, Drake, Tems",
+          "track_album_name": "I NEVER LIKED YOU",
+          "tags": []
+        },
+        {
+          "track_name": "La Jumpa",
+          "track_artist": "Arc\u00e1ngel, Bad Bunny",
+          "track_album_name": "La Jumpa",
+          "tags": []
+        },
+        {
+          "track_name": "Kese (Dance)",
+          "track_artist": "Wizkid",
+          "track_album_name": "Kese (Dance)",
+          "tags": [
+            "afrobeat",
+            "Hip-Hop",
+            "afrobeats",
+            "nigeria",
+            "All",
+            "afropop",
+            "nigerian",
+            "wizkid",
+            "hip hop",
+            "african"
+          ]
+        },
+        {
+          "track_name": "Formidable",
+          "track_artist": "Stromae",
+          "track_album_name": "racine carr\u00e9e",
+          "tags": [
+            "2013",
+            "electronic",
+            "dance",
+            "french",
+            "electro",
+            "electropop",
+            "pop",
+            "Fran\u00e7ais",
+            "Fusion",
+            "electronica"
+          ]
+        },
+        {
+          "track_name": "In the End",
+          "track_artist": "Linkin Park",
+          "track_album_name": "Hybrid Theory (Bonus Edition)",
+          "tags": [
+            "rock",
+            "Nu Metal",
+            "alternative rock",
+            "Linkin Park",
+            "alternative",
+            "metal",
+            "rapcore",
+            "alternative metal",
+            "hard rock",
+            "In the End"
+          ]
+        },
+        {
+          "track_name": "Murder She Wrote",
+          "track_artist": "Chaka Demus & Pliers",
+          "track_album_name": "Tease Me",
+          "tags": [
+            "dancehall reggae",
+            "dancehall",
+            "dance hall",
+            "ragga",
+            "ragga muffin"
+          ]
+        },
+        {
+          "track_name": "TOO COOL TO BE CARELESS",
+          "track_artist": "PAWSA",
+          "track_album_name": "TOO COOL TO BE CARELESS",
+          "tags": [
+            "cover",
+            "party"
+          ]
+        },
+        {
+          "track_name": "2 Slippery (feat. BossMan Dlow)",
+          "track_artist": "Luh Tyler, BossMan Dlow",
+          "track_album_name": "Mr. Skii",
+          "tags": []
+        },
+        {
+          "track_name": "One More Time",
+          "track_artist": "Daft Punk",
+          "track_album_name": "Discovery",
+          "tags": [
+            "electronic",
+            "dance",
+            "House",
+            "electronica",
+            "techno",
+            "Daft Punk",
+            "party",
+            "french",
+            "french house",
+            "00s"
+          ]
+        },
+        {
+          "track_name": "Nuthin' But A \"G\" Thang",
+          "track_artist": "Dr. Dre, Snoop Dogg",
+          "track_album_name": "The Chronic",
+          "tags": [
+            "Hip-Hop",
+            "rap",
+            "90s",
+            "G-funk",
+            "Gangsta Rap",
+            "hip hop",
+            "West Coast Rap",
+            "west coast",
+            "dr dre",
+            "Snoop Dogg"
+          ]
+        },
+        {
+          "track_name": "\u30a2\u30a4\u30c9\u30eb",
+          "track_artist": "YOASOBI",
+          "track_album_name": "\u30a2\u30a4\u30c9\u30eb",
+          "tags": [
+            "j-pop",
+            "japanese",
+            "pop",
+            "anime",
+            "idol",
+            "YOASOBI",
+            "jazz",
+            "Energetic",
+            "k-pop",
+            "danceable"
+          ]
+        },
+        {
+          "track_name": "HIBIKI",
+          "track_artist": "Bad Bunny, Mora",
+          "track_album_name": "nadie sabe lo que va a pasar ma\u00f1ana",
+          "tags": []
+        },
+        {
+          "track_name": "Resonance",
+          "track_artist": "Home",
+          "track_album_name": "Odyssey",
+          "tags": [
+            "synthwave",
+            "chillwave",
+            "vaporwave",
+            "chillsynth",
+            "electronic",
+            "chillout",
+            "instrumental",
+            "indietronica",
+            "dreamwave",
+            "2014"
+          ]
+        },
+        {
+          "track_name": "Wake Me up When September Ends",
+          "track_artist": "Green Day",
+          "track_album_name": "American Idiot",
+          "tags": [
+            "rock",
+            "punk rock",
+            "alternative",
+            "green day",
+            "punk",
+            "pop punk",
+            "alternative rock",
+            "sad",
+            "00s",
+            "melancholic"
+          ]
+        },
+        {
+          "track_name": "Astronomy",
+          "track_artist": "Conan Gray",
+          "track_album_name": "Superache",
+          "tags": [
+            "folk",
+            "anacore",
+            "indie",
+            "acoustic",
+            "Recommended",
+            "folk pop",
+            "acoustic pop",
+            "Riel fav",
+            "Uriel fav",
+            "sun and moon and stars and outer space"
+          ]
+        },
+        {
+          "track_name": "Faded",
+          "track_artist": "Alan Walker",
+          "track_album_name": "Different World",
+          "tags": [
+            "EDM",
+            "electronic",
+            "dance",
+            "pop",
+            "norwegian",
+            "House",
+            "electro house",
+            "german number one",
+            "bbc radio1 playlist 2016",
+            "2015"
+          ]
+        },
+        {
+          "track_name": "No Son Doritos",
+          "track_artist": "Clave Especial, Luis R Conriquez",
+          "track_album_name": "No Son Doritos",
+          "tags": []
+        },
+        {
+          "track_name": "Starships",
+          "track_artist": "Nicki Minaj",
+          "track_album_name": "Pink Friday: Roman Reloaded The Re-Up (Explicit Version)",
+          "tags": [
+            "pop",
+            "dance",
+            "nicki minaj",
+            "party",
+            "love at first listen",
+            "rap",
+            "redone",
+            "female vocalists",
+            "hip hop",
+            "summer"
+          ]
+        },
+        {
+          "track_name": "Fear of the Dark - 2015 Remaster",
+          "track_artist": "Iron Maiden",
+          "track_album_name": "Fear of the Dark (2015 Remaster)",
+          "tags": [
+            "heavy metal",
+            "metal",
+            "hard rock",
+            "classic rock",
+            "NWOBHM",
+            "1992"
+          ]
+        },
+        {
+          "track_name": "See You Again (feat. Kali Uchis)",
+          "track_artist": "Tyler, The Creator, Kali Uchis",
+          "track_album_name": "Flower Boy",
+          "tags": []
+        },
+        {
+          "track_name": "Old Money",
+          "track_artist": "AP Dhillon",
+          "track_album_name": "Old Money",
+          "tags": [
+            "Bhangra",
+            "canada",
+            "india",
+            "Indian",
+            "Punjabi",
+            "punjab",
+            "Indian roots",
+            "Punjabi Trap",
+            "desi trap"
+          ]
+        },
+        {
+          "track_name": "Until I Found You (with Em Beihold) - Em Beihold Version",
+          "track_artist": "Stephen Sanchez, Em Beihold",
+          "track_album_name": "Until I Found You (Em Beihold Version)",
+          "tags": []
+        },
+        {
+          "track_name": "Master Of Puppets",
+          "track_artist": "Metallica",
+          "track_album_name": "Master Of Puppets (Remastered)",
+          "tags": [
+            "thrash metal",
+            "metal",
+            "heavy metal",
+            "metallica",
+            "rock",
+            "hard rock",
+            "master of puppets",
+            "80s",
+            "thrash",
+            "speed metal"
+          ]
+        }
+      ]
+    },
+    "matches": [
+      {
+        "rank": 1,
+        "id": 23,
+        "name": "Veronica Andrews",
+        "gender": "female",
+        "interests": [
+          "Wine Tasting",
+          "Fashion & Styling",
+          "Stand-up Comedy",
+          "Coding & Tech",
+          "Yoga & Meditation",
+          "Photography"
+        ],
+        "narration": "The listening profile juxtaposes high\u2011octane, confrontational rap aggression (Eminem, 50\u202fCent, DJ\u202fKhaled) and kinetic Afro\u2011beat/Latin trap propulsion (Young\u202fJonn, Bad\u202fBunny, Tito\u202fDouble\u202fP) with lush, reverberant vocal harmonies and yearning balladry of 90s R&B and adult\u2011contemporary pop (Boyz\u202fII\u202fMen, C\u00e9line\u202fDion, Ed\u202fSheeran), yielding a spectrum that swings from visceral lyrical bravado to tender, nostalgic catharsis. Simultaneously, the sonic texture oscillates between crunchy, distorted funk\u2011rock guitars and melodic bass lines of Red\u202fHot\u202fChili\u202fPeppers, bright synth\u2011laden new\u2011wave of The\u202fCars and The\u202fPolice, airy bedroom\u2011pop ambience of Mk.gee, and polished J\u2011pop sheen, while the lyrical narrative flips from explicit swagger to introspective spiritual uplift in Lauren\u202fDaigle\u2019s gospel anthem, producing a bifurcated identity that fuses retro\u2011rock nostalgia with contemporary global urban pulse.",
+        "personality": [
+          0.2139216,
+          -0.3631847,
+          -0.16637856,
+          0.110786356,
+          0.44226092,
+          0.44226092,
+          0.44226092,
+          0.0,
+          0.44226092,
+          0.0
+        ],
+        "score": 2.098762,
+        "tracks": [
+          {
+            "track_name": "Houdini",
+            "track_artist": "Eminem",
+            "track_album_name": "Houdini",
+            "tags": [
+              "hip hop",
+              "2024",
+              "rap",
+              "Hip-Hop",
+              "Eminem",
+              "peter",
+              "my top songs",
+              "2020s",
+              "comedy",
+              "american"
+            ]
+          },
+          {
+            "track_name": "Californication",
+            "track_artist": "Red Hot Chili Peppers",
+            "track_album_name": "Californication (Deluxe Edition)",
+            "tags": [
+              "rock",
+              "alternative rock",
+              "alternative",
+              "Red Hot Chili Peppers",
+              "funk",
+              "Funk Rock",
+              "90s",
+              "California",
+              "american",
+              "Mellow"
+            ]
+          },
+          {
+            "track_name": "From the Dining Table",
+            "track_artist": "Harry Styles",
+            "track_album_name": "Harry Styles",
+            "tags": [
+              "Soundtrack Of My Life",
+              "rock",
+              "pop",
+              "folk",
+              "alternative pop",
+              "alternative",
+              "alternative rock",
+              "song of the year",
+              "pipe dream",
+              "love at first listen"
+            ]
+          },
+          {
+            "track_name": "Te Felicito",
+            "track_artist": "Shakira, Rauw Alejandro",
+            "track_album_name": "Te Felicito",
+            "tags": [
+              "Te felicito"
+            ]
+          },
+          {
+            "track_name": "Perfect",
+            "track_artist": "Ed Sheeran",
+            "track_album_name": "\u00f7 (Deluxe)",
+            "tags": [
+              "pop",
+              "Ballad",
+              "Love",
+              "british",
+              "singer-songwriter",
+              "2010s",
+              "love at first listen",
+              "Ed Sheeran",
+              "2017",
+              "FS"
+            ]
+          },
+          {
+            "track_name": "I'm Alive",
+            "track_artist": "C\u00e9line Dion",
+            "track_album_name": "A New Day Has Come",
+            "tags": [
+              "Celine Dion",
+              "pop",
+              "2002",
+              "soft rock",
+              "00s",
+              "Canadian",
+              "female vocalist",
+              "dance",
+              "adult contemporary",
+              "easy listening"
+            ]
+          },
+          {
+            "track_name": "Are you there?",
+            "track_artist": "Ayo Maff",
+            "track_album_name": "MAFFIAN",
+            "tags": [
+              "lagos"
+            ]
+          },
+          {
+            "track_name": "Another Day in Paradise - 2016 Remaster",
+            "track_artist": "Phil Collins",
+            "track_album_name": "...But Seriously (Deluxe Edition)",
+            "tags": [
+              "Phil Collins",
+              "soft rock",
+              "rock",
+              "80s",
+              "1989",
+              "pop",
+              "90s",
+              "Z3PO like this",
+              "europa plus",
+              "smoth"
+            ]
+          },
+          {
+            "track_name": "JUJU (feat. Shallipopi)",
+            "track_artist": "Smur Lee, ODUMODUBLVCK, Shallipopi",
+            "track_album_name": "JUJU (feat. Shallipopi)",
+            "tags": []
+          },
+          {
+            "track_name": "En Otra Vida",
+            "track_artist": "Yami Safdie, Lasso",
+            "track_album_name": "En Otra Vida",
+            "tags": []
+          },
+          {
+            "track_name": "Candy Shop",
+            "track_artist": "50 Cent, Olivia",
+            "track_album_name": "The Massacre",
+            "tags": [
+              "rap",
+              "50 Cent",
+              "Hip-Hop",
+              "hip hop",
+              "Gangsta Rap",
+              "candy shop",
+              "2005",
+              "sexy",
+              "dance",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "EVERY CHANCE I GET (feat. Lil Baby & Lil Durk)",
+            "track_artist": "DJ Khaled, Lil Baby, Lil Durk",
+            "track_album_name": "KHALED KHALED",
+            "tags": []
+          },
+          {
+            "track_name": "Supernova Love",
+            "track_artist": "IVE, David Guetta",
+            "track_album_name": "Supernova Love",
+            "tags": [
+              "english"
+            ]
+          },
+          {
+            "track_name": "\u30ab\u30fc\u30c6\u30f3\u30b3\u30fc\u30eb",
+            "track_artist": "Yuuri",
+            "track_album_name": "\u30ab\u30fc\u30c6\u30f3\u30b3\u30fc\u30eb",
+            "tags": [
+              "j-pop",
+              "japanese",
+              "pop",
+              "rock",
+              "J-rock",
+              "japan",
+              "pop rock"
+            ]
+          },
+          {
+            "track_name": "Stronger",
+            "track_artist": "Young Jonn",
+            "track_album_name": "Jiggy Forever",
+            "tags": [
+              "afrobeats",
+              "nigeria",
+              "singer",
+              "african",
+              "young john",
+              "naija",
+              "producer",
+              "the wicked producer"
+            ]
+          },
+          {
+            "track_name": "Like I'm Gonna Lose You (feat. John Legend)",
+            "track_artist": "Meghan Trainor, John Legend",
+            "track_album_name": "Title (Deluxe)",
+            "tags": []
+          },
+          {
+            "track_name": "Rock Your Body",
+            "track_artist": "Justin Timberlake",
+            "track_album_name": "Justified",
+            "tags": [
+              "pop",
+              "dance",
+              "rnb",
+              "Justin Timberlake",
+              "Hip-Hop",
+              "00s",
+              "sexy",
+              "r&b",
+              "soul",
+              "2003"
+            ]
+          },
+          {
+            "track_name": "Just What I Needed",
+            "track_artist": "The Cars",
+            "track_album_name": "The Cars",
+            "tags": [
+              "new wave",
+              "80s",
+              "classic rock",
+              "rock",
+              "pop",
+              "70s",
+              "KICK",
+              "The Cars",
+              "power pop",
+              "1978"
+            ]
+          },
+          {
+            "track_name": "Dancing In the Dark",
+            "track_artist": "Bruce Springsteen",
+            "track_album_name": "Born In The U.S.A.",
+            "tags": [
+              "rock",
+              "80s",
+              "classic rock",
+              "Bruce Springsteen",
+              "pop",
+              "singer-songwriter",
+              "1984",
+              "heartland rock",
+              "american",
+              "male vocalists"
+            ]
+          },
+          {
+            "track_name": "MMS",
+            "track_artist": "Asake, Wizkid",
+            "track_album_name": "Lungu Boy",
+            "tags": []
+          },
+          {
+            "track_name": "Callaita",
+            "track_artist": "Bad Bunny, Tainy",
+            "track_album_name": "Callaita",
+            "tags": []
+          },
+          {
+            "track_name": "End Of The Road",
+            "track_artist": "Boyz II Men",
+            "track_album_name": "Cooleyhighharmony (Bonus Tracks Version)",
+            "tags": [
+              "rnb",
+              "soul",
+              "90s",
+              "pop",
+              "r and b",
+              "r&b",
+              "male vocalists",
+              "new jack swing",
+              "american",
+              "motown"
+            ]
+          },
+          {
+            "track_name": "Roxanne",
+            "track_artist": "The Police",
+            "track_album_name": "Outlandos D'Amour (Remastered 2003)",
+            "tags": [
+              "rock",
+              "classic rock",
+              "80s",
+              "new wave",
+              "The Police",
+              "british",
+              "70s",
+              "pop",
+              "reggae",
+              "sting"
+            ]
+          },
+          {
+            "track_name": "Be Alright",
+            "track_artist": "Dean Lewis",
+            "track_album_name": "Be Alright",
+            "tags": [
+              "pop",
+              "australian",
+              "singer-songwriter",
+              "indie pop",
+              "acoustic rhythm guitars",
+              "Pop-Rock",
+              "B major",
+              "extensive vamping",
+              "a subtle use of vocal harmony",
+              "acoustic rhythm piano"
+            ]
+          },
+          {
+            "track_name": "ROCKMAN",
+            "track_artist": "Mk.gee",
+            "track_album_name": "ROCKMAN",
+            "tags": [
+              "new wave",
+              "Sophisti-Pop",
+              "bedroom pop",
+              "indie",
+              "art pop",
+              "The Police",
+              "indie pop",
+              "hypnagogic pop",
+              "Reelin In The Years",
+              "sting"
+            ]
+          },
+          {
+            "track_name": "DOS D\u00cdAS",
+            "track_artist": "Tito Double P, Peso Pluma",
+            "track_album_name": "INC\u00d3MODO",
+            "tags": []
+          },
+          {
+            "track_name": "EL LOKERON",
+            "track_artist": "Tito Double P",
+            "track_album_name": "INC\u00d3MODO",
+            "tags": [
+              "corridos"
+            ]
+          },
+          {
+            "track_name": "When I See U",
+            "track_artist": "Fantasia",
+            "track_album_name": "Fantasia",
+            "tags": [
+              "rnb",
+              "Fantasias",
+              "00s",
+              "Progressive rock",
+              "2000s",
+              "Fabulous",
+              "r'n'b",
+              "Wie alles begann",
+              "Sweet Thing",
+              "2006"
+            ]
+          },
+          {
+            "track_name": "Give It Away",
+            "track_artist": "Red Hot Chili Peppers",
+            "track_album_name": "Blood Sugar Sex Magik (Deluxe Edition)",
+            "tags": [
+              "rock",
+              "Funk Rock",
+              "funk",
+              "alternative",
+              "90s",
+              "alternative rock",
+              "Red Hot Chili Peppers",
+              "funk metal",
+              "1991",
+              "classic rock"
+            ]
+          },
+          {
+            "track_name": "You Say",
+            "track_artist": "Lauren Daigle",
+            "track_album_name": "Look Up Child",
+            "tags": [
+              "christian",
+              "gospel",
+              "anthem",
+              "4"
+            ]
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "id": 15,
+        "name": "Kathryn Rios",
+        "gender": "female",
+        "interests": [
+          "Volunteering",
+          "Dancing",
+          "Cinema & Movies",
+          "Coffee & Cafes",
+          "Songwriting",
+          "Wine Tasting",
+          "Fashion & Styling",
+          "Cooking & Baking"
+        ],
+        "narration": "The listener oscillates between brooding, airy alt\u2011pop soundscapes\u2014muted vocals, sparse piano, synth\u2011washed melancholy, and warm acoustic\u2011folk textures that evoke intimate nostalgia\u2014and aggressive, bass\u2011heavy trap and drill tracks where distorted 808s, snarling flows, and confrontational lyrical aggression dominate. This bifurcated palette is further amplified by a craving for soaring 80s arena\u2011rock anthems built on crunchy guitars and epic choruses, alongside glossy, sax\u2011infused tropical house and progressive festival EDM that prioritize bright, pulsing synth leads and high\u2011tempo dance energy, indicating a simultaneous desire for cathartic intensity and wistful escapism across varied cultural frames.",
+        "personality": [
+          0.11767415,
+          0.27554587,
+          0.2969093,
+          0.25484392,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.0
+        ],
+        "score": 1.9630961,
+        "tracks": [
+          {
+            "track_name": "lovely (with Khalid)",
+            "track_artist": "Billie Eilish, Khalid",
+            "track_album_name": "lovely (with Khalid)",
+            "tags": [
+              "chamber pop",
+              "USA",
+              "alt-pop",
+              "alternative rnb"
+            ]
+          },
+          {
+            "track_name": "Baian\u00e1",
+            "track_artist": "Bakermat",
+            "track_album_name": "The Ringmaster",
+            "tags": [
+              "House",
+              "deep house",
+              "dutch",
+              "electronic",
+              "chillout",
+              "dance",
+              "tropical house",
+              "electronica",
+              "Favorite artist",
+              "saxophone"
+            ]
+          },
+          {
+            "track_name": "TEFLON DON",
+            "track_artist": "Future",
+            "track_album_name": "MIXTAPE PLUTO",
+            "tags": [
+              "2024",
+              "Hip-Hop",
+              "future",
+              "Gangsta Rap",
+              "trap",
+              "9",
+              "Southern Hip Hop",
+              "Roblox",
+              "nitrous",
+              "2020s"
+            ]
+          },
+          {
+            "track_name": "Riptide",
+            "track_artist": "Vance Joy",
+            "track_album_name": "Dream Your Life Away (Deluxe Edition)",
+            "tags": [
+              "folk",
+              "indie",
+              "australian",
+              "alternative",
+              "indie folk",
+              "2013",
+              "pop",
+              "indie pop",
+              "singer-songwriter",
+              "2014"
+            ]
+          },
+          {
+            "track_name": "Que Se Cuide",
+            "track_artist": "Luis R Conriquez, Joel De La P, Chimbala",
+            "track_album_name": "Que Se Cuide",
+            "tags": []
+          },
+          {
+            "track_name": "Like That",
+            "track_artist": "Future, Metro Boomin, Kendrick Lamar",
+            "track_album_name": "WE DON'T TRUST YOU",
+            "tags": []
+          },
+          {
+            "track_name": "Life in the Fast Lane - 2013 Remaster",
+            "track_artist": "Eagles",
+            "track_album_name": "Hotel California (2013 Remaster)",
+            "tags": [
+              "Eagles",
+              "70s",
+              "1976",
+              "finished"
+            ]
+          },
+          {
+            "track_name": "Piensa En M\u00ed",
+            "track_artist": "Grupo Mojado",
+            "track_album_name": "Sue\u00f1o Y Realidad",
+            "tags": [
+              "cumbia",
+              "Rock Argentino",
+              "romanticas",
+              "sandro",
+              "mojado"
+            ]
+          },
+          {
+            "track_name": "Under Control (feat. Hurts)",
+            "track_artist": "Calvin Harris, Alesso, Hurts",
+            "track_album_name": "Motion",
+            "tags": [
+              "Sweden"
+            ]
+          },
+          {
+            "track_name": "Nada",
+            "track_artist": "Cazzu, Lyanno, Rauw Alejandro, Dalex",
+            "track_album_name": "Error 93",
+            "tags": []
+          },
+          {
+            "track_name": "The Final Countdown",
+            "track_artist": "Europe",
+            "track_album_name": "The Final Countdown (Expanded Edition)",
+            "tags": [
+              "80s",
+              "rock",
+              "hard rock",
+              "classic rock",
+              "Europe",
+              "hair metal",
+              "swedish",
+              "pop",
+              "heavy metal",
+              "epic"
+            ]
+          },
+          {
+            "track_name": "Replay",
+            "track_artist": "Tems",
+            "track_album_name": "If Orange Was A Place",
+            "tags": [
+              "3"
+            ]
+          },
+          {
+            "track_name": "Without Me",
+            "track_artist": "Eminem",
+            "track_album_name": "The Eminem Show",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "Eminem",
+              "hip hop",
+              "00s",
+              "2002",
+              "pop",
+              "american",
+              "Without Me",
+              "funny"
+            ]
+          },
+          {
+            "track_name": "Seven Nation Army",
+            "track_artist": "The White Stripes",
+            "track_album_name": "Elephant",
+            "tags": [
+              "rock",
+              "alternative rock",
+              "alternative",
+              "indie rock",
+              "indie",
+              "Garage Rock",
+              "00s",
+              "The White Stripes",
+              "blues rock",
+              "american"
+            ]
+          },
+          {
+            "track_name": "You Give Love A Bad Name",
+            "track_artist": "Bon Jovi",
+            "track_album_name": "Slippery When Wet",
+            "tags": [
+              "rock",
+              "80s",
+              "hard rock",
+              "classic rock",
+              "bon jovi",
+              "hair metal",
+              "glam rock",
+              "1986",
+              "Get psyched",
+              "classic"
+            ]
+          },
+          {
+            "track_name": "Hola - Remix",
+            "track_artist": "Dalex, Lenny Tav\u00e1rez, Chencho Corleone, Juhn, D\u00edmelo Flow",
+            "track_album_name": "Yo Te Quiero Pa Mi",
+            "tags": []
+          },
+          {
+            "track_name": "Cholo 7",
+            "track_artist": "Fuerza Regida, Luis R Conriquez",
+            "track_album_name": "Cholo 7",
+            "tags": []
+          },
+          {
+            "track_name": "Armed & Dangerous",
+            "track_artist": "King Von",
+            "track_album_name": "Welcome to O'Block",
+            "tags": [
+              "hip hop",
+              "rap",
+              "drill",
+              "Gangsta Rap",
+              "trap",
+              "Chicago drill"
+            ]
+          },
+          {
+            "track_name": "Runaway (U & I)",
+            "track_artist": "Galantis",
+            "track_album_name": "Pharmacy",
+            "tags": [
+              "dance",
+              "swedish",
+              "today gif",
+              "electronic",
+              "2015",
+              "party",
+              "House",
+              "galantis",
+              "festival progressive house",
+              "love at first listen"
+            ]
+          },
+          {
+            "track_name": "Un Ratito Mas",
+            "track_artist": "Bryant Myers, Bad Bunny",
+            "track_album_name": "Un Ratito Mas",
+            "tags": []
+          },
+          {
+            "track_name": "Many Men (Wish Death)",
+            "track_artist": "50 Cent",
+            "track_album_name": "Get Rich Or Die Tryin'",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "Gangsta Rap",
+              "50 Cent",
+              "many men",
+              "hip hop",
+              "WISH DEATH UPON ME",
+              "BLOOD IN MY EYE",
+              "2003",
+              "Disturbed"
+            ]
+          },
+          {
+            "track_name": "Boulevard of Broken Dreams",
+            "track_artist": "Green Day",
+            "track_album_name": "Greatest Hits: God's Favorite Band",
+            "tags": [
+              "rock",
+              "punk rock",
+              "green day",
+              "punk",
+              "alternative",
+              "alternative rock",
+              "pop punk",
+              "00s",
+              "american",
+              "Boulevard of Broken Dreams"
+            ]
+          },
+          {
+            "track_name": "telepat\u00eda",
+            "track_artist": "Kali Uchis",
+            "track_album_name": "Sin Miedo (del Amor y Otros Demonios) \u221e",
+            "tags": [
+              "rnb",
+              "Neo-Soul",
+              "alternative rnb",
+              "synthpop",
+              "Sophisti-Pop",
+              "contemporary rnb",
+              "synth funk",
+              "2021",
+              "2020",
+              "2020s"
+            ]
+          },
+          {
+            "track_name": "I Don't Love You",
+            "track_artist": "My Chemical Romance",
+            "track_album_name": "The Black Parade",
+            "tags": [
+              "rock",
+              "alternative",
+              "emo",
+              "punk rock",
+              "my chemical romance",
+              "alternative rock",
+              "punk",
+              "sad",
+              "Love",
+              "mcr"
+            ]
+          },
+          {
+            "track_name": "Interstate Love Song - 2019 Remaster",
+            "track_artist": "Stone Temple Pilots",
+            "track_album_name": "Purple (2019 Remaster)",
+            "tags": [
+              "Grunge",
+              "alternative",
+              "alternative rock",
+              "rock",
+              "hard rock",
+              "Alt-country",
+              "post-grunge",
+              "true masterpiece",
+              "mistagged"
+            ]
+          },
+          {
+            "track_name": "Como Pacman",
+            "track_artist": "Alem\u00e1n, Gera MX",
+            "track_album_name": "Como Pacman",
+            "tags": []
+          },
+          {
+            "track_name": "Sprinter",
+            "track_artist": "Dave, Central Cee",
+            "track_album_name": "Sprinter",
+            "tags": [
+              "england"
+            ]
+          },
+          {
+            "track_name": "Die With A Smile",
+            "track_artist": "Lady Gaga, Bruno Mars",
+            "track_album_name": "Die With A Smile",
+            "tags": [
+              "Lady Gaga"
+            ]
+          },
+          {
+            "track_name": "Nothing's New",
+            "track_artist": "Rio Romeo",
+            "track_album_name": "Good God!",
+            "tags": [
+              "epi"
+            ]
+          },
+          {
+            "track_name": "Don't Stand So Close To Me",
+            "track_artist": "The Police",
+            "track_album_name": "Zenyatta Mondatta (Remastered 2003)",
+            "tags": [
+              "The Police"
+            ]
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "id": 24,
+        "name": "Christine Sanford",
+        "gender": "female",
+        "interests": [
+          "Hiking & Outdoors",
+          "Yoga & Meditation",
+          "Concerts & Festivals"
+        ],
+        "narration": "The listener\u2019s chronology alternates between high\u2011energy, rhythm\u2011centric urban aggression\u2014characterized by hard\u2011hitting 808\u2011driven hip\u2011hop, trap\u2011flavored reggaeton, nu\u2011metal riff assaults, and explicit lyrical bravado\u2014and enveloping, low\u2011tempo soundscapes such as synthwave\u2011laden chillwave, ambient piano minimalism, and psychedelic progressive rock that foreground spacious reverb, warm analog pads, and melancholic melodic lines. This bifurcated taste generates a tonal polarity where the aggressive tier delivers confrontational, sexually charged, adrenaline\u2011fueled affect, while the atmospheric tier evokes nostalgic introspection, dreamy melancholy, and cinematic expansiveness, all stitched together by glittering electropop hooks, soaring vocal harmonies, and deep sub\u2011bass foundations.",
+        "personality": [
+          0.19476007,
+          -0.06956614,
+          0.23726574,
+          0.335462,
+          0.6278532,
+          0.0,
+          0.0,
+          0.0,
+          0.6278532,
+          0.0
+        ],
+        "score": 1.86811,
+        "tracks": [
+          {
+            "track_name": "Est-ce que tu m'aimes ? - Pilule bleue",
+            "track_artist": "GIMS",
+            "track_album_name": "Mon coeur avait raison",
+            "tags": [
+              "hip hop",
+              "rap",
+              "rnb",
+              "Hip-Hop"
+            ]
+          },
+          {
+            "track_name": "Resonance",
+            "track_artist": "Home",
+            "track_album_name": "Odyssey",
+            "tags": [
+              "synthwave",
+              "chillwave",
+              "vaporwave",
+              "chillsynth",
+              "electronic",
+              "chillout",
+              "instrumental",
+              "indietronica",
+              "dreamwave",
+              "2014"
+            ]
+          },
+          {
+            "track_name": "You",
+            "track_artist": "Lloyd, Lil Wayne",
+            "track_album_name": "Street Love",
+            "tags": []
+          },
+          {
+            "track_name": "Replay",
+            "track_artist": "Tems",
+            "track_album_name": "If Orange Was A Place",
+            "tags": [
+              "3"
+            ]
+          },
+          {
+            "track_name": "we can't be friends (wait for your love)",
+            "track_artist": "Ariana Grande",
+            "track_album_name": "eternal sunshine",
+            "tags": [
+              "pop",
+              "synthpop",
+              "soty",
+              "2024",
+              "Robyn's daughter",
+              "best of 2024",
+              "electropop",
+              "dream pop",
+              "synth",
+              "female vocalists"
+            ]
+          },
+          {
+            "track_name": "Because Of You",
+            "track_artist": "Ne-Yo",
+            "track_album_name": "Because Of You",
+            "tags": [
+              "rnb",
+              "Ne-Yo",
+              "r&b",
+              "soul",
+              "Because Of You",
+              "pop",
+              "Hip-Hop",
+              "2007",
+              "00s",
+              "male vocalists"
+            ]
+          },
+          {
+            "track_name": "Hear Me Now",
+            "track_artist": "Alok, Zeeba, Bruno Martini",
+            "track_album_name": "Hear Me Now (feat. Zeeba)",
+            "tags": []
+          },
+          {
+            "track_name": "6 AM",
+            "track_artist": "J Balvin, Farruko",
+            "track_album_name": "La Familia",
+            "tags": []
+          },
+          {
+            "track_name": "Stay",
+            "track_artist": "Zedd, Alessia Cara",
+            "track_album_name": "Stay",
+            "tags": []
+          },
+          {
+            "track_name": "Behind Every Decision",
+            "track_artist": "Yehezkel Raz",
+            "track_album_name": "Preludes, Book 2 - Torrents",
+            "tags": [
+              "ambient",
+              "instrumental",
+              "Israel",
+              "minimal",
+              "piano",
+              "israeli",
+              "electronic",
+              "funk_add_to_lidarr_batch_29"
+            ]
+          },
+          {
+            "track_name": "In the End",
+            "track_artist": "Linkin Park",
+            "track_album_name": "Hybrid Theory (Bonus Edition)",
+            "tags": [
+              "rock",
+              "Nu Metal",
+              "alternative rock",
+              "Linkin Park",
+              "alternative",
+              "metal",
+              "rapcore",
+              "alternative metal",
+              "hard rock",
+              "In the End"
+            ]
+          },
+          {
+            "track_name": "Pon de Replay",
+            "track_artist": "Rihanna",
+            "track_album_name": "Music Of The Sun",
+            "tags": [
+              "dance",
+              "pop",
+              "rnb",
+              "Rihanna",
+              "Hip-Hop",
+              "female vocalists",
+              "2005",
+              "dancehall",
+              "party",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "Comfortably Numb",
+            "track_artist": "Pink Floyd",
+            "track_album_name": "The Wall",
+            "tags": [
+              "Progressive rock",
+              "classic rock",
+              "Psychedelic Rock",
+              "rock",
+              "Pink Floyd",
+              "70s",
+              "beautiful",
+              "psychedelic",
+              "epic",
+              "Guitar Solo"
+            ]
+          },
+          {
+            "track_name": "Buffalo Soldier",
+            "track_artist": "Bob Marley & The Wailers",
+            "track_album_name": "Confrontation",
+            "tags": [
+              "reggae",
+              "roots reggae",
+              "jamaican",
+              "1983",
+              "ska",
+              "classic rock",
+              "jamaica",
+              "roots",
+              "1980s",
+              "bob marley and the wailers"
+            ]
+          },
+          {
+            "track_name": "Always On Time",
+            "track_artist": "Ja Rule, Ashanti",
+            "track_album_name": "Pain Is Love",
+            "tags": [
+              "Ja Rule",
+              "Hip-Hop",
+              "00s",
+              "rap",
+              "american",
+              "rnb",
+              "hip hop",
+              "East Coast",
+              "2001"
+            ]
+          },
+          {
+            "track_name": "Fast Car",
+            "track_artist": "Luke Combs",
+            "track_album_name": "Gettin' Old",
+            "tags": [
+              "country",
+              "country pop",
+              "male vocalists",
+              "cover",
+              "contemporary country",
+              "2023",
+              "bomb of the year",
+              "Radio",
+              "pop",
+              "folk"
+            ]
+          },
+          {
+            "track_name": "Fi Kan We Kan",
+            "track_artist": "Bnxn, Rema",
+            "track_album_name": "Fi Kan We Kan",
+            "tags": []
+          },
+          {
+            "track_name": "BIRDS OF A FEATHER",
+            "track_artist": "Billie Eilish",
+            "track_album_name": "HIT ME HARD AND SOFT",
+            "tags": [
+              "peter",
+              "alt-pop",
+              "2024",
+              "pop",
+              "Radio",
+              "Olivia",
+              "Love",
+              "my top songs",
+              "Sophisti-Pop",
+              "indie pop"
+            ]
+          },
+          {
+            "track_name": "Taste",
+            "track_artist": "Sabrina Carpenter",
+            "track_album_name": "Short n' Sweet",
+            "tags": [
+              "pop",
+              "pop rock",
+              "Sabrina Carpenter",
+              "2024",
+              "slacker rock",
+              "synthpop",
+              "taste",
+              "dance-pop",
+              "soft rock",
+              "female vocalists"
+            ]
+          },
+          {
+            "track_name": "I Got 5 On It",
+            "track_artist": "Luniz, Michael Marshall",
+            "track_album_name": "Operation Stackola",
+            "tags": []
+          },
+          {
+            "track_name": "First Person Shooter (feat. J. Cole)",
+            "track_artist": "Drake, J. Cole",
+            "track_album_name": "For All The Dogs",
+            "tags": [
+              "Hip-Hop",
+              "rap",
+              "hip hop",
+              "North Carolina",
+              "underground hip-hop",
+              "Jazz Hop",
+              "j cole",
+              "american",
+              "underground rap",
+              "Conscious Hip Hop"
+            ]
+          },
+          {
+            "track_name": "Tu Boda",
+            "track_artist": "Oscar Maydon, Fuerza Regida",
+            "track_album_name": "Tu Boda",
+            "tags": []
+          },
+          {
+            "track_name": "Montagem Mysterious Game",
+            "track_artist": "LXNGVX",
+            "track_album_name": "Montagem Mysterious Game",
+            "tags": [
+              "phonk",
+              "electronic",
+              "Kazakhstan"
+            ]
+          },
+          {
+            "track_name": "The Largest",
+            "track_artist": "BigXthaPlug",
+            "track_album_name": "The Largest",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "2020s",
+              "2024"
+            ]
+          },
+          {
+            "track_name": "Closer",
+            "track_artist": "The Chainsmokers, Halsey",
+            "track_album_name": "Closer",
+            "tags": []
+          },
+          {
+            "track_name": "Agosto",
+            "track_artist": "Bad Bunny",
+            "track_album_name": "Un Verano Sin Ti",
+            "tags": [
+              "2022",
+              "Reggaeton",
+              "latin pop",
+              "latin",
+              "pop",
+              "Hip-Hop",
+              "dancehall",
+              "dembow",
+              "afrobeats",
+              "bookmarked"
+            ]
+          },
+          {
+            "track_name": "Under Control (feat. Hurts)",
+            "track_artist": "Calvin Harris, Alesso, Hurts",
+            "track_album_name": "Motion",
+            "tags": [
+              "Sweden"
+            ]
+          },
+          {
+            "track_name": "Pink + White",
+            "track_artist": "Frank Ocean",
+            "track_album_name": "Blonde",
+            "tags": [
+              "rnb",
+              "Neo-Soul",
+              "For our kids",
+              "soul",
+              "Olivia",
+              "beyonce",
+              "Love",
+              "2016",
+              "I got Olivia forever",
+              "malik and olivia"
+            ]
+          },
+          {
+            "track_name": "The Way I Are",
+            "track_artist": "Timbaland, Keri Hilson, D.O.E.",
+            "track_album_name": "Shock Value",
+            "tags": []
+          },
+          {
+            "track_name": "Gatluak - Bakermat Remix",
+            "track_artist": "Kronan, Nyaruach, Bakermat",
+            "track_album_name": "Gatluak (Bakermat Remix)",
+            "tags": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "host": {
+      "id": 2,
+      "name": "Alicia Gonzalez",
+      "gender": "female",
+      "interests": [
+        "Dancing",
+        "Karaoke",
+        "Board Games",
+        "Vinyl Collecting"
+      ],
+      "narration": "The listener\u2019s dominant consumption centers on high\u2011BPM, production\u2011heavy global pop and trap, where bright synth leads, tight 808 sub\u2011bass, and polished vocal harmonies in K\u2011pop, reggaeton, synth\u2011wave, and contemporary hip\u2011hop generate a hedonistic, sexually charged, club\u2011ready energy amplified by glossy electronic textures and pulsating rhythmic drive. Simultaneously, a secondary strand pulls toward abrasive, horror\u2011inflected industrial metal timbres and low\u2011key, introspective acoustic environments such as neo\u2011soul, folk\u2011rock, and singer\u2011songwriter material, indicating a dualistic preference for both aggressive catharsis and melancholic reflection.",
+      "personality": [
+        -0.15937537,
+        0.36925003,
+        0.2952839,
+        -0.2519159,
+        0.41460812,
+        0.41460812,
+        0.41460812,
+        0.41460812,
+        0.0,
+        0.0
+      ],
+      "tracks": [
+        {
+          "track_name": "Sudden Shower",
+          "track_artist": "ECLIPSE",
+          "track_album_name": "Lovely Runner, Pt. 1 (Original Soundtrack)",
+          "tags": [
+            "pop",
+            "Kpop",
+            "Pop South korean"
+          ]
+        },
+        {
+          "track_name": "Can We Kiss Forever?",
+          "track_artist": "Kina, Adriana Proenza",
+          "track_album_name": "Can We Kiss Forever?",
+          "tags": []
+        },
+        {
+          "track_name": "Circadian Rhythm",
+          "track_artist": "Drake",
+          "track_album_name": "100 GIGS",
+          "tags": [
+            "Drake",
+            "2024"
+          ]
+        },
+        {
+          "track_name": "Superhero (Heroes & Villains) [with Future & Chris Brown]",
+          "track_artist": "Metro Boomin, Future, Chris Brown",
+          "track_album_name": "HEROES & VILLAINS",
+          "tags": []
+        },
+        {
+          "track_name": "Timber",
+          "track_artist": "Pitbull, Kesha",
+          "track_album_name": "Global Warming: Meltdown (Deluxe Version)",
+          "tags": [
+            "pop",
+            "dance",
+            "kesha",
+            "party",
+            "2013",
+            "rap",
+            "2010s",
+            "best of 2013",
+            "pop rap",
+            "Hip-Hop"
+          ]
+        },
+        {
+          "track_name": "LA CANCI\u00d3N",
+          "track_artist": "J Balvin, Bad Bunny",
+          "track_album_name": "OASIS",
+          "tags": [
+            "I want to have sex with this song"
+          ]
+        },
+        {
+          "track_name": "Fi Kan We Kan",
+          "track_artist": "Bnxn, Rema",
+          "track_album_name": "Fi Kan We Kan",
+          "tags": []
+        },
+        {
+          "track_name": "Who",
+          "track_artist": "Jimin",
+          "track_album_name": "MUSE",
+          "tags": [
+            "soty",
+            "jimin",
+            "it boy",
+            "pop",
+            "who",
+            "k-pop",
+            "Muse",
+            "1B CLUB",
+            "song of the year",
+            "homosexual"
+          ]
+        },
+        {
+          "track_name": "Gang Baby",
+          "track_artist": "NLE Choppa",
+          "track_album_name": "SLUT SZN",
+          "tags": [
+            "men",
+            "rap",
+            "3s"
+          ]
+        },
+        {
+          "track_name": "Clouded",
+          "track_artist": "Brent Faiyaz",
+          "track_album_name": "Fuck The World",
+          "tags": [
+            "rnb",
+            "Neo-Soul",
+            "alternative rnb",
+            "toronto sound"
+          ]
+        },
+        {
+          "track_name": "Dragula",
+          "track_artist": "Rob Zombie",
+          "track_album_name": "Hellbilly Deluxe",
+          "tags": [
+            "industrial metal",
+            "metal",
+            "industrial",
+            "rock",
+            "rob zombie",
+            "heavy metal",
+            "hard rock",
+            "90s",
+            "alternative metal",
+            "horror"
+          ]
+        },
+        {
+          "track_name": "Jingle Bell Rock",
+          "track_artist": "Bobby Helms",
+          "track_album_name": "Jingle Bell Rock/Captain Santa Claus (And His Reindeer Space Patrol)",
+          "tags": [
+            "country",
+            "christmas",
+            "rockabilly",
+            "oldies",
+            "male vocalists",
+            "50s",
+            "american",
+            "Indiana",
+            "Rock and Roll",
+            "Bobby Helms"
+          ]
+        },
+        {
+          "track_name": "If You Love Her",
+          "track_artist": "Forest Blakk",
+          "track_album_name": "If You Love Her",
+          "tags": [
+            "alternative",
+            "Canadian",
+            "my top songs"
+          ]
+        },
+        {
+          "track_name": "That Go! (feat. T-Shyne)",
+          "track_artist": "Young Stoner Life, Young Thug, Meek Mill, T-Shyne",
+          "track_album_name": "Slime Language 2",
+          "tags": []
+        },
+        {
+          "track_name": "a lot",
+          "track_artist": "21 Savage",
+          "track_album_name": "i am > i was",
+          "tags": [
+            "trap",
+            "rap",
+            "Conscious Hip Hop",
+            "Southern Hip Hop",
+            "chipmunk soul",
+            "21 savage",
+            "j cole",
+            "Dirty South",
+            "atlanta",
+            "Hip-Hop"
+          ]
+        },
+        {
+          "track_name": "Rockstar",
+          "track_artist": "LISA",
+          "track_album_name": "Rockstar",
+          "tags": [
+            "rap",
+            "Hip-Hop",
+            "pop",
+            "electronic",
+            "Kpop",
+            "k-pop",
+            "hip hop",
+            "mpb",
+            "dance pop",
+            "Psychedelia"
+          ]
+        },
+        {
+          "track_name": "Love Yourz",
+          "track_artist": "J. Cole",
+          "track_album_name": "2014 Forest Hills Drive",
+          "tags": [
+            "j cole",
+            "Hip-Hop",
+            "2014",
+            "hip hop",
+            "introspective",
+            "rap",
+            "good",
+            "Rap Music",
+            "Best song on the album",
+            "personal favourites"
+          ]
+        },
+        {
+          "track_name": "For What It's Worth",
+          "track_artist": "Buffalo Springfield",
+          "track_album_name": "Buffalo Springfield",
+          "tags": [
+            "classic rock",
+            "60s",
+            "folk rock",
+            "rock",
+            "folk",
+            "buffalo springfield",
+            "oldies",
+            "Soundtrack",
+            "political",
+            "1967"
+          ]
+        },
+        {
+          "track_name": "DILUVIO",
+          "track_artist": "Rauw Alejandro",
+          "track_album_name": "PLAYA SATURNO",
+          "tags": [
+            "Reggaeton"
+          ]
+        },
+        {
+          "track_name": "The Boy Is Mine",
+          "track_artist": "James Mac, Vall, Rosalie",
+          "track_album_name": "The Boy Is Mine",
+          "tags": []
+        },
+        {
+          "track_name": "Welcome To Jamrock",
+          "track_artist": "Damian Marley",
+          "track_album_name": "Welcome to Jamrock",
+          "tags": [
+            "reggae",
+            "dancehall",
+            "jamaica",
+            "ragga",
+            "damian marley",
+            "Hip-Hop",
+            "Welcome to Jamrock",
+            "roots reggae",
+            "chill",
+            "chillout"
+          ]
+        },
+        {
+          "track_name": "BUBALU",
+          "track_artist": "Feid, Rema",
+          "track_album_name": "BUBALU",
+          "tags": [
+            "Colombia"
+          ]
+        },
+        {
+          "track_name": "BBY BOO - REMIX",
+          "track_artist": "iZaak, JHAYCO, Anuel AA",
+          "track_album_name": "BBY BOO (REMIX)",
+          "tags": []
+        },
+        {
+          "track_name": "Hungry Like the Wolf - 2009 Remaster",
+          "track_artist": "Duran Duran",
+          "track_album_name": "Rio (Collector's Edition)",
+          "tags": [
+            "new romantic",
+            "new wave",
+            "pop rock",
+            "80s",
+            "synthpop",
+            "pop",
+            "rock",
+            "hard rock",
+            "thrill",
+            "Synth-Rock"
+          ]
+        },
+        {
+          "track_name": "Essence (feat. Tems)",
+          "track_artist": "Wizkid, Tems",
+          "track_album_name": "Made In Lagos",
+          "tags": []
+        },
+        {
+          "track_name": "Feel It Still",
+          "track_artist": "Portugal. The Man",
+          "track_album_name": "Woodstock",
+          "tags": [
+            "poptron",
+            "pop",
+            "indie",
+            "funk",
+            "psychedelic pop",
+            "2010s",
+            "Portugal the Man",
+            "2017",
+            "party",
+            "alternative"
+          ]
+        },
+        {
+          "track_name": "Insecurities",
+          "track_artist": "Lil Baby",
+          "track_album_name": "Insecurities",
+          "tags": [
+            "rap",
+            "Hip-Hop",
+            "hip hop",
+            "trap",
+            "atlanta",
+            "georgia",
+            "pop rap",
+            "Gangsta Rap",
+            "Southern Hip Hop",
+            "american"
+          ]
+        },
+        {
+          "track_name": "I'm Good Luv, Enjoy.",
+          "track_artist": "Aaron May",
+          "track_album_name": "CHASE",
+          "tags": [
+            "rap",
+            "hip hop",
+            "underground hip hop",
+            "jazz rap",
+            "Indie Hip Hop",
+            "underground hip-hop",
+            "Hip-Hop",
+            "United States",
+            "Houston",
+            "texas"
+          ]
+        },
+        {
+          "track_name": "Solo",
+          "track_artist": "Myles Smith",
+          "track_album_name": "Solo",
+          "tags": [
+            "folk",
+            "british",
+            "americana",
+            "pop",
+            "singer-songwriter",
+            "alternative",
+            "UK Pop",
+            "indie folk",
+            "United Kingdom",
+            "male vocalists"
+          ]
+        },
+        {
+          "track_name": "6 AM",
+          "track_artist": "J Balvin, Farruko",
+          "track_album_name": "La Familia",
+          "tags": []
+        }
+      ]
+    },
+    "matches": [
+      {
+        "rank": 1,
+        "id": 15,
+        "name": "Kathryn Rios",
+        "gender": "female",
+        "interests": [
+          "Volunteering",
+          "Dancing",
+          "Cinema & Movies",
+          "Coffee & Cafes",
+          "Songwriting",
+          "Wine Tasting",
+          "Fashion & Styling",
+          "Cooking & Baking"
+        ],
+        "narration": "The listener oscillates between brooding, airy alt\u2011pop soundscapes\u2014muted vocals, sparse piano, synth\u2011washed melancholy, and warm acoustic\u2011folk textures that evoke intimate nostalgia\u2014and aggressive, bass\u2011heavy trap and drill tracks where distorted 808s, snarling flows, and confrontational lyrical aggression dominate. This bifurcated palette is further amplified by a craving for soaring 80s arena\u2011rock anthems built on crunchy guitars and epic choruses, alongside glossy, sax\u2011infused tropical house and progressive festival EDM that prioritize bright, pulsing synth leads and high\u2011tempo dance energy, indicating a simultaneous desire for cathartic intensity and wistful escapism across varied cultural frames.",
+        "personality": [
+          0.11767415,
+          0.27554587,
+          0.2969093,
+          0.25484392,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.38913408,
+          0.0
+        ],
+        "score": 2.0249228,
+        "tracks": [
+          {
+            "track_name": "lovely (with Khalid)",
+            "track_artist": "Billie Eilish, Khalid",
+            "track_album_name": "lovely (with Khalid)",
+            "tags": [
+              "chamber pop",
+              "USA",
+              "alt-pop",
+              "alternative rnb"
+            ]
+          },
+          {
+            "track_name": "Baian\u00e1",
+            "track_artist": "Bakermat",
+            "track_album_name": "The Ringmaster",
+            "tags": [
+              "House",
+              "deep house",
+              "dutch",
+              "electronic",
+              "chillout",
+              "dance",
+              "tropical house",
+              "electronica",
+              "Favorite artist",
+              "saxophone"
+            ]
+          },
+          {
+            "track_name": "TEFLON DON",
+            "track_artist": "Future",
+            "track_album_name": "MIXTAPE PLUTO",
+            "tags": [
+              "2024",
+              "Hip-Hop",
+              "future",
+              "Gangsta Rap",
+              "trap",
+              "9",
+              "Southern Hip Hop",
+              "Roblox",
+              "nitrous",
+              "2020s"
+            ]
+          },
+          {
+            "track_name": "Riptide",
+            "track_artist": "Vance Joy",
+            "track_album_name": "Dream Your Life Away (Deluxe Edition)",
+            "tags": [
+              "folk",
+              "indie",
+              "australian",
+              "alternative",
+              "indie folk",
+              "2013",
+              "pop",
+              "indie pop",
+              "singer-songwriter",
+              "2014"
+            ]
+          },
+          {
+            "track_name": "Que Se Cuide",
+            "track_artist": "Luis R Conriquez, Joel De La P, Chimbala",
+            "track_album_name": "Que Se Cuide",
+            "tags": []
+          },
+          {
+            "track_name": "Like That",
+            "track_artist": "Future, Metro Boomin, Kendrick Lamar",
+            "track_album_name": "WE DON'T TRUST YOU",
+            "tags": []
+          },
+          {
+            "track_name": "Life in the Fast Lane - 2013 Remaster",
+            "track_artist": "Eagles",
+            "track_album_name": "Hotel California (2013 Remaster)",
+            "tags": [
+              "Eagles",
+              "70s",
+              "1976",
+              "finished"
+            ]
+          },
+          {
+            "track_name": "Piensa En M\u00ed",
+            "track_artist": "Grupo Mojado",
+            "track_album_name": "Sue\u00f1o Y Realidad",
+            "tags": [
+              "cumbia",
+              "Rock Argentino",
+              "romanticas",
+              "sandro",
+              "mojado"
+            ]
+          },
+          {
+            "track_name": "Under Control (feat. Hurts)",
+            "track_artist": "Calvin Harris, Alesso, Hurts",
+            "track_album_name": "Motion",
+            "tags": [
+              "Sweden"
+            ]
+          },
+          {
+            "track_name": "Nada",
+            "track_artist": "Cazzu, Lyanno, Rauw Alejandro, Dalex",
+            "track_album_name": "Error 93",
+            "tags": []
+          },
+          {
+            "track_name": "The Final Countdown",
+            "track_artist": "Europe",
+            "track_album_name": "The Final Countdown (Expanded Edition)",
+            "tags": [
+              "80s",
+              "rock",
+              "hard rock",
+              "classic rock",
+              "Europe",
+              "hair metal",
+              "swedish",
+              "pop",
+              "heavy metal",
+              "epic"
+            ]
+          },
+          {
+            "track_name": "Replay",
+            "track_artist": "Tems",
+            "track_album_name": "If Orange Was A Place",
+            "tags": [
+              "3"
+            ]
+          },
+          {
+            "track_name": "Without Me",
+            "track_artist": "Eminem",
+            "track_album_name": "The Eminem Show",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "Eminem",
+              "hip hop",
+              "00s",
+              "2002",
+              "pop",
+              "american",
+              "Without Me",
+              "funny"
+            ]
+          },
+          {
+            "track_name": "Seven Nation Army",
+            "track_artist": "The White Stripes",
+            "track_album_name": "Elephant",
+            "tags": [
+              "rock",
+              "alternative rock",
+              "alternative",
+              "indie rock",
+              "indie",
+              "Garage Rock",
+              "00s",
+              "The White Stripes",
+              "blues rock",
+              "american"
+            ]
+          },
+          {
+            "track_name": "You Give Love A Bad Name",
+            "track_artist": "Bon Jovi",
+            "track_album_name": "Slippery When Wet",
+            "tags": [
+              "rock",
+              "80s",
+              "hard rock",
+              "classic rock",
+              "bon jovi",
+              "hair metal",
+              "glam rock",
+              "1986",
+              "Get psyched",
+              "classic"
+            ]
+          },
+          {
+            "track_name": "Hola - Remix",
+            "track_artist": "Dalex, Lenny Tav\u00e1rez, Chencho Corleone, Juhn, D\u00edmelo Flow",
+            "track_album_name": "Yo Te Quiero Pa Mi",
+            "tags": []
+          },
+          {
+            "track_name": "Cholo 7",
+            "track_artist": "Fuerza Regida, Luis R Conriquez",
+            "track_album_name": "Cholo 7",
+            "tags": []
+          },
+          {
+            "track_name": "Armed & Dangerous",
+            "track_artist": "King Von",
+            "track_album_name": "Welcome to O'Block",
+            "tags": [
+              "hip hop",
+              "rap",
+              "drill",
+              "Gangsta Rap",
+              "trap",
+              "Chicago drill"
+            ]
+          },
+          {
+            "track_name": "Runaway (U & I)",
+            "track_artist": "Galantis",
+            "track_album_name": "Pharmacy",
+            "tags": [
+              "dance",
+              "swedish",
+              "today gif",
+              "electronic",
+              "2015",
+              "party",
+              "House",
+              "galantis",
+              "festival progressive house",
+              "love at first listen"
+            ]
+          },
+          {
+            "track_name": "Un Ratito Mas",
+            "track_artist": "Bryant Myers, Bad Bunny",
+            "track_album_name": "Un Ratito Mas",
+            "tags": []
+          },
+          {
+            "track_name": "Many Men (Wish Death)",
+            "track_artist": "50 Cent",
+            "track_album_name": "Get Rich Or Die Tryin'",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "Gangsta Rap",
+              "50 Cent",
+              "many men",
+              "hip hop",
+              "WISH DEATH UPON ME",
+              "BLOOD IN MY EYE",
+              "2003",
+              "Disturbed"
+            ]
+          },
+          {
+            "track_name": "Boulevard of Broken Dreams",
+            "track_artist": "Green Day",
+            "track_album_name": "Greatest Hits: God's Favorite Band",
+            "tags": [
+              "rock",
+              "punk rock",
+              "green day",
+              "punk",
+              "alternative",
+              "alternative rock",
+              "pop punk",
+              "00s",
+              "american",
+              "Boulevard of Broken Dreams"
+            ]
+          },
+          {
+            "track_name": "telepat\u00eda",
+            "track_artist": "Kali Uchis",
+            "track_album_name": "Sin Miedo (del Amor y Otros Demonios) \u221e",
+            "tags": [
+              "rnb",
+              "Neo-Soul",
+              "alternative rnb",
+              "synthpop",
+              "Sophisti-Pop",
+              "contemporary rnb",
+              "synth funk",
+              "2021",
+              "2020",
+              "2020s"
+            ]
+          },
+          {
+            "track_name": "I Don't Love You",
+            "track_artist": "My Chemical Romance",
+            "track_album_name": "The Black Parade",
+            "tags": [
+              "rock",
+              "alternative",
+              "emo",
+              "punk rock",
+              "my chemical romance",
+              "alternative rock",
+              "punk",
+              "sad",
+              "Love",
+              "mcr"
+            ]
+          },
+          {
+            "track_name": "Interstate Love Song - 2019 Remaster",
+            "track_artist": "Stone Temple Pilots",
+            "track_album_name": "Purple (2019 Remaster)",
+            "tags": [
+              "Grunge",
+              "alternative",
+              "alternative rock",
+              "rock",
+              "hard rock",
+              "Alt-country",
+              "post-grunge",
+              "true masterpiece",
+              "mistagged"
+            ]
+          },
+          {
+            "track_name": "Como Pacman",
+            "track_artist": "Alem\u00e1n, Gera MX",
+            "track_album_name": "Como Pacman",
+            "tags": []
+          },
+          {
+            "track_name": "Sprinter",
+            "track_artist": "Dave, Central Cee",
+            "track_album_name": "Sprinter",
+            "tags": [
+              "england"
+            ]
+          },
+          {
+            "track_name": "Die With A Smile",
+            "track_artist": "Lady Gaga, Bruno Mars",
+            "track_album_name": "Die With A Smile",
+            "tags": [
+              "Lady Gaga"
+            ]
+          },
+          {
+            "track_name": "Nothing's New",
+            "track_artist": "Rio Romeo",
+            "track_album_name": "Good God!",
+            "tags": [
+              "epi"
+            ]
+          },
+          {
+            "track_name": "Don't Stand So Close To Me",
+            "track_artist": "The Police",
+            "track_album_name": "Zenyatta Mondatta (Remastered 2003)",
+            "tags": [
+              "The Police"
+            ]
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "id": 14,
+        "name": "Cindy James",
+        "gender": "female",
+        "interests": [
+          "Reading & Literature",
+          "Karaoke",
+          "Cooking & Baking",
+          "Cinema & Movies",
+          "Anime & Manga",
+          "Vinyl Collecting"
+        ],
+        "narration": "The user\u2019s streaming profile alternates between kinetic, bass\u2011heavy dance/EDM and trap soundscapes\u2014glittering synth arpeggios, relentless 4\u2011on\u2011the\u2011floor beats, aggressive rap cadences, and Latin reggaeton swagger\u2014and reverent consumption of expansive progressive\u2011rock epics, classic blues\u2011rock riffs, and intimate folk\u2011singer\u2011songwriter ballads grounded in warm acoustic timbres and plaintive lyricism. This bifurcated pattern signals a simultaneous craving for cathartic, high\u2011energy euphoria and contemplative, atmospheric introspection, with each pole reinforced by distinct textural palettes (bright, polished production versus organic, mellow instrumentation).",
+        "personality": [
+          0.11501734,
+          0.032100394,
+          -0.29151508,
+          0.11273223,
+          0.5440745,
+          0.5440745,
+          0.0,
+          0.5440745,
+          0.0,
+          0.0
+        ],
+        "score": 1.834185,
+        "tracks": [
+          {
+            "track_name": "Strangers",
+            "track_artist": "Kenya Grace",
+            "track_album_name": "Strangers",
+            "tags": [
+              "Drum and bass",
+              "liquid dnb",
+              "pop",
+              "dance",
+              "alt-pop",
+              "vocal",
+              "dnb",
+              "liquid drum and bass",
+              "EDM",
+              "House"
+            ]
+          },
+          {
+            "track_name": "This Girl (Kungs Vs. Cookin' On 3 Burners)",
+            "track_artist": "Kungs, Cookin' On 3 Burners",
+            "track_album_name": "Layers",
+            "tags": []
+          },
+          {
+            "track_name": "Outside (feat. Ellie Goulding)",
+            "track_artist": "Calvin Harris, Ellie Goulding",
+            "track_album_name": "Motion",
+            "tags": [
+              "pop",
+              "electronic",
+              "ellie goulding",
+              "love at first listen",
+              "dance",
+              "electro house",
+              "omg",
+              "EDM",
+              "Outside",
+              "hit song"
+            ]
+          },
+          {
+            "track_name": "Si Se Da - Remix",
+            "track_artist": "Myke Towers, Farruko, Arc\u00e1ngel, Sech, Zion",
+            "track_album_name": "Si Se da Remix",
+            "tags": []
+          },
+          {
+            "track_name": "Yes Indeed",
+            "track_artist": "Lil Baby, Drake",
+            "track_album_name": "Harder Than Ever",
+            "tags": []
+          },
+          {
+            "track_name": "Ela Joga na Hora",
+            "track_artist": "Mc Pogba, DJ Guih Da ZO",
+            "track_album_name": "Ela Joga na Hora",
+            "tags": []
+          },
+          {
+            "track_name": "Comfortably Numb",
+            "track_artist": "Pink Floyd",
+            "track_album_name": "The Wall",
+            "tags": [
+              "Progressive rock",
+              "classic rock",
+              "Psychedelic Rock",
+              "rock",
+              "Pink Floyd",
+              "70s",
+              "beautiful",
+              "psychedelic",
+              "epic",
+              "Guitar Solo"
+            ]
+          },
+          {
+            "track_name": "Good To Be",
+            "track_artist": "Mark Ambor",
+            "track_album_name": "Rockwood",
+            "tags": [
+              "Mark Ambor"
+            ]
+          },
+          {
+            "track_name": "Still Not a Player (feat. Joe) - Radio Version",
+            "track_artist": "Big Pun, Joe",
+            "track_album_name": "Capital Punishment",
+            "tags": [
+              "1998",
+              "rap",
+              "bigpunisher capitalpunishment",
+              "hiphop",
+              "golden age",
+              "classic",
+              "favourite albums",
+              "jbtv recommendation",
+              "mafioso rap",
+              "Totec Radio"
+            ]
+          },
+          {
+            "track_name": "i am not who i was",
+            "track_artist": "Chance Pe\u00f1a",
+            "track_album_name": "Ever-Shifting, Continual Blossoming",
+            "tags": [
+              "folk",
+              "singer-songwriter",
+              "on some dark shit",
+              "USA",
+              "the voice",
+              "texas",
+              "american",
+              "Singer-songwriter pop"
+            ]
+          },
+          {
+            "track_name": "21 Reasons (feat. Ella Henderson)",
+            "track_artist": "Nathan Dawe, Ella Henderson",
+            "track_album_name": "21 Reasons (feat. Ella Henderson)",
+            "tags": []
+          },
+          {
+            "track_name": "White Wedding - Pt. 1",
+            "track_artist": "Billy Idol",
+            "track_album_name": "Billy Idol",
+            "tags": [
+              "hard rock",
+              "rock",
+              "punk",
+              "post-punk",
+              "Billy Wedding",
+              "Billy Idol"
+            ]
+          },
+          {
+            "track_name": "(I Can't Get No) Satisfaction - Mono Version",
+            "track_artist": "The Rolling Stones",
+            "track_album_name": "Out Of Our Heads",
+            "tags": [
+              "1965",
+              "rock",
+              "classic rock",
+              "60s",
+              "blues rock",
+              "british",
+              "Rock and Roll",
+              "the rolling stones",
+              "1960s",
+              "rolling stone 500 greatest albums of all time"
+            ]
+          },
+          {
+            "track_name": "Moves Like Jagger - Studio Recording From \"The Voice\" Performance",
+            "track_artist": "Maroon 5, Christina Aguilera",
+            "track_album_name": "Hands All Over (Revised International Standard version)",
+            "tags": [
+              "dance",
+              "pop",
+              "rock",
+              "sexy",
+              "maroon 5",
+              "pop rock",
+              "american",
+              "hot",
+              "female vocalist",
+              "USA"
+            ]
+          },
+          {
+            "track_name": "The Largest",
+            "track_artist": "BigXthaPlug",
+            "track_album_name": "The Largest",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "2020s",
+              "2024"
+            ]
+          },
+          {
+            "track_name": "Lovin On Me",
+            "track_artist": "Jack Harlow",
+            "track_album_name": "Lovin On Me",
+            "tags": [
+              "pop rap",
+              "rap",
+              "us number one",
+              "hip hop",
+              "party",
+              "electronic",
+              "Hip-Hop",
+              "american",
+              "male vocalists",
+              "sex"
+            ]
+          },
+          {
+            "track_name": "T\u00e1 OK",
+            "track_artist": "DENNIS, MC Kevin o Chris",
+            "track_album_name": "T\u00e1 OK",
+            "tags": []
+          },
+          {
+            "track_name": "Touches",
+            "track_artist": "Somnum Magnam",
+            "track_album_name": "Touches",
+            "tags": []
+          },
+          {
+            "track_name": "Like That",
+            "track_artist": "Future, Metro Boomin, Kendrick Lamar",
+            "track_album_name": "WE DON'T TRUST YOU",
+            "tags": []
+          },
+          {
+            "track_name": "Sativa",
+            "track_artist": "Jhen\u00e9 Aiko, Swae Lee",
+            "track_album_name": "Trip",
+            "tags": []
+          },
+          {
+            "track_name": "Imag\u00ednate",
+            "track_artist": "Danny Ocean, Kapo",
+            "track_album_name": "Imag\u00ednate",
+            "tags": []
+          },
+          {
+            "track_name": "M4",
+            "track_artist": "Teto, Matu\u00ea",
+            "track_album_name": "M4",
+            "tags": []
+          },
+          {
+            "track_name": "Baby Can I Hold You",
+            "track_artist": "Tracy Chapman",
+            "track_album_name": "Tracy Chapman",
+            "tags": [
+              "1988",
+              "folk",
+              "80s",
+              "female vocalists",
+              "contemporary folk",
+              "folk rock",
+              "singer-songwriter",
+              "Alternative Folk",
+              "college rock",
+              "soul"
+            ]
+          },
+          {
+            "track_name": "Let Me Love You",
+            "track_artist": "Mario",
+            "track_album_name": "Turning Point",
+            "tags": [
+              "rnb",
+              "Mario",
+              "Love",
+              "soul",
+              "pop",
+              "let me love you - mario",
+              "r&b",
+              "Let Me Love You",
+              "slow jams",
+              "Hip-Hop"
+            ]
+          },
+          {
+            "track_name": "Wants and Needs (feat. Lil Baby)",
+            "track_artist": "Drake, Lil Baby",
+            "track_album_name": "Scary Hours 2",
+            "tags": []
+          },
+          {
+            "track_name": "Black Friday (pretty like the sun)",
+            "track_artist": "Lost Frequencies, Tom Odell",
+            "track_album_name": "Black Friday (pretty like the sun)",
+            "tags": []
+          },
+          {
+            "track_name": "Con Calma",
+            "track_artist": "Daddy Yankee, Snow",
+            "track_album_name": "Con Calma",
+            "tags": []
+          },
+          {
+            "track_name": "The Boy Is Mine",
+            "track_artist": "James Mac, Vall, Rosalie",
+            "track_album_name": "The Boy Is Mine",
+            "tags": []
+          },
+          {
+            "track_name": "Dance The Night - From Barbie The Album",
+            "track_artist": "Dua Lipa",
+            "track_album_name": "Dance The Night (From Barbie The Album)",
+            "tags": [
+              "pop",
+              "electropop",
+              "dance-pop",
+              "love at first listen",
+              "bubble gum pop",
+              "my music discovery",
+              "dua lipa"
+            ]
+          },
+          {
+            "track_name": "BIRDS OF A FEATHER",
+            "track_artist": "Billie Eilish",
+            "track_album_name": "HIT ME HARD AND SOFT",
+            "tags": [
+              "peter",
+              "alt-pop",
+              "2024",
+              "pop",
+              "Radio",
+              "Olivia",
+              "Love",
+              "my top songs",
+              "Sophisti-Pop",
+              "indie pop"
+            ]
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "id": 10,
+        "name": "Gary Sanders",
+        "gender": "male",
+        "interests": [
+          "Writing & Journaling",
+          "Board Games",
+          "Music Production",
+          "Fitness & Gym",
+          "Vinyl Collecting",
+          "Songwriting",
+          "Cinema & Movies"
+        ],
+        "narration": "The listening profile oscillates between brooding, melodic emo\u2011rap and plaintive indie\u2011pop balladry\u2014marked by sparse, reverberant synth pads, minor\u2011key chordal ambiances, and lyrical preoccupations with heartbreak\u2014while concurrently gravitating toward high\u2011tempo, rhythm\u2011driven Southern trap and Latin reggaeton that layer crisp 808 sub\u2011bass, syncopated snares, and dembow percussion for club\u2011ready propulsion. Simultaneously, the user embraces abrasive industrial\u2011metal textures (distorted, mechanistic guitar riffs, relentless double\u2011kick), nostalgic 90s punk rock vigor, and groove\u2011centric funk\u2011rock, disco\u2011inflected R&B, and Euro\u2011dance gloss, revealing a bifurcated affinity for visceral aggression and polished dance\u2011floor euphoria across Anglo\u2011American, Francophone, and Latin sonic cultures.",
+        "personality": [
+          0.29023758,
+          -0.08955607,
+          0.2943789,
+          -0.27695084,
+          0.4313876,
+          0.4313876,
+          0.0,
+          0.4313876,
+          0.0,
+          0.4313876
+        ],
+        "score": 1.8338852,
+        "tracks": [
+          {
+            "track_name": "Robbery",
+            "track_artist": "Juice WRLD",
+            "track_album_name": "Death Race For Love (Bonus Track Version)",
+            "tags": [
+              "emo rap",
+              "pop rap",
+              "sad",
+              "Hip-Hop",
+              "trap",
+              "melodic",
+              "heartbroken",
+              "emo-pop",
+              "solo",
+              "heartbreak"
+            ]
+          },
+          {
+            "track_name": "ATLiens",
+            "track_artist": "Outkast",
+            "track_album_name": "ATLiens",
+            "tags": [
+              "Hip-Hop",
+              "rap",
+              "outkast",
+              "90s",
+              "hip hop",
+              "1996",
+              "Southern Hip Hop",
+              "atliens",
+              "Conscious Hip Hop",
+              "georgia"
+            ]
+          },
+          {
+            "track_name": "Agora Hills",
+            "track_artist": "Doja Cat",
+            "track_album_name": "Scarlet",
+            "tags": [
+              "rnb",
+              "pop rap",
+              "rap",
+              "Hip-Hop",
+              "cloud rap",
+              "alternative rnb",
+              "Trap Soul",
+              "2023",
+              "hip hop",
+              "agoura hills"
+            ]
+          },
+          {
+            "track_name": "Blow for Blow (feat. J. Cole)",
+            "track_artist": "Tee Grizzley, J. Cole",
+            "track_album_name": "Blow for Blow (feat. J. Cole)",
+            "tags": []
+          },
+          {
+            "track_name": "American Idiot",
+            "track_artist": "Green Day",
+            "track_album_name": "American Idiot",
+            "tags": [
+              "punk rock",
+              "rock",
+              "punk",
+              "alternative",
+              "green day",
+              "test",
+              "testing",
+              "pop punk",
+              "alternative rock",
+              "00s"
+            ]
+          },
+          {
+            "track_name": "Teenagers",
+            "track_artist": "My Chemical Romance",
+            "track_album_name": "The Black Parade",
+            "tags": [
+              "rock",
+              "punk rock",
+              "emo",
+              "alternative",
+              "my chemical romance",
+              "alternative rock",
+              "punk",
+              "pop punk",
+              "teenagers",
+              "mcr"
+            ]
+          },
+          {
+            "track_name": "Dancing On My Own",
+            "track_artist": "Calum Scott",
+            "track_album_name": "Only Human (Deluxe)",
+            "tags": [
+              "pop",
+              "soul",
+              "indie pop",
+              "british",
+              "Blue-Eyed Soul",
+              "folk pop",
+              "soft pop",
+              "calum scott"
+            ]
+          },
+          {
+            "track_name": "It's Up (feat. Young Thug & 21 Savage)",
+            "track_artist": "Drake, Young Thug, 21 Savage",
+            "track_album_name": "100 GIGS",
+            "tags": []
+          },
+          {
+            "track_name": "Pink + White",
+            "track_artist": "Frank Ocean",
+            "track_album_name": "Blonde",
+            "tags": [
+              "rnb",
+              "Neo-Soul",
+              "For our kids",
+              "soul",
+              "Olivia",
+              "beyonce",
+              "Love",
+              "2016",
+              "I got Olivia forever",
+              "malik and olivia"
+            ]
+          },
+          {
+            "track_name": "ALL MINE",
+            "track_artist": "Brent Faiyaz",
+            "track_album_name": "WASTELAND",
+            "tags": [
+              "pop",
+              "soul",
+              "rnb",
+              "american",
+              "alternative rnb",
+              "MINHAS m\u00fasicas",
+              "Neo-Soul",
+              "amor a primeira ouvida"
+            ]
+          },
+          {
+            "track_name": "Dragula",
+            "track_artist": "Rob Zombie",
+            "track_album_name": "Hellbilly Deluxe",
+            "tags": [
+              "industrial metal",
+              "metal",
+              "industrial",
+              "rock",
+              "rob zombie",
+              "heavy metal",
+              "hard rock",
+              "90s",
+              "alternative metal",
+              "horror"
+            ]
+          },
+          {
+            "track_name": "Que Se Cuide",
+            "track_artist": "Luis R Conriquez, Joel De La P, Chimbala",
+            "track_album_name": "Que Se Cuide",
+            "tags": []
+          },
+          {
+            "track_name": "Basket Case",
+            "track_artist": "Green Day",
+            "track_album_name": "Dookie",
+            "tags": [
+              "punk rock",
+              "punk",
+              "rock",
+              "90s",
+              "green day",
+              "pop punk",
+              "alternative",
+              "alternative rock",
+              "1994",
+              "american"
+            ]
+          },
+          {
+            "track_name": "Like That",
+            "track_artist": "Future, Metro Boomin, Kendrick Lamar",
+            "track_album_name": "WE DON'T TRUST YOU",
+            "tags": []
+          },
+          {
+            "track_name": "Give It Away",
+            "track_artist": "Red Hot Chili Peppers",
+            "track_album_name": "Blood Sugar Sex Magik (Deluxe Edition)",
+            "tags": [
+              "rock",
+              "Funk Rock",
+              "funk",
+              "alternative",
+              "90s",
+              "alternative rock",
+              "Red Hot Chili Peppers",
+              "funk metal",
+              "1991",
+              "classic rock"
+            ]
+          },
+          {
+            "track_name": "Nost\u00e1lgico",
+            "track_artist": "Rvssian, Rauw Alejandro, Chris Brown",
+            "track_album_name": "Nost\u00e1lgico",
+            "tags": []
+          },
+          {
+            "track_name": "Papaoutai",
+            "track_artist": "Stromae",
+            "track_album_name": "racine carr\u00e9e",
+            "tags": [
+              "french",
+              "pop",
+              "dance",
+              "electronic",
+              "2013",
+              "belgian",
+              "electropop",
+              "catchy",
+              "male vocalists",
+              "summer"
+            ]
+          },
+          {
+            "track_name": "Tit\u00ed Me Pregunt\u00f3",
+            "track_artist": "Bad Bunny",
+            "track_album_name": "Un Verano Sin Ti",
+            "tags": [
+              "Reggaeton",
+              "dembow",
+              "latin",
+              "king of pop",
+              "trap",
+              "fire",
+              "rey del pop",
+              "Latin Trap",
+              "Clone hero",
+              "alternative reggaeton"
+            ]
+          },
+          {
+            "track_name": "Let's Groove",
+            "track_artist": "Earth, Wind & Fire",
+            "track_album_name": "Raise!",
+            "tags": [
+              "funk",
+              "Disco",
+              "soul",
+              "80s",
+              "dance",
+              "70s",
+              "rnb",
+              "Earth Wind and Fire",
+              "funky",
+              "1981"
+            ]
+          },
+          {
+            "track_name": "You Are Not Alone",
+            "track_artist": "Michael Jackson",
+            "track_album_name": "HIStory - PAST, PRESENT AND FUTURE - BOOK I",
+            "tags": [
+              "pop",
+              "michael jackson",
+              "90s",
+              "Ballad",
+              "soul",
+              "king of pop",
+              "rnb",
+              "romantic",
+              "Love",
+              "1995"
+            ]
+          },
+          {
+            "track_name": "La Zona",
+            "track_artist": "Bad Bunny",
+            "track_album_name": "YHLQMDLG",
+            "tags": [
+              "trap",
+              "Reggaeton",
+              "2020",
+              "latin",
+              "Latin Trap",
+              "indie",
+              "Hip-Hop",
+              "rnb",
+              "latin pop",
+              "male vocals"
+            ]
+          },
+          {
+            "track_name": "MMS",
+            "track_artist": "Asake, Wizkid",
+            "track_album_name": "Lungu Boy",
+            "tags": []
+          },
+          {
+            "track_name": "We Found Love",
+            "track_artist": "Rihanna, Calvin Harris",
+            "track_album_name": "Talk That Talk",
+            "tags": [
+              "pop",
+              "rnb",
+              "female vocalists",
+              "dance",
+              "Hip-Hop",
+              "Rihanna",
+              "r&b",
+              "hip hop",
+              "american",
+              "reggae"
+            ]
+          },
+          {
+            "track_name": "Despu\u00e9s de la Playa",
+            "track_artist": "Bad Bunny",
+            "track_album_name": "Un Verano Sin Ti",
+            "tags": [
+              "merengue",
+              "mambo",
+              "alternative rnb",
+              "mambo urbano",
+              "spanish",
+              "latin",
+              "Reggaeton",
+              "pr",
+              "chillwave"
+            ]
+          },
+          {
+            "track_name": "Djadja",
+            "track_artist": "Aya Nakamura",
+            "track_album_name": "NAKAMURA",
+            "tags": [
+              "pop",
+              "rnb",
+              "afropop",
+              "r&b",
+              "julia mofada"
+            ]
+          },
+          {
+            "track_name": "Feel It Still",
+            "track_artist": "Portugal. The Man",
+            "track_album_name": "Woodstock",
+            "tags": [
+              "poptron",
+              "pop",
+              "indie",
+              "funk",
+              "psychedelic pop",
+              "2010s",
+              "Portugal the Man",
+              "2017",
+              "party",
+              "alternative"
+            ]
+          },
+          {
+            "track_name": "Get Lucky (Radio Edit) [feat. Pharrell Williams and Nile Rodgers]",
+            "track_artist": "Daft Punk, Pharrell Williams, Nile Rodgers",
+            "track_album_name": "Get Lucky (Radio Edit) [feat. Pharrell Williams and Nile Rodgers]",
+            "tags": [
+              "french",
+              "american"
+            ]
+          },
+          {
+            "track_name": "Coco Jamboo",
+            "track_artist": "Mr. President",
+            "track_album_name": "We See The Same Sun",
+            "tags": [
+              "eurodance",
+              "90s",
+              "german",
+              "pop",
+              "90's",
+              "dance",
+              "4",
+              "kot"
+            ]
+          },
+          {
+            "track_name": "Go Flex",
+            "track_artist": "Post Malone",
+            "track_album_name": "Stoney (Deluxe)",
+            "tags": [
+              "rap",
+              "Hip-Hop",
+              "trap",
+              "hip hop",
+              "chill",
+              "pop rap",
+              "Rhytm and Blues",
+              "2016",
+              "folk rap",
+              "2010s"
+            ]
+          },
+          {
+            "track_name": "See You Again (feat. Kali Uchis)",
+            "track_artist": "Tyler, The Creator, Kali Uchis",
+            "track_album_name": "Flower Boy",
+            "tags": []
+          }
+        ]
+      }
+    ]
+  }
+];
+
+    let activeHostIndex = null;
+    let activeMatchIndex = 0;
+
+    // Load Host Profiles
+    function init() {
+      const hostList = document.getElementById("host-list");
+      hostList.innerHTML = "";
+      
+      appData.forEach((hostData, idx) => {
+        const card = document.createElement("div");
+        card.className = "host-card" + (activeHostIndex === idx ? " active" : "");
+        card.onclick = () => selectHost(idx);
+        
+        // Shorten narration for card snippet
+        let snippet = hostData.host.narration || "No narration profile available.";
+        
+        card.innerHTML = `
+          <div class="card-header-row">
+            <span class="card-name">${hostData.host.name}</span>
+            <span class="gender-badge ${hostData.host.gender}">${hostData.host.gender}</span>
+          </div>
+          <div class="card-snippet">${snippet}</div>
+        `;
+        
+        hostList.appendChild(card);
+      });
+
+      if (appData.length > 0) {
+        selectHost(0);
+      }
+    }
+
+    function selectHost(idx) {
+      activeHostIndex = idx;
+      activeMatchIndex = 0;
+      
+      // Update sidebar active class
+      const cards = document.querySelectorAll(".host-card");
+      cards.forEach((c, cIdx) => {
+        if (cIdx === idx) {
+          c.classList.add("active");
+        } else {
+          c.classList.remove("active");
+        }
+      });
+
+      document.getElementById("placeholder").style.display = "none";
+      document.getElementById("workspace-content").style.display = "flex";
+
+      renderMatchTabs();
+      renderWorkspace();
+    }
+
+    function selectMatch(mIdx) {
+      activeMatchIndex = mIdx;
+      
+      const buttons = document.querySelectorAll(".tab-button");
+      buttons.forEach((b, idx) => {
+        if (idx === mIdx) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+
+      renderWorkspace();
+    }
+
+    function renderMatchTabs() {
+      const tabs = document.getElementById("match-tabs");
+      tabs.innerHTML = "";
+
+      const hostData = appData[activeHostIndex];
+      hostData.matches.forEach((m, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "tab-button" + (idx === activeMatchIndex ? " active" : "");
+        btn.onclick = () => selectMatch(idx);
+        
+        // Scale score to percent (assuming Cosine similarity around 0.5 to 1.0 or just a raw relative score)
+        let pct = (m.score * 100).toFixed(1);
+        
+        btn.innerHTML = `
+          Rank ${m.rank}: ${m.name}
+          <span class="match-percentage-badge">${pct}%</span>
+        `;
+        tabs.appendChild(btn);
+      });
+    }
+
+    // Toggle subtabs (Profile vs Tracks) inside cards
+    function toggleCardTab(panel, tab) {
+      const profileBtn = document.getElementById(`${panel}-subtab-profile`);
+      const tracksBtn = document.getElementById(`${panel}-subtab-tracks`);
+      const profileDiv = document.getElementById(`${panel}-profile-details`);
+      const tracksDiv = document.getElementById(`${panel}-tracks-details`);
+      
+      if (tab === 'profile') {
+        profileBtn.classList.add('active');
+        tracksBtn.classList.remove('active');
+        profileDiv.style.display = 'flex';
+        tracksDiv.style.display = 'none';
+      } else {
+        profileBtn.classList.remove('active');
+        tracksBtn.classList.add('active');
+        profileDiv.style.display = 'none';
+        tracksDiv.style.display = 'flex';
+      }
+    }
+
+    const personalityTraits = [
+      "Openness Coordinate A", "Openness Coordinate B",
+      "Conscientiousness Coordinate A", "Conscientiousness Coordinate B",
+      "Extraversion Coordinate A", "Extraversion Coordinate B",
+      "Agreeableness Coordinate A", "Agreeableness Coordinate B",
+      "Neuroticism Coordinate A", "Neuroticism Coordinate B"
+    ];
+
+    function renderWorkspace() {
+      const hostData = appData[activeHostIndex];
+      const match = hostData.matches[activeMatchIndex];
+      
+      if (!hostData || !match) return;
+
+      // Reset sub-tabs to Profile by default when loading new host/match
+      toggleCardTab('host', 'profile');
+      toggleCardTab('match', 'profile');
+
+      // Update Host Panel HTML
+      document.getElementById("host-title-name").innerText = hostData.host.name;
+      document.getElementById("host-narration").innerText = hostData.host.narration || "No narration profile.";
+      document.getElementById("host-gender-tag").className = "gender-badge " + hostData.host.gender;
+      document.getElementById("host-gender-tag").innerText = hostData.host.gender;
+      
+      // Update Match Panel HTML
+      document.getElementById("match-title-name").innerText = `Rank ${match.rank} Match: ${match.name}`;
+      document.getElementById("match-narration").innerText = match.narration || "No narration profile.";
+      document.getElementById("match-gender-tag").className = "gender-badge " + match.gender;
+      document.getElementById("match-gender-tag").innerText = match.gender;
+
+      // Update Interests comparison
+      const hostInterests = hostData.host.interests;
+      const matchInterests = match.interests;
+      
+      const hostTagsBox = document.getElementById("host-interests-tags");
+      const matchTagsBox = document.getElementById("match-interests-tags");
+      hostTagsBox.innerHTML = "";
+      matchTagsBox.innerHTML = "";
+
+      // Distinguish common and unique interests
+      hostInterests.forEach(interest => {
+        const pill = document.createElement("span");
+        if (matchInterests.some(m => m.toLowerCase() === interest.toLowerCase())) {
+          pill.className = "tag-pill shared";
+          pill.innerHTML = `★ ${interest}`;
+        } else {
+          pill.className = "tag-pill unique";
+          pill.innerText = interest;
+        }
+        hostTagsBox.appendChild(pill);
+      });
+
+      matchInterests.forEach(interest => {
+        const pill = document.createElement("span");
+        if (hostInterests.some(h => h.toLowerCase() === interest.toLowerCase())) {
+          pill.className = "tag-pill shared";
+          pill.innerHTML = `★ ${interest}`;
+        } else {
+          pill.className = "tag-pill unique";
+          pill.innerText = interest;
+        }
+        matchTagsBox.appendChild(pill);
+      });
+
+      // Personality Bars Comparison
+      const hostChart = document.getElementById("host-personality-chart");
+      const matchChart = document.getElementById("match-personality-chart");
+      hostChart.innerHTML = "";
+      matchChart.innerHTML = "";
+
+      personalityTraits.forEach((trait, i) => {
+        const hostVal = hostData.host.personality[i] || 0;
+        const matchVal = match.personality[i] || 0;
+
+        // Render Host Row
+        hostChart.appendChild(createChartRow(trait, hostVal, true));
+        // Render Match Row
+        matchChart.appendChild(createChartRow(trait, matchVal, false));
+      });
+
+      // Render Host Tracks list
+      const hostTracks = hostData.host.tracks || [];
+      const matchTracks = match.tracks || [];
+      const hostTracksBox = document.getElementById("host-tracks-list");
+      const matchTracksBox = document.getElementById("match-tracks-list");
+      hostTracksBox.innerHTML = "";
+      matchTracksBox.innerHTML = "";
+
+      if (hostTracks.length === 0) {
+        hostTracksBox.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem;">No recently played tracks.</div>`;
+      } else {
+        hostTracks.forEach(track => {
+          const isSharedTrack = matchTracks.some(mt => 
+            mt.track_name.toLowerCase() === track.track_name.toLowerCase() && 
+            mt.track_artist.toLowerCase() === track.track_artist.toLowerCase()
+          );
+          const isSharedArtist = matchTracks.some(mt => 
+            mt.track_artist.toLowerCase() === track.track_artist.toLowerCase()
+          );
+          hostTracksBox.appendChild(createTrackItem(track, isSharedTrack, isSharedArtist));
+        });
+      }
+
+      if (matchTracks.length === 0) {
+        matchTracksBox.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem;">No recently played tracks.</div>`;
+      } else {
+        matchTracks.forEach(track => {
+          const isSharedTrack = hostTracks.some(ht => 
+            ht.track_name.toLowerCase() === track.track_name.toLowerCase() && 
+            ht.track_artist.toLowerCase() === track.track_artist.toLowerCase()
+          );
+          const isSharedArtist = hostTracks.some(ht => 
+            ht.track_artist.toLowerCase() === track.track_artist.toLowerCase()
+          );
+          matchTracksBox.appendChild(createTrackItem(track, isSharedTrack, isSharedArtist));
+        });
+      }
+
+      // Affinity Circle
+      const affinityScore = match.score;
+      const displayScore = (affinityScore * 100).toFixed(2);
+      document.getElementById("affinity-score-percent").innerText = displayScore;
+      
+      // Update circular chart stroke dasharray
+      const circleStroke = document.getElementById("score-circle-stroke");
+      const clampedScore = Math.max(0, Math.min(1, affinityScore));
+      circleStroke.setAttribute("stroke-dasharray", `${(clampedScore * 100).toFixed(0)}, 100`);
+
+      // Match explanation text based on vectors
+      let matchExpt = `DBSF query resolved an affinity of ${displayScore}% for ${match.name} to match ${hostData.host.name}. `;
+      
+      // Find mutual interests count
+      const mutuals = hostInterests.filter(h => matchInterests.some(m => m.toLowerCase() === h.toLowerCase()));
+      if (mutuals.length > 0) {
+        matchExpt += `They share ${mutuals.length} interest(s), including: ${mutuals.slice(0, 3).join(", ")}. `;
+      } else {
+        matchExpt += `While they don't share identical interest tags, their interest topics have high semantic alignment in the vector space. `;
+      }
+      
+      // Check shared tracks/artists
+      const sharedTracksCount = hostTracks.filter(ht => 
+        matchTracks.some(mt => mt.track_name.toLowerCase() === ht.track_name.toLowerCase() && mt.track_artist.toLowerCase() === ht.track_artist.toLowerCase())
+      ).length;
+      const hostArtists = [...new Set(hostTracks.map(t => t.track_artist.toLowerCase()))];
+      const matchArtists = [...new Set(matchTracks.map(t => t.track_artist.toLowerCase()))];
+      const sharedArtistsCount = hostArtists.filter(a => matchArtists.includes(a)).length;
+
+      if (sharedTracksCount > 0) {
+        matchExpt += `Acoustically, they share ${sharedTracksCount} identical track(s) in their play histories. `;
+      } else if (sharedArtistsCount > 0) {
+        matchExpt += `Acoustically, they listen to ${sharedArtistsCount} of the same artist(s). `;
+      }
+      
+      // Check personality distance
+      let personalityDiffSum = 0;
+      for (let i = 0; i < 10; i++) {
+        personalityDiffSum += Math.abs((hostData.host.personality[i] || 0) - (match.personality[i] || 0));
+      }
+      const avgPersonalityDiff = personalityDiffSum / 10;
+      if (avgPersonalityDiff < 0.3) {
+        matchExpt += `Psychometrically, their personality coordinate systems map closely, indicating highly aligned behavioral traits (average distance: ${avgPersonalityDiff.toFixed(2)}).`;
+      } else if (avgPersonalityDiff > 0.7) {
+        matchExpt += `Their personality profiles show complementary oppositions, adding dynamic contrast and balance (average distance: ${avgPersonalityDiff.toFixed(2)}).`;
+      } else {
+        matchExpt += `Their personality profiles display balanced traits with complementary overlaps (average distance: ${avgPersonalityDiff.toFixed(2)}).`;
+      }
+
+      document.getElementById("affinity-explanation").innerText = matchExpt;
+    }
+
+    function createTrackItem(track, isSharedTrack, isSharedArtist) {
+      const item = document.createElement("div");
+      
+      let badgeHtml = "";
+      let sharedClass = "";
+      
+      if (isSharedTrack) {
+        sharedClass = " shared-track";
+        badgeHtml = `<span class="shared-badge track">★ Shared Track</span>`;
+      } else if (isSharedArtist) {
+        sharedClass = " shared-artist";
+        badgeHtml = `<span class="shared-badge artist">Shared Artist</span>`;
+      }
+
+      item.className = "track-item" + sharedClass;
+
+      const tagsHtml = (track.tags || []).slice(0, 3).map(tag => 
+        `<span class="track-tag-pill">${tag}</span>`
+      ).join('');
+
+      item.innerHTML = `
+        <div class="track-main-info">
+          <div>
+            <div class="track-title">${track.track_name}</div>
+            <div class="track-artist">${track.track_artist}</div>
+          </div>
+          ${badgeHtml}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.15rem;">
+          <div class="track-album">${track.track_album_name || ""}</div>
+          <div class="track-tags">${tagsHtml}</div>
+        </div>
+      `;
+      
+      return item;
+    }
+
+    function createChartRow(traitName, value, isHost) {
+      const row = document.createElement("div");
+      row.className = "chart-row";
+      
+      const percentValue = value * 50; // range: -50 to 50
+      
+      let left = "50%";
+      let width = "0%";
+      
+      if (percentValue >= 0) {
+        width = `${percentValue}%`;
+        left = "50%";
+      } else {
+        width = `${Math.abs(percentValue)}%`;
+        left = `${50 - Math.abs(percentValue)}%`;
+      }
+
+      row.innerHTML = `
+        <div class="row-meta">
+          <span>${traitName}</span>
+          <span style="font-family: monospace; color: ${isHost ? 'var(--accent-purple)' : 'var(--accent-cyan)'}">
+            ${value >= 0 ? '+' : ''}${value.toFixed(4)}
+          </span>
+        </div>
+        <div class="bar-wrapper">
+          <div class="bar-center-line"></div>
+          <div class="bar-fill ${isHost ? 'host-fill' : 'match-fill'}" style="left: ${left}; width: ${width}"></div>
+        </div>
+      `;
+      
+      return row;
+    }
+
+    // Start Visualizer
+    window.onload = init;
+  </script>
+</body>
+</html>
