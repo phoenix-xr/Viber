@@ -9,7 +9,10 @@
             "2013",
             "The Weeknd",
             "darkwave",
-            "soul"
+            "soul",
+            "cloud rap",
+            "witch house",
+            "sex"
         ]
     },
     {
@@ -29,7 +32,10 @@
             "Canadian",
             "soul",
             "electronic",
-            "The Weeknd"
+            "The Weeknd",
+            "drugs and alcohol have ruined my life",
+            "chill",
+            "r'n'b"
         ]
     },
     {
@@ -42,7 +48,10 @@
             "alternative rnb",
             "Progressive",
             "melancholic",
-            "atmospheric"
+            "atmospheric",
+            "melodic",
+            "ethereal",
+            "breakup"
         ]
     },
     {
@@ -55,7 +64,10 @@
             "rock",
             "trip hop",
             "Love",
-            "Hip-Hop"
+            "Hip-Hop",
+            "x",
+            "titty",
+            "2"
         ]
     },
     {
@@ -68,7 +80,10 @@
             "trap",
             "2018",
             "sad",
-            "sexy"
+            "sexy",
+            "The Weeknd",
+            "alternative rnb",
+            "r&b"
         ]
     },
     {
@@ -81,7 +96,10 @@
             "Hip-Hop",
             "rnb",
             "king of pop",
-            "catchy"
+            "catchy",
+            "male vocalists",
+            "dancinha",
+            "sou"
         ]
     },
     {
@@ -104,7 +122,10 @@
             "electronic",
             "jamaica",
             "House",
-            "trap"
+            "trap",
+            "trap house jazz",
+            "jamaican",
+            "blues"
         ]
     },
     {
@@ -117,7 +138,284 @@
             "r&b",
             "Hip-Hop",
             "rock",
-            "soul"
+            "soul",
+            "urban",
+            "best album",
+            "slow jams"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "Twenty Eight",
+        "tags": [
+            "r&b",
+            "Canadian",
+            "indie",
+            "rnb",
+            "The Weeknd",
+            "downtempo",
+            "electronic",
+            "beautiful",
+            "dubstep",
+            "fav"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "Wicked Games",
+        "tags": [
+            "rnb",
+            "r&b",
+            "Canadian",
+            "fucking brilliant",
+            "experimental",
+            "soul",
+            "electronic",
+            "The Weeknd",
+            "rhythm and blues",
+            "self-deprecating"
+        ]
+    },
+    {
+        "artist": "PARTYNEXTDOOR",
+        "track": "F o r C e r t a i n",
+        "tags": [
+            "dancehall"
+        ]
+    },
+    {
+        "artist": "Drake",
+        "track": "Passionfruit",
+        "tags": [
+            "rnb",
+            "tropical house",
+            "House",
+            "2017",
+            "chill",
+            "dancehall",
+            "dance",
+            "Drake",
+            "contemporary rnb",
+            "2010s"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "Coming Down",
+        "tags": [
+            "Canadian",
+            "rnb",
+            "r&b",
+            "rhythm and blues",
+            "10s",
+            "toronto",
+            "soul",
+            "The Weeknd",
+            "electronic",
+            "2011"
+        ]
+    },
+    {
+        "artist": "Bruno Mars",
+        "track": "That's What I Like",
+        "tags": [
+            "funk",
+            "rnb",
+            "2010s",
+            "new jack swing",
+            "2016",
+            "pop",
+            "american",
+            "Bruno Mars",
+            "love at first listen",
+            "2017"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "The Knowing",
+        "tags": [
+            "downtempo",
+            "electronic",
+            "future garage",
+            "alternative rnb",
+            "Progressive",
+            "melancholic",
+            "atmospheric",
+            "melodic",
+            "ethereal",
+            "breakup"
+        ]
+    },
+    {
+        "artist": "Drake",
+        "track": "Chicago Freestyle (feat. Giveon)",
+        "tags": [
+            "2020",
+            "rap",
+            "Hip-Hop",
+            "Grime",
+            "8",
+            "trap",
+            "pop rap",
+            "uk-rap",
+            "Drake",
+            " hip-hop"
+        ]
+    },
+    {
+        "artist": "Young Thug",
+        "track": "The London (feat. J. Cole & Travis Scott)",
+        "tags": [
+            "travis scott",
+            "j cole",
+            "trap",
+            "rap",
+            "Young Thug",
+            "2019",
+            "london",
+            "Hard",
+            "los angeles",
+            "hip hop"
+        ]
+    },
+    {
+        "artist": "Shawn Mendes",
+        "track": "Monster (Shawn Mendes & Justin Bieber)",
+        "tags": [
+            "2020"
+        ]
+    },
+    {
+        "artist": "Tory Lanez",
+        "track": "Lavender Sunflower",
+        "tags": [
+            "synthwave",
+            "80s",
+            "pop",
+            "synthpop",
+            "retro electro",
+            "nu-disco"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "Pretty",
+        "tags": [
+            "2013",
+            "r&b",
+            "alternative rnb",
+            "electronic",
+            "rnb",
+            "darkwave",
+            "Canadian",
+            "rhythm & blues",
+            "cds I own",
+            "swing"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "Belong To The World",
+        "tags": [
+            "2013",
+            "r&b",
+            "alternative rnb",
+            "electronic",
+            "rnb",
+            "darkwave",
+            "Canadian",
+            "rhythm & blues",
+            "cds I own",
+            "swing"
+        ]
+    },
+    {
+        "artist": "Joji",
+        "track": "Glimpse of Us",
+        "tags": [
+            "Ballad",
+            "piano",
+            "adult contemporary",
+            "pop",
+            "singer-songwriter",
+            "Masterpiece",
+            "alternative pop",
+            "joji",
+            "2022",
+            "ethereal"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "The Birds Pt. 2",
+        "tags": [
+            "post-punk"
+        ]
+    },
+    {
+        "artist": "The Weeknd",
+        "track": "As You Are",
+        "tags": [
+            "2015",
+            "rnb",
+            "pop",
+            "best of 2015",
+            "electropop",
+            "alternative rnb",
+            "Hip-Hop",
+            "dance-pop",
+            "atmospheric",
+            "nocturnal"
+        ]
+    },
+    {
+        "artist": "Ariana Grande",
+        "track": "thank u, next",
+        "tags": [
+            "pop",
+            "rnb",
+            "Thank U",
+            "2010s",
+            "pete fracassado",
+            "2018",
+            "electropop",
+            "best of 2018",
+            "contemporary rnb",
+            "Ariana Grande"
+        ]
+    },
+    {
+        "artist": "Dido",
+        "track": "Thank You",
+        "tags": [
+            "pop",
+            "female vocalists",
+            "chillout",
+            "dido",
+            "british",
+            "90s",
+            "Mellow",
+            "singer-songwriter",
+            "easy listening",
+            "female vocalist"
+        ]
+    },
+
+    {
+        "artist": "Joji",
+        "track": "Sanctuary",
+        "tags": [
+            "indie",
+            "alternative",
+            "rnb",
+            "electropop",
+            "alternative rnb",
+            "synthpop",
+            "Lo-Fi",
+            "joji",
+            "indietronica",
+            "japanese"
         ]
     }
 ]
